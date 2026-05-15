@@ -29,13 +29,16 @@ def verify(ctx):
     ctx.run("dnf", ["--version"])
 
 def install_pkg(ctx, name, version, **kwargs):
-    ctx.run("sudo", ["dnf", "install", "-y", name])
+    if version:
+        ctx.run("sudo", ["dnf", "install", "-y", "%s-%s" % (name, version)])
+    else:
+        ctx.run("sudo", ["dnf", "install", "-y", name])
 
 def uninstall_pkg(ctx, name, version, **kwargs):
     ctx.run("sudo", ["dnf", "remove", "-y", name])
 
 def interrogate(ctx):
-    result = ctx.run("dnf", ["--quiet", "repoquery", "--installed", "--qf", "%{name}"])
+    result = ctx.run("dnf", ["--quiet", "repoquery", "--installed", "--qf", "%{name}\n"])
     pkgs = []
     for line in result.stdout.splitlines():
         line = line.strip()

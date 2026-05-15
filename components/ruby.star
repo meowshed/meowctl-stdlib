@@ -26,7 +26,10 @@ def install_pkg(ctx, name, version, **kwargs):
         ctx.run("gem", ["install", name])
 
 def uninstall_pkg(ctx, name, version, **kwargs):
-    ctx.run("gem", ["uninstall", name, "--all-versions"])
+    if version:
+        ctx.run("gem", ["uninstall", name, "-v", version])
+    else:
+        ctx.run("gem", ["uninstall", name, "--all-versions"])
 
 def interrogate(ctx):
     result = ctx.run("gem", ["list", "--local", "--no-versions"])

@@ -27,7 +27,10 @@ def verify(ctx):
     ctx.run("apt-get", ["--version"])
 
 def install_pkg(ctx, name, version, **kwargs):
-    ctx.run("sudo", ["apt-get", "install", "-y", name])
+    if version:
+        ctx.run("sudo", ["apt-get", "install", "-y", "%s=%s" % (name, version)])
+    else:
+        ctx.run("sudo", ["apt-get", "install", "-y", name])
 
 def uninstall_pkg(ctx, name, version, **kwargs):
     ctx.run("sudo", ["apt-get", "remove", "-y", name])
