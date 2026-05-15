@@ -8,10 +8,8 @@
 #
 # Delegates to mise's github: backend (stable since mise v2025.9.19).
 # name format: "owner/repo" (e.g. "cli/cli", "junegunn/fzf")
-# install_pkg: pkg(manager="mise", name="github:owner/repo", version=version)
-# uninstall_pkg: delegates to mise uninstall via pkg()
-# interrogate: `mise ls --installed --json` → filter keys starting with
-#              "github:"; strip prefix to return "owner/repo" strings.
+# uninstall_pkg: unpkg(manager="mise", name="github:owner/repo", version=version)
+# interrogate: query_pm("mise") → filter keys starting with "github:"; strip prefix.
 
 after = ["mise"]
 pm_name = "github-release"
@@ -21,25 +19,25 @@ def install(ctx):
     pass
 
 def verify(ctx):
-    ctx.run("mise", ["--version"])
+    # mise is already verified by its own component; nothing to check here.
+    pass
 
 def install_pkg(ctx, name, version, **kwargs):
     # name: "owner/repo"
     pkg(manager="mise", name="github:%s" % name, version=version)
 
 def uninstall_pkg(ctx, name, version, **kwargs):
-    # mise uninstall is not exposed via pkg(); call mise directly as the PM itself.
     if version:
-        spec = "github:%s@%s" % (name, version)
+        spec_version = version
     else:
-        spec = "github:%s" % name
-    ctx.run("mise", ["uninstall", spec])
+        spec_version = ""
+    unpkg(manager="mise", name="github:%s" % name, version=spec_version)
 
 def interrogate(ctx):
-    result = ctx.run("mise", ["ls", "--installed", "--json"])
-    installed = json.decode(result.stdout)
+    # query_pm("mise") returns all mise-managed tool names; filter for github: prefix.
+    all_tools = query_pm("mise")
     names = []
-    for key in installed.keys():
+    for key in all_tools:
         if key.startswith("github:"):
             names.append(key[len("github:"):])
     return names

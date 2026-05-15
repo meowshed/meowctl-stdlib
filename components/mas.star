@@ -11,7 +11,7 @@
 #        the user to be signed in to the App Store.
 # uninstall: mas cannot auto-uninstall by ID; logs a warning and returns.
 # interrogate: `mas list` → space-padded `<id>  <name> (<version>)` per line;
-#              returns the numeric ID strings (first whitespace-delimited field).
+#              returns the numeric ID strings (first space-delimited field).
 
 platforms = ["macos"]
 after = ["brew"]
@@ -40,5 +40,5 @@ def interrogate(ctx):
     for line in result.stdout.splitlines():
         line = line.strip()
         if line:
-            ids.append(line.split()[0])
+            ids.append(line.split(" ")[0])
     return ids

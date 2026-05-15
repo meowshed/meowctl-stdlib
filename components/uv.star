@@ -37,7 +37,8 @@ def interrogate(ctx):
     for line in result.stdout.splitlines():
         line = line.strip()
         # Lines starting with "-" are entrypoints under the previous tool; skip.
-        if line and not line.startswith("-"):
+        # Lines ending with ":" are headers (e.g. "Installed tools:"); skip.
+        if line and not line.startswith("-") and not line.endswith(":"):
             # Format: "<name> v<version>"
             names.append(line.split(" ")[0])
     return names

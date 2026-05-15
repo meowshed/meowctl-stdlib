@@ -26,6 +26,8 @@ def verify(ctx):
     ctx.run("pacman", ["--version"])
 
 def install_pkg(ctx, name, version, **kwargs):
+    if version:
+        ctx.log("warning: pacman does not support version pinning; installing latest %s" % name)
     ctx.run("sudo", ["pacman", "-S", "--noconfirm", name])
 
 def uninstall_pkg(ctx, name, version, **kwargs):

@@ -10,8 +10,7 @@
 # install: installs pipx via mise.
 # install_pkg: `pipx install <name>` (optionally with version specifier).
 # uninstall_pkg: `pipx uninstall <name>`.
-# interrogate: `pipx list --short` → lines of the form `<name> <version>`;
-#              returns the tool names.
+# interrogate: `pipx list --json` → parse JSON; venvs keys are package names.
 
 after = ["mise"]
 pm_name = "pipx"
@@ -32,11 +31,6 @@ def uninstall_pkg(ctx, name, version, **kwargs):
     ctx.run("pipx", ["uninstall", name])
 
 def interrogate(ctx):
-    result = ctx.run("pipx", ["list", "--short"])
-    names = []
-    for line in result.stdout.splitlines():
-        line = line.strip()
-        if line:
-            # Format: "package version, ..."  — first word is the package name
-            names.append(line.split(" ")[0])
-    return names
+    result = ctx.run("pipx", ["list", "--json"])
+    data = json.decode(result.stdout)
+    return list(data["venvs"].keys())

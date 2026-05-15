@@ -46,9 +46,9 @@ def interrogate(ctx):
         # Algorithm: strip the trailing "-r<N>" release suffix, then strip
         # the remaining version by finding the last "-<digit>" boundary.
         spec = line.split(" ")[0]  # e.g. "py3-setuptools-67.8.0-r1"
-        # Drop -r<N> release suffix
+        # Drop -r<N> release suffix — guard: char after "-r" must be a digit
         idx = spec.rfind("-r")
-        if idx != -1:
+        if idx != -1 and spec[idx + 2:idx + 3] >= "0" and spec[idx + 2:idx + 3] <= "9":
             spec = spec[:idx]  # e.g. "py3-setuptools-67.8.0"
         # Drop version: find last "-<digit>" boundary
         while True:
