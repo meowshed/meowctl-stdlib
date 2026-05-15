@@ -69,7 +69,6 @@ jobs:
           STDLIB_PATH: ${{ github.workspace }}/stdlib
         run: |
           bash stdlib/scripts/pm-smoke-test.sh \
-            apt mise node ruby rust go uv pipx luarocks github_release \
             test-apt test-mise test-npm test-pipx test-gem test-cargo test-go test-uv test-luarocks test-github-release
 
   integration-fedora:
@@ -104,7 +103,6 @@ jobs:
           STDLIB_PATH: ${{ github.workspace }}/stdlib
         run: |
           bash stdlib/scripts/pm-smoke-test.sh \
-            dnf mise node ruby rust go uv pipx luarocks github_release \
             test-dnf test-mise test-npm test-pipx test-gem test-cargo test-go test-uv test-luarocks test-github-release
 
   integration-arch:
@@ -139,7 +137,6 @@ jobs:
           STDLIB_PATH: ${{ github.workspace }}/stdlib
         run: |
           bash stdlib/scripts/pm-smoke-test.sh \
-            pacman mise node ruby rust go uv pipx luarocks github_release \
             test-pacman test-mise test-npm test-pipx test-gem test-cargo test-go test-uv test-luarocks test-github-release
 
   integration-alpine:
@@ -174,7 +171,6 @@ jobs:
           STDLIB_PATH: ${{ github.workspace }}/stdlib
         run: |
           bash stdlib/scripts/pm-smoke-test.sh \
-            apk mise node ruby rust go uv pipx luarocks github_release \
             test-apk test-mise test-npm test-pipx test-gem test-cargo test-go test-uv test-luarocks test-github-release
 
   integration-macos:
@@ -210,7 +206,6 @@ jobs:
           STDLIB_PATH: ${{ github.workspace }}/stdlib
         run: |
           bash stdlib/scripts/pm-smoke-test.sh \
-            brew mise node ruby rust go uv pipx luarocks github_release \
             test-brew test-mise test-npm test-pipx test-gem test-cargo test-go test-uv test-luarocks test-github-release
 
   secrets:
