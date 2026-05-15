@@ -10,8 +10,8 @@ permissions:
   contents: read
 
 jobs:
-  integration:
-    name: Integration tests
+  pm-validity:
+    name: PM validity tests
     runs-on: ubuntu-latest
     steps:
       - name: Checkout meowctl-stdlib
@@ -30,14 +30,14 @@ jobs:
           cache: true
           working_directory: meowctl
 
-      - name: Run stdlib integration tests
+      - name: Run PM validity tests
         working-directory: meowctl
         env:
           STDLIB_PATH: ${{ github.workspace }}/stdlib
         run: CGO_ENABLED=0 go test -tags integration -count=1 -v ./internal/lifecycle/...
 
-  smoke-ubuntu:
-    name: Smoke / Ubuntu (apt)
+  integration-ubuntu:
+    name: Integration / Ubuntu (apt)
     runs-on: ubuntu-latest
     steps:
       - name: Checkout meowctl-stdlib
@@ -69,10 +69,11 @@ jobs:
         run: |
           bash stdlib/scripts/pm-smoke-test.sh \
             "$MEOWCTL_BIN" "$STDLIB_PATH" \
+            apt mise node ruby rust go uv pipx luarocks github_release \
             test-apt test-mise test-npm test-pipx test-gem test-cargo test-go test-uv test-luarocks test-github-release
 
-  smoke-fedora:
-    name: Smoke / Fedora (dnf)
+  integration-fedora:
+    name: Integration / Fedora (dnf)
     runs-on: ubuntu-latest
     container: fedora:latest
     steps:
@@ -103,10 +104,11 @@ jobs:
         run: |
           bash stdlib/scripts/pm-smoke-test.sh \
             "$MEOWCTL_BIN" "$STDLIB_PATH" \
+            dnf mise node ruby rust go uv pipx luarocks github_release \
             test-dnf test-mise test-npm test-pipx test-gem test-cargo test-go test-uv test-luarocks test-github-release
 
-  smoke-arch:
-    name: Smoke / Arch (pacman)
+  integration-arch:
+    name: Integration / Arch (pacman)
     runs-on: ubuntu-latest
     container: archlinux:latest
     steps:
@@ -137,10 +139,11 @@ jobs:
         run: |
           bash stdlib/scripts/pm-smoke-test.sh \
             "$MEOWCTL_BIN" "$STDLIB_PATH" \
+            pacman mise node ruby rust go uv pipx luarocks github_release \
             test-pacman test-mise test-npm test-pipx test-gem test-cargo test-go test-uv test-luarocks test-github-release
 
-  smoke-alpine:
-    name: Smoke / Alpine (apk)
+  integration-alpine:
+    name: Integration / Alpine (apk)
     runs-on: ubuntu-latest
     container: alpine:latest
     steps:
@@ -171,10 +174,11 @@ jobs:
         run: |
           bash stdlib/scripts/pm-smoke-test.sh \
             "$MEOWCTL_BIN" "$STDLIB_PATH" \
+            apk mise node ruby rust go uv pipx luarocks github_release \
             test-apk test-mise test-npm test-pipx test-gem test-cargo test-go test-uv test-luarocks test-github-release
 
-  smoke-macos:
-    name: Smoke / macOS (brew)
+  integration-macos:
+    name: Integration / macOS (brew)
     runs-on: macos-latest
     steps:
       - name: Checkout meowctl-stdlib

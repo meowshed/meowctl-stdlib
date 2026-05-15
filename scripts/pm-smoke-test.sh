@@ -9,8 +9,11 @@
 # Each <component> must match a test-<pm> fixture component name (e.g. test-apt).
 # The script:
 #   1. Creates a temp config dir and copies stdlib + fixture components into it.
-#   2. Runs meowctl install   → verify   → update   → uninstall for each component.
-#   3. Exits non-zero on first failure, printing which component and phase failed.
+#   2. Runs meowctl install for all requested components in one call so that
+#      dependency ordering (after=) is respected — PM components are installed
+#      before the test-pkg components that depend on them.
+#   3. Then for each test component individually: verify → update → uninstall.
+#   4. Exits non-zero on first failure, printing which component and phase failed.
 #
 # Environment:
 #   MEOWCTL_BIN   - path to meowctl binary (overrides $1)
@@ -58,7 +61,13 @@ cp "$REPO_ROOT"/tests/fixtures/components/*.star "$CONFIG_DIR/components/"
 # Copy fixture meowctl.star (declares component() graph).
 cp "$REPO_ROOT/tests/fixtures/meowctl.star" "$CONFIG_DIR/meowctl.star"
 
-# --- smoke test each requested component ---
+# --- phase 1: install all components together so after= ordering is respected ---
+# PM components (mise, node, ruby, etc.) are installed before the test-pkg
+# components that depend on them.
+echo "==> install: ${COMPONENTS[*]}"
+"$MEOWCTL_BIN" --config "$CONFIG_DIR" install "${COMPONENTS[@]}"
+
+# --- phase 2: verify → update → uninstall per test component ---
 FAILED=()
 
 run_phase() {
@@ -72,9 +81,10 @@ run_phase() {
 }
 
 for component in "${COMPONENTS[@]}"; do
+  # Only run lifecycle checks on test-pkg components, not on PM bootstrap components.
+  [[ "$component" != test-* ]] && continue
   echo "==> smoke: ${component}"
-  if run_phase install  "$component" \
-  && run_phase verify   "$component" \
+  if run_phase verify   "$component" \
   && run_phase update   "$component" \
   && run_phase uninstall "$component"; then
     echo "  OK"
