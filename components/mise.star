@@ -25,27 +25,6 @@ def _curl_install(ctx):
         ctx.run("sh", ["/tmp/mise-install.sh"])
         ctx.delete_file("/tmp/mise-install.sh")
 
-def _apt_install(ctx):
-    # mise is not in the default Ubuntu/Debian apt repos.
-    # Ubuntu 26.04+ supports a PPA; older releases require the official apt repo.
-    # We use the official repo (works on all Ubuntu/Debian versions).
-    if ctx.which("mise"):
-        return
-    ctx.run("sudo", ["apt-get", "update", "-y"])
-    ctx.run("sudo", ["apt-get", "install", "-y", "curl", "ca-certificates"])
-    ctx.run("sudo", ["install", "-dm", "755", "/etc/apt/keyrings"])
-    ctx.run("sh", ["-c", "curl -fsSL https://mise.jdx.dev/gpg-key.pub | sudo tee /etc/apt/keyrings/mise-archive-keyring.asc > /dev/null"])
-    ctx.run("sh", ["-c", "echo 'deb [signed-by=/etc/apt/keyrings/mise-archive-keyring.asc] https://mise.jdx.dev/deb stable main' | sudo tee /etc/apt/sources.list.d/mise.list"])
-    ctx.run("sudo", ["apt-get", "update", "-y"])
-    ctx.run("sudo", ["apt-get", "install", "-y", "mise"])
-
-def _dnf_install(ctx):
-    # mise requires enabling the jdxcode COPR repo on Fedora/RHEL.
-    if ctx.which("mise"):
-        return
-    ctx.run("sudo", ["dnf", "copr", "enable", "-y", "jdxcode/mise"])
-    ctx.run("sudo", ["dnf", "install", "-y", "mise"])
-
 def _activate_shims(ctx):
     # Registers mise shim dirs into the current process PATH so that tools
     # installed by mise are findable by subsequent ctx.run calls.
@@ -63,9 +42,17 @@ def install(ctx):
         pkg(manager="brew", name="mise")
     elif p.os == "linux":
         if p.distro == "ubuntu" or p.distro == "debian" or p.distro_like == "debian":
-            _apt_install(ctx)
+            if not ctx.which("mise"):
+                repo(
+                    manager="apt",
+                    key_url="https://mise.jdx.dev/gpg-key.pub",
+                    repo_line="deb [signed-by=/etc/apt/keyrings/gpg-key.asc] https://mise.jdx.dev/deb stable main",
+                )
+                pkg(manager="apt", name="mise")
         elif p.distro == "fedora" or p.distro == "rhel" or p.distro_like == "fedora" or p.distro_like == "rhel":
-            _dnf_install(ctx)
+            if not ctx.which("mise"):
+                repo(manager="dnf", copr="jdxcode/mise")
+                pkg(manager="dnf", name="mise")
         elif p.distro == "arch":
             pkg(manager="pacman", name="mise")
         elif p.distro == "alpine":

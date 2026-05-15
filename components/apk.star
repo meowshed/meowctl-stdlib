@@ -27,6 +27,10 @@ def install(ctx):
 def verify(ctx):
     ctx.run("apk", ["--version"])
 
+def add_repo(ctx, **kwargs):
+    # apk uses /etc/apk/repositories for repos; no generic add_repo supported.
+    pass
+
 def install_pkg(ctx, name, version, **kwargs):
     ctx.run("apk", ["add", name])
 

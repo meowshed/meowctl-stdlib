@@ -25,6 +25,10 @@ def install(ctx):
 def verify(ctx):
     ctx.run("pacman", ["--version"])
 
+def add_repo(ctx, **kwargs):
+    # pacman uses /etc/pacman.conf for repos; no generic add_repo supported.
+    pass
+
 def install_pkg(ctx, name, version, **kwargs):
     if version:
         ctx.log("warning: pacman does not support version pinning; installing latest %s" % name)

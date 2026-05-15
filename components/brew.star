@@ -35,6 +35,11 @@ def verify(ctx):
         return
     ctx.run("brew", ["--version"])
 
+def add_repo(ctx, **kwargs):
+    # brew uses `brew tap` for third-party repos; no generic add_repo needed.
+    # Taps are handled via the tap= kwarg in install_pkg instead.
+    pass
+
 def install_pkg(ctx, name, version, **kwargs):
     tap = kwargs.get("tap", "")
     cask = kwargs.get("cask", False)
