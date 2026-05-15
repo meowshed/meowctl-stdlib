@@ -1,0 +1,49 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  integration:
+    name: Integration tests
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout meowctl-stdlib
+        uses: actions/checkout@v4
+        with:
+          path: meowctl-stdlib
+
+      - name: Checkout meowctl
+        uses: actions/checkout@v4
+        with:
+          repository: meowshed/meowctl
+          path: meowctl
+
+      - uses: jdx/mise-action@1648a7812b9aeae629881980618f079932869151 # v4.0.1
+        with:
+          cache: true
+          working_directory: meowctl
+
+      - name: Run stdlib integration tests
+        working-directory: meowctl
+        env:
+          STDLIB_PATH: ${{ github.workspace }}/meowctl-stdlib
+        run: CGO_ENABLED=0 go test -tags integration -count=1 -v ./internal/lifecycle/...
+
+  secrets:
+    name: Secrets (trufflehog)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Scan for secrets
+        uses: trufflesecurity/trufflehog@7dc056a193116ba8d82154bf0549381c8fb8545c # v3.88.14
+        with:
+          extra_args: --results=verified,unknown
