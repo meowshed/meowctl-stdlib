@@ -1,0 +1,64 @@
+# components/apk.star
+#
+# pm_name:  apk
+# platform: ["linux"]
+# distro:   alpine
+# after:    —
+#
+# PM kwargs: none
+#
+# Bootstrap PM. apk is a system-level package manager; no higher-level PM
+# can install it. install() is a no-op — apk is always present on Alpine.
+#
+# Package names are standard apk package names (e.g. "curl", "git").
+# install_pkg: runs `apk add <name>` (Alpine runs as root in containers;
+#              no sudo needed).
+# uninstall_pkg: runs `apk del <name>`.
+# interrogate: `apk list --installed` → lines of the form `<name>-<version> ...`;
+#              extracts the package name by stripping the trailing version suffix.
+
+platforms = ["linux"]
+pm_name = "apk"
+
+def install(ctx):
+    # apk is a system PM — always present on Alpine; nothing to install.
+    pass
+
+def verify(ctx):
+    ctx.run("apk", ["--version"])
+
+def install_pkg(ctx, name, version, **kwargs):
+    ctx.run("apk", ["add", name])
+
+def uninstall_pkg(ctx, name, version, **kwargs):
+    ctx.run("apk", ["del", name])
+
+def interrogate(ctx):
+    result = ctx.run("apk", ["list", "--installed"])
+    pkgs = []
+    for line in result.stdout.splitlines():
+        line = line.strip()
+        if not line:
+            continue
+        # line format: "<name>-<version>-r<N> <arch> {<origin>} ..."
+        # Per apk-package(5): the version boundary is the LAST occurrence of
+        # "-<digit>", so we must split from the right.
+        # Algorithm: strip the trailing "-r<N>" release suffix, then strip
+        # the remaining version by finding the last "-<digit>" boundary.
+        spec = line.split(" ")[0]  # e.g. "py3-setuptools-67.8.0-r1"
+        # Drop -r<N> release suffix
+        idx = spec.rfind("-r")
+        if idx != -1:
+            spec = spec[:idx]  # e.g. "py3-setuptools-67.8.0"
+        # Drop version: find last "-<digit>" boundary
+        while True:
+            idx = spec.rfind("-")
+            if idx == -1:
+                break
+            if spec[idx + 1:idx + 2] >= "0" and spec[idx + 1:idx + 2] <= "9":
+                spec = spec[:idx]
+            else:
+                break
+        if spec:
+            pkgs.append(spec)
+    return pkgs
