@@ -20,10 +20,11 @@ def install(ctx):
     pkg(manager="mise", name="uv", version="latest")
     # uv tool install puts binaries in $(uv tool dir)/bin; add to PATH so
     # subsequent ctx.run calls can find them without a shell restart.
-    result = ctx.run("uv", ["tool", "dir"])
-    tool_dir = result.stdout.strip()
-    if tool_dir:
-        ctx.add_path(tool_dir + "/bin")
+    if ctx.which("uv"):
+        result = ctx.run("uv", ["tool", "dir"])
+        tool_dir = result.stdout.strip()
+        if tool_dir:
+            ctx.add_path(tool_dir + "/bin")
 
 def verify(ctx):
     ctx.run("uv", ["--version"])

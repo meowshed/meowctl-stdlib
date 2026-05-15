@@ -67,6 +67,7 @@ jobs:
       - name: Smoke test (apt)
         env:
           STDLIB_PATH: ${{ github.workspace }}/stdlib
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           bash stdlib/scripts/pm-smoke-test.sh \
             test-apt test-mise test-npm test-pipx test-gem test-cargo test-go test-uv test-luarocks test-github-release
@@ -101,6 +102,7 @@ jobs:
       - name: Smoke test (dnf)
         env:
           STDLIB_PATH: ${{ github.workspace }}/stdlib
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           bash stdlib/scripts/pm-smoke-test.sh \
             test-dnf test-mise test-npm test-pipx test-gem test-cargo test-go test-uv test-luarocks test-github-release
@@ -135,6 +137,7 @@ jobs:
       - name: Smoke test (pacman)
         env:
           STDLIB_PATH: ${{ github.workspace }}/stdlib
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           bash stdlib/scripts/pm-smoke-test.sh \
             test-pacman test-mise test-npm test-pipx test-gem test-cargo test-go test-uv test-luarocks test-github-release
@@ -169,6 +172,7 @@ jobs:
       - name: Smoke test (apk)
         env:
           STDLIB_PATH: ${{ github.workspace }}/stdlib
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           bash stdlib/scripts/pm-smoke-test.sh \
             test-apk test-mise test-npm test-pipx test-gem test-cargo test-go test-uv test-luarocks test-github-release
@@ -204,6 +208,7 @@ jobs:
       - name: Smoke test (brew)
         env:
           STDLIB_PATH: ${{ github.workspace }}/stdlib
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           bash stdlib/scripts/pm-smoke-test.sh \
             test-brew test-mise test-npm test-pipx test-gem test-cargo test-go test-uv test-luarocks test-github-release
