@@ -17,7 +17,7 @@ jobs:
       - name: Checkout meowctl-stdlib
         uses: actions/checkout@v4
         with:
-          path: meowctl-stdlib
+          path: stdlib
 
       - name: Checkout meowctl
         uses: actions/checkout@v4
@@ -33,7 +33,7 @@ jobs:
       - name: Run stdlib integration tests
         working-directory: meowctl
         env:
-          STDLIB_PATH: ${{ github.workspace }}/meowctl-stdlib
+          STDLIB_PATH: ${{ github.workspace }}/stdlib
         run: CGO_ENABLED=0 go test -tags integration -count=1 -v ./internal/lifecycle/...
 
   secrets:
