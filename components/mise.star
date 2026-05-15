@@ -7,8 +7,9 @@
 # PM kwargs: none
 #
 # Installs mise via the native package manager for the current platform.
-# Falls back to the official curl installer on platforms without a known
-# native package manager component.
+# On macOS: brew only (brew is the canonical macOS package manager for mise).
+# On Linux: distro-native PM; falls back to the official curl installer for
+# unrecognised distros.
 #
 # Version format: <name>@<version> passed verbatim to `mise install`.
 # interrogate: `mise ls --installed --json` → JSON object; keys are tool names.
@@ -16,6 +17,13 @@
 
 pm_name = "mise"
 after = ["brew", "apt", "dnf", "pacman", "apk"]
+
+def _curl_install(ctx):
+    # Official curl installer. Guarded by ctx.which for idempotency.
+    if not ctx.which("mise"):
+        ctx.run("curl", ["-fsSL", "https://mise.run", "-o", "/tmp/mise-install.sh"])
+        ctx.run("sh", ["/tmp/mise-install.sh"])
+        ctx.delete_file("/tmp/mise-install.sh")
 
 def install(ctx):
     p = platform()
@@ -31,18 +39,9 @@ def install(ctx):
         elif p.distro == "alpine":
             pkg(manager="apk", name="mise")
         else:
-            # Fallback: official curl installer for unrecognised Linux distros.
-            # Guard: skip if mise is already on PATH (idempotency).
-            if not ctx.which("mise"):
-                ctx.run("curl", ["-fsSL", "https://mise.run", "-o", "/tmp/mise-install.sh"])
-                ctx.run("sh", ["/tmp/mise-install.sh"])
-                ctx.delete_file("/tmp/mise-install.sh")
+            _curl_install(ctx)
     else:
-        # Fallback for non-macOS, non-Linux platforms.
-        if not ctx.which("mise"):
-            ctx.run("curl", ["-fsSL", "https://mise.run", "-o", "/tmp/mise-install.sh"])
-            ctx.run("sh", ["/tmp/mise-install.sh"])
-            ctx.delete_file("/tmp/mise-install.sh")
+        _curl_install(ctx)
 
 def verify(ctx):
     ctx.run("mise", ["--version"])
