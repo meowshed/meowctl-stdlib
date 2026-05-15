@@ -11,7 +11,7 @@
 # On Linux: distro-native PM with repo setup where required; falls back to
 # the official curl installer for unrecognised distros.
 #
-# Version format: <name>@<version> passed verbatim to `mise install`.
+# Version format: <name>@<version> passed verbatim to `mise use --global`.
 # interrogate: `mise ls --installed --json` → JSON object; keys are tool names.
 # Each key is accepted verbatim by install_pkg as the `name` argument.
 
