@@ -10,11 +10,11 @@
 #          use "latest" when no version is specified.
 # Uninstall: remove the binary from $(go env GOPATH)/bin; the basename is
 #            the last path component of the import path.
-# interrogate: list files in $(go env GOPATH)/bin — each file is a binary
-#              name. We return full import paths only when they are known;
-#              here we return basenames matching the installed binaries.
-#              Note: go install does not record the source import path after
-#              install, so interrogate returns binary basenames only.
+# interrogate: go install does not record the source import path after
+#              installation; GOPATH/bin contains only binaries with no mapping
+#              back to import paths. interrogate therefore returns an empty list.
+#              Reconciliation must rely on the meowctl lock file, not runtime
+#              inspection.
 # Pinning: @latest is non-reproducible; use explicit version tags for
 #          reproducible installs.
 
@@ -43,7 +43,7 @@ def uninstall_pkg(ctx, name, version, **kwargs):
     ctx.delete_file("%s/bin/%s" % (gopath, binary))
 
 def interrogate(ctx):
-    gopath_result = ctx.run("go", ["env", "GOPATH"])
-    gopath = gopath_result.stdout.strip()
-    result = ctx.list_dir("%s/bin" % gopath)
-    return [entry for entry in result]
+    # go install does not record import paths after installation — GOPATH/bin
+    # holds only binary names with no reverse mapping. Return empty list;
+    # meowctl reconciles via the lock file.
+    return []
