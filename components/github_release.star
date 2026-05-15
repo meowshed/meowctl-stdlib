@@ -27,11 +27,7 @@ def install_pkg(ctx, name, version, **kwargs):
     pkg(manager="mise", name="github:%s" % name, version=version)
 
 def uninstall_pkg(ctx, name, version, **kwargs):
-    if version:
-        spec_version = version
-    else:
-        spec_version = ""
-    unpkg(manager="mise", name="github:%s" % name, version=spec_version)
+    unpkg(manager="mise", name="github:%s" % name, version=version or "")
 
 def interrogate(ctx):
     # query_pm("mise") returns all mise-managed tool names; filter for github: prefix.
