@@ -25,10 +25,10 @@ jobs:
           repository: meowshed/meowctl
           path: meowctl
 
-      - uses: jdx/mise-action@1648a7812b9aeae629881980618f079932869151 # v4.0.1
+      - uses: actions/setup-go@v6
         with:
-          cache: true
-          working_directory: meowctl
+          go-version-file: meowctl/go.mod
+          cache-dependency-path: meowctl/go.sum
 
       - name: Run PM contract tests
         working-directory: meowctl
@@ -51,10 +51,10 @@ jobs:
           repository: meowshed/meowctl
           path: meowctl
 
-      - uses: jdx/mise-action@1648a7812b9aeae629881980618f079932869151 # v4.0.1
+      - uses: actions/setup-go@v6
         with:
-          cache: true
-          working_directory: meowctl
+          go-version-file: meowctl/go.mod
+          cache-dependency-path: meowctl/go.sum
 
       - name: Build and install meowctl
         working-directory: meowctl
@@ -188,10 +188,10 @@ jobs:
           repository: meowshed/meowctl
           path: meowctl
 
-      - uses: jdx/mise-action@1648a7812b9aeae629881980618f079932869151 # v4.0.1
+      - uses: actions/setup-go@v6
         with:
-          cache: true
-          working_directory: meowctl
+          go-version-file: meowctl/go.mod
+          cache-dependency-path: meowctl/go.sum
 
       - name: Build and install meowctl
         working-directory: meowctl
