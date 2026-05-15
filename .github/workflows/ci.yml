@@ -36,6 +36,168 @@ jobs:
           STDLIB_PATH: ${{ github.workspace }}/stdlib
         run: CGO_ENABLED=0 go test -tags integration -count=1 -v ./internal/lifecycle/...
 
+  smoke-ubuntu:
+    name: Smoke / Ubuntu (apt)
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout meowctl-stdlib
+        uses: actions/checkout@v4
+        with:
+          path: stdlib
+
+      - name: Checkout meowctl
+        uses: actions/checkout@v4
+        with:
+          repository: meowshed/meowctl
+          path: meowctl
+
+      - uses: jdx/mise-action@1648a7812b9aeae629881980618f079932869151 # v4.0.1
+        with:
+          cache: true
+          working_directory: meowctl
+
+      - name: Build meowctl
+        working-directory: meowctl
+        run: CGO_ENABLED=0 go build -o meowctl ./cmd/meowctl
+
+      - name: Smoke test (apt)
+        env:
+          STDLIB_PATH: ${{ github.workspace }}/stdlib
+          MEOWCTL_BIN: ${{ github.workspace }}/meowctl/meowctl
+        run: |
+          bash stdlib/scripts/pm-smoke-test.sh \
+            "$MEOWCTL_BIN" "$STDLIB_PATH" \
+            test-apt test-mise test-npm test-pipx test-gem test-cargo test-go test-uv test-luarocks test-github-release
+
+  smoke-fedora:
+    name: Smoke / Fedora (dnf)
+    runs-on: ubuntu-latest
+    container: fedora:latest
+    steps:
+      - name: Install git and Go toolchain deps
+        run: dnf install -y git golang
+
+      - name: Checkout meowctl-stdlib
+        uses: actions/checkout@v4
+        with:
+          path: stdlib
+
+      - name: Checkout meowctl
+        uses: actions/checkout@v4
+        with:
+          repository: meowshed/meowctl
+          path: meowctl
+
+      - name: Build meowctl
+        working-directory: meowctl
+        run: CGO_ENABLED=0 go build -o meowctl ./cmd/meowctl
+
+      - name: Smoke test (dnf)
+        env:
+          STDLIB_PATH: ${{ github.workspace }}/stdlib
+          MEOWCTL_BIN: ${{ github.workspace }}/meowctl/meowctl
+        run: |
+          bash stdlib/scripts/pm-smoke-test.sh \
+            "$MEOWCTL_BIN" "$STDLIB_PATH" \
+            test-dnf test-mise test-npm test-pipx test-gem test-cargo test-go test-uv test-luarocks test-github-release
+
+  smoke-arch:
+    name: Smoke / Arch (pacman)
+    runs-on: ubuntu-latest
+    container: archlinux:latest
+    steps:
+      - name: Install git and Go toolchain deps
+        run: pacman -Syu --noconfirm git go
+
+      - name: Checkout meowctl-stdlib
+        uses: actions/checkout@v4
+        with:
+          path: stdlib
+
+      - name: Checkout meowctl
+        uses: actions/checkout@v4
+        with:
+          repository: meowshed/meowctl
+          path: meowctl
+
+      - name: Build meowctl
+        working-directory: meowctl
+        run: CGO_ENABLED=0 go build -o meowctl ./cmd/meowctl
+
+      - name: Smoke test (pacman)
+        env:
+          STDLIB_PATH: ${{ github.workspace }}/stdlib
+          MEOWCTL_BIN: ${{ github.workspace }}/meowctl/meowctl
+        run: |
+          bash stdlib/scripts/pm-smoke-test.sh \
+            "$MEOWCTL_BIN" "$STDLIB_PATH" \
+            test-pacman test-mise test-npm test-pipx test-gem test-cargo test-go test-uv test-luarocks test-github-release
+
+  smoke-alpine:
+    name: Smoke / Alpine (apk)
+    runs-on: ubuntu-latest
+    container: alpine:latest
+    steps:
+      - name: Install git and Go toolchain deps
+        run: apk add --no-cache git go bash
+
+      - name: Checkout meowctl-stdlib
+        uses: actions/checkout@v4
+        with:
+          path: stdlib
+
+      - name: Checkout meowctl
+        uses: actions/checkout@v4
+        with:
+          repository: meowshed/meowctl
+          path: meowctl
+
+      - name: Build meowctl
+        working-directory: meowctl
+        run: CGO_ENABLED=0 go build -o meowctl ./cmd/meowctl
+
+      - name: Smoke test (apk)
+        env:
+          STDLIB_PATH: ${{ github.workspace }}/stdlib
+          MEOWCTL_BIN: ${{ github.workspace }}/meowctl/meowctl
+        run: |
+          bash stdlib/scripts/pm-smoke-test.sh \
+            "$MEOWCTL_BIN" "$STDLIB_PATH" \
+            test-apk test-mise test-npm test-pipx test-gem test-cargo test-go test-uv test-luarocks test-github-release
+
+  smoke-macos:
+    name: Smoke / macOS (brew)
+    runs-on: macos-latest
+    steps:
+      - name: Checkout meowctl-stdlib
+        uses: actions/checkout@v4
+        with:
+          path: stdlib
+
+      - name: Checkout meowctl
+        uses: actions/checkout@v4
+        with:
+          repository: meowshed/meowctl
+          path: meowctl
+
+      - uses: jdx/mise-action@1648a7812b9aeae629881980618f079932869151 # v4.0.1
+        with:
+          cache: true
+          working_directory: meowctl
+
+      - name: Build meowctl
+        working-directory: meowctl
+        run: CGO_ENABLED=0 go build -o meowctl ./cmd/meowctl
+
+      - name: Smoke test (brew)
+        env:
+          STDLIB_PATH: ${{ github.workspace }}/stdlib
+          MEOWCTL_BIN: ${{ github.workspace }}/meowctl/meowctl
+        run: |
+          bash stdlib/scripts/pm-smoke-test.sh \
+            "$MEOWCTL_BIN" "$STDLIB_PATH" \
+            test-brew test-mise test-npm test-pipx test-gem test-cargo test-go test-uv test-luarocks test-github-release
+
   secrets:
     name: Secrets (trufflehog)
     runs-on: ubuntu-latest
