@@ -25,6 +25,17 @@ def _curl_install(ctx):
         ctx.run("sh", ["/tmp/mise-install.sh"])
         ctx.delete_file("/tmp/mise-install.sh")
 
+def _activate_shims(ctx):
+    # Registers mise shim dirs into the current process PATH so that tools
+    # installed by mise are findable by subsequent ctx.run calls.
+    # Called after install and again during verify so PATH stays current
+    # across all phases in a multi-phase run.
+    result = ctx.run("mise", ["bin-paths"])
+    for path in result.stdout.splitlines():
+        path = path.strip()
+        if path:
+            ctx.add_path(path)
+
 def install(ctx):
     p = platform()
     if p.os == "macos":
@@ -42,16 +53,11 @@ def install(ctx):
             _curl_install(ctx)
     else:
         _curl_install(ctx)
-    # Activate mise shims for the current meowctl session so that subsequent
-    # ctx.run calls can find tools installed by mise without a shell restart.
-    result = ctx.run("mise", ["bin-paths"])
-    for path in result.stdout.splitlines():
-        path = path.strip()
-        if path:
-            ctx.add_path(path)
+    _activate_shims(ctx)
 
 def verify(ctx):
     ctx.run("mise", ["--version"])
+    _activate_shims(ctx)
 
 def shell(ctx):
     ctx.emit("eval \"$(mise activate %s)\"" % ctx.shell)

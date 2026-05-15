@@ -66,11 +66,11 @@ EOF
 
 # --- phase 1: install all components together so after= ordering is respected ---
 echo "==> install: ${COMPONENTS[*]}"
-"$MEOWCTL_BIN" --config "$CONFIG_DIR" install "${COMPONENTS[@]}"
+"$MEOWCTL_BIN" --config "$CONFIG_DIR" install --verbose "${COMPONENTS[@]}"
 
 # --- phase 2: update all components together (tests update path for all PMs) ---
 echo "==> update: ${COMPONENTS[*]}"
-"$MEOWCTL_BIN" --config "$CONFIG_DIR" update "${COMPONENTS[@]}"
+"$MEOWCTL_BIN" --config "$CONFIG_DIR" update --verbose "${COMPONENTS[@]}"
 
 # --- phase 3: verify + uninstall each test-pkg component individually ---
 FAILED=()
@@ -79,7 +79,7 @@ run_phase() {
   local phase="$1"
   local component="$2"
   echo "  [${phase}] ${component}"
-  if ! "$MEOWCTL_BIN" --config "$CONFIG_DIR" "$phase" "$component"; then
+  if ! "$MEOWCTL_BIN" --config "$CONFIG_DIR" "$phase" --verbose "$component"; then
     echo "FAIL: ${component} / ${phase}" >&2
     return 1
   fi
