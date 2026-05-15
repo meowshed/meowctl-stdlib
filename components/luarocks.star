@@ -23,6 +23,11 @@ after = ["mise"]
 
 def install(ctx):
     pkg(manager="mise", name="luarocks")
+    # luarocks installs rock executables into ~/.luarocks/bin; add to PATH.
+    result = ctx.run("luarocks", ["config", "home_tree"])
+    home_tree = result.stdout.strip()
+    if home_tree:
+        ctx.add_path(home_tree + "/bin")
 
 def verify(ctx):
     ctx.run("luarocks", ["--version"])
