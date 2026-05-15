@@ -8,8 +8,9 @@
 #
 # Each <component> must match a test-<pm> fixture component name (e.g. test-apt).
 # The script:
-#   1. Creates a temp config dir and copies only fixture test-pkg components into it.
-#      Stdlib components are resolved at runtime via --replace stdlib=$STDLIB_PATH.
+#   1. Creates a temp config dir, copies fixture test-pkg components and
+#      meowctl.star into it, and writes a meowctl.mod with a replace() directive
+#      pointing @stdlib// to the local STDLIB_PATH checkout.
 #   2. Runs meowctl install for all requested components in one call so that
 #      dependency ordering (after=) is respected — PM components are installed
 #      before the test-pkg components that depend on them.
@@ -18,7 +19,7 @@
 #
 # Environment:
 #   MEOWCTL_BIN   - path to meowctl binary (required)
-#   STDLIB_PATH   - path to meowctl-stdlib checkout (required; passed as --replace stdlib=)
+#   STDLIB_PATH   - path to meowctl-stdlib checkout (required)
 
 set -euo pipefail
 
@@ -49,23 +50,27 @@ trap 'rm -rf "$CONFIG_DIR"' EXIT
 mkdir -p "$CONFIG_DIR/components"
 
 # Copy fixture test-pkg components (user test components only).
-# Stdlib PM components are resolved via --replace stdlib=$STDLIB_PATH.
 cp "$REPO_ROOT"/tests/fixtures/components/*.star "$CONFIG_DIR/components/"
 
-# Copy fixture meowctl.star (declares @stdlib// component graph + test-* components).
+# Copy fixture meowctl.star (declares test-* components; stdlib PM deps are
+# auto-discovered at runtime via each test component's after= globals).
 cp "$REPO_ROOT/tests/fixtures/meowctl.star" "$CONFIG_DIR/meowctl.star"
 
-REPLACE_FLAG="--replace=stdlib=$STDLIB_PATH"
+# Write meowctl.mod with a replace() directive so @stdlib// resolves to the
+# local STDLIB_PATH checkout instead of the registry.
+cat > "$CONFIG_DIR/meowctl.mod" <<EOF
+module(name = "test-fixtures", version = "0.0.0")
+
+replace(module = "stdlib", path = "$STDLIB_PATH")
+EOF
 
 # --- phase 1: install all components together so after= ordering is respected ---
-# PM components (mise, node, ruby, etc.) are installed before the test-pkg
-# components that depend on them.
 echo "==> install: ${COMPONENTS[*]}"
-"$MEOWCTL_BIN" --config "$CONFIG_DIR" install $REPLACE_FLAG "${COMPONENTS[@]}"
+"$MEOWCTL_BIN" --config "$CONFIG_DIR" install "${COMPONENTS[@]}"
 
 # --- phase 2: update all components together (tests update path for all PMs) ---
 echo "==> update: ${COMPONENTS[*]}"
-"$MEOWCTL_BIN" --config "$CONFIG_DIR" update $REPLACE_FLAG "${COMPONENTS[@]}"
+"$MEOWCTL_BIN" --config "$CONFIG_DIR" update "${COMPONENTS[@]}"
 
 # --- phase 3: verify + uninstall each test-pkg component individually ---
 FAILED=()
@@ -74,7 +79,7 @@ run_phase() {
   local phase="$1"
   local component="$2"
   echo "  [${phase}] ${component}"
-  if ! "$MEOWCTL_BIN" --config "$CONFIG_DIR" $REPLACE_FLAG "$phase" "$component"; then
+  if ! "$MEOWCTL_BIN" --config "$CONFIG_DIR" "$phase" "$component"; then
     echo "FAIL: ${component} / ${phase}" >&2
     return 1
   fi
