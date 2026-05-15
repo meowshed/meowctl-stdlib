@@ -2,13 +2,20 @@
 #
 # pm_name:  fisher
 # platform: all
-# after:    ["mise"]
+# after:    ["brew", "apt", "dnf", "pacman", "apk"]
 #
 # PM kwargs: none
 #
-# Installs the fish shell via mise, then bootstraps fisher (the fish plugin
-# manager) via its official curl installer — fisher has no upstream package and
-# is only distributed this way.
+# Installs the fish shell via the native package manager. mise does not carry
+# fish in its standard registry; native PMs are preferred so fish lands in the
+# system path (/usr/bin/fish or /usr/local/bin/fish) where chsh and /etc/shells
+# expect it.
+#
+# After installing fish, the install hook:
+#   1. Adds fish to /etc/shells if not already present.
+#   2. Sets fish as the default shell for the current user via chsh.
+#   3. Bootstraps fisher (the fish plugin manager) via its official curl
+#      installer — fisher is not packaged anywhere else.
 #
 # shell hook: emits nothing — fish reads ~/.config/fish/config.fish directly;
 #             no eval-based activation is needed. The hook is present so that
@@ -23,15 +30,46 @@
 # interrogate: `fish -c "fisher list"` → one plugin slug per line.
 
 pm_name = "fisher"
-after = ["mise"]
+after = ["brew", "apt", "dnf", "pacman", "apk"]
+
+def _fish_bin(ctx):
+    p = platform()
+    if p.os == "macos":
+        return "/usr/local/bin/fish"
+    return "/usr/bin/fish"
 
 def _install_fisher(ctx):
     # Bootstrap fisher using the official curl installer, run inside fish.
-    # This is the only supported distribution path for fisher.
+    # Fisher is not packaged anywhere; this is the only supported path.
     ctx.run("fish", ["-c", "curl -sL https://raw.githubusercontent.com/jorgebucaran/fisher/main/functions/fisher.fish | source && fisher install jorgebucaran/fisher"])
 
 def install(ctx):
-    pkg(manager="mise", name="fish")
+    p = platform()
+    if p.os == "macos":
+        pkg(manager="brew", name="fish")
+    elif p.os == "linux":
+        if p.distro == "ubuntu" or p.distro == "debian" or p.distro_like == "debian":
+            pkg(manager="apt", name="fish")
+        elif p.distro == "fedora" or p.distro == "rhel" or p.distro_like == "fedora" or p.distro_like == "rhel":
+            pkg(manager="dnf", name="fish")
+        elif p.distro == "arch":
+            pkg(manager="pacman", name="fish")
+        elif p.distro == "alpine":
+            pkg(manager="apk", name="fish")
+        else:
+            ctx.log("fish: unsupported distro %r — install fish manually then re-run" % p.distro)
+            return
+
+    fish = _fish_bin(ctx)
+
+    # Add fish to /etc/shells if not already listed (required for chsh).
+    shells = ctx.read_file("/etc/shells")
+    if fish not in shells:
+        ctx.append_file("/etc/shells", fish + "\n")
+
+    # Set fish as the default shell for the current user.
+    ctx.run("chsh", ["-s", fish])
+
     _install_fisher(ctx)
 
 def verify(ctx):
