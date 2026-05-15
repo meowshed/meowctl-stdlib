@@ -25,8 +25,15 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 REPO_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
 
 # --- argument / env resolution ---
-MEOWCTL_BIN="${MEOWCTL_BIN:-${1:-}}"
-STDLIB_PATH="${STDLIB_PATH:-${2:-}}"
+# If MEOWCTL_BIN/STDLIB_PATH are not set in the environment, consume them from
+# positional args $1 and $2, then shift so $@ contains only component names.
+# If they are already set via env, all positional args are component names.
+if [[ -z "${MEOWCTL_BIN:-}" ]]; then
+  MEOWCTL_BIN="${1:-}"
+  STDLIB_PATH="${2:-}"
+  shift 2 2>/dev/null || true
+fi
+STDLIB_PATH="${STDLIB_PATH:-}"
 
 if [[ -z "$MEOWCTL_BIN" ]]; then
   echo "error: meowctl binary path required (arg 1 or MEOWCTL_BIN env)" >&2
@@ -37,8 +44,7 @@ if [[ -z "$STDLIB_PATH" ]]; then
   exit 1
 fi
 
-# Components passed as remaining args; if none given, print usage.
-shift 2 2>/dev/null || true
+# Remaining positional args are component names.
 COMPONENTS=("$@")
 if [[ ${#COMPONENTS[@]} -eq 0 ]]; then
   echo "usage: pm-smoke-test.sh <meowctl-bin> <stdlib-path> <component>..." >&2
@@ -67,7 +73,11 @@ cp "$REPO_ROOT/tests/fixtures/meowctl.star" "$CONFIG_DIR/meowctl.star"
 echo "==> install: ${COMPONENTS[*]}"
 "$MEOWCTL_BIN" --config "$CONFIG_DIR" install "${COMPONENTS[@]}"
 
-# --- phase 2: verify → update → uninstall per test component ---
+# --- phase 2: update all components together (tests update path for all PMs) ---
+echo "==> update: ${COMPONENTS[*]}"
+"$MEOWCTL_BIN" --config "$CONFIG_DIR" update "${COMPONENTS[@]}"
+
+# --- phase 3: verify + uninstall each test-pkg component individually ---
 FAILED=()
 
 run_phase() {
@@ -81,11 +91,11 @@ run_phase() {
 }
 
 for component in "${COMPONENTS[@]}"; do
-  # Only run lifecycle checks on test-pkg components, not on PM bootstrap components.
+  # Only verify/uninstall test-pkg components; PM bootstrap components are
+  # intentionally left installed (other components depend on them).
   [[ "$component" != test-* ]] && continue
   echo "==> smoke: ${component}"
-  if run_phase verify   "$component" \
-  && run_phase update   "$component" \
+  if run_phase verify    "$component" \
   && run_phase uninstall "$component"; then
     echo "  OK"
   else

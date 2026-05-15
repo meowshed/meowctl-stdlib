@@ -56,19 +56,19 @@ jobs:
           cache: true
           working_directory: meowctl
 
-      - name: Build meowctl
+      - name: Build and install meowctl
         working-directory: meowctl
         run: |
           CGO_ENABLED=0 go build -o meowctl ./cmd/meowctl
-          echo "${{ github.workspace }}/meowctl" >> "$GITHUB_PATH"
+          mkdir -p "$HOME/.local/bin"
+          install -m755 meowctl "$HOME/.local/bin/meowctl"
+          echo "MEOWCTL_BIN=$HOME/.local/bin/meowctl" >> "$GITHUB_ENV"
 
       - name: Smoke test (apt)
         env:
           STDLIB_PATH: ${{ github.workspace }}/stdlib
-          MEOWCTL_BIN: meowctl
         run: |
           bash stdlib/scripts/pm-smoke-test.sh \
-            "$MEOWCTL_BIN" "$STDLIB_PATH" \
             apt mise node ruby rust go uv pipx luarocks github_release \
             test-apt test-mise test-npm test-pipx test-gem test-cargo test-go test-uv test-luarocks test-github-release
 
@@ -91,19 +91,19 @@ jobs:
           repository: meowshed/meowctl
           path: meowctl
 
-      - name: Build meowctl
+      - name: Build and install meowctl
         working-directory: meowctl
         run: |
           CGO_ENABLED=0 go build -o meowctl ./cmd/meowctl
-          echo "${{ github.workspace }}/meowctl" >> "$GITHUB_PATH"
+          mkdir -p "$HOME/.local/bin"
+          install -m755 meowctl "$HOME/.local/bin/meowctl"
+          echo "MEOWCTL_BIN=$HOME/.local/bin/meowctl" >> "$GITHUB_ENV"
 
       - name: Smoke test (dnf)
         env:
           STDLIB_PATH: ${{ github.workspace }}/stdlib
-          MEOWCTL_BIN: meowctl
         run: |
           bash stdlib/scripts/pm-smoke-test.sh \
-            "$MEOWCTL_BIN" "$STDLIB_PATH" \
             dnf mise node ruby rust go uv pipx luarocks github_release \
             test-dnf test-mise test-npm test-pipx test-gem test-cargo test-go test-uv test-luarocks test-github-release
 
@@ -126,19 +126,19 @@ jobs:
           repository: meowshed/meowctl
           path: meowctl
 
-      - name: Build meowctl
+      - name: Build and install meowctl
         working-directory: meowctl
         run: |
           CGO_ENABLED=0 go build -o meowctl ./cmd/meowctl
-          echo "${{ github.workspace }}/meowctl" >> "$GITHUB_PATH"
+          mkdir -p "$HOME/.local/bin"
+          install -m755 meowctl "$HOME/.local/bin/meowctl"
+          echo "MEOWCTL_BIN=$HOME/.local/bin/meowctl" >> "$GITHUB_ENV"
 
       - name: Smoke test (pacman)
         env:
           STDLIB_PATH: ${{ github.workspace }}/stdlib
-          MEOWCTL_BIN: meowctl
         run: |
           bash stdlib/scripts/pm-smoke-test.sh \
-            "$MEOWCTL_BIN" "$STDLIB_PATH" \
             pacman mise node ruby rust go uv pipx luarocks github_release \
             test-pacman test-mise test-npm test-pipx test-gem test-cargo test-go test-uv test-luarocks test-github-release
 
@@ -161,19 +161,19 @@ jobs:
           repository: meowshed/meowctl
           path: meowctl
 
-      - name: Build meowctl
+      - name: Build and install meowctl
         working-directory: meowctl
         run: |
           CGO_ENABLED=0 go build -o meowctl ./cmd/meowctl
-          echo "${{ github.workspace }}/meowctl" >> "$GITHUB_PATH"
+          mkdir -p "$HOME/.local/bin"
+          install -m755 meowctl "$HOME/.local/bin/meowctl"
+          echo "MEOWCTL_BIN=$HOME/.local/bin/meowctl" >> "$GITHUB_ENV"
 
       - name: Smoke test (apk)
         env:
           STDLIB_PATH: ${{ github.workspace }}/stdlib
-          MEOWCTL_BIN: meowctl
         run: |
           bash stdlib/scripts/pm-smoke-test.sh \
-            "$MEOWCTL_BIN" "$STDLIB_PATH" \
             apk mise node ruby rust go uv pipx luarocks github_release \
             test-apk test-mise test-npm test-pipx test-gem test-cargo test-go test-uv test-luarocks test-github-release
 
@@ -197,19 +197,20 @@ jobs:
           cache: true
           working_directory: meowctl
 
-      - name: Build meowctl
+      - name: Build and install meowctl
         working-directory: meowctl
         run: |
           CGO_ENABLED=0 go build -o meowctl ./cmd/meowctl
-          echo "${{ github.workspace }}/meowctl" >> "$GITHUB_PATH"
+          mkdir -p "$HOME/.local/bin"
+          install -m755 meowctl "$HOME/.local/bin/meowctl"
+          echo "MEOWCTL_BIN=$HOME/.local/bin/meowctl" >> "$GITHUB_ENV"
 
       - name: Smoke test (brew)
         env:
           STDLIB_PATH: ${{ github.workspace }}/stdlib
-          MEOWCTL_BIN: meowctl
         run: |
           bash stdlib/scripts/pm-smoke-test.sh \
-            "$MEOWCTL_BIN" "$STDLIB_PATH" \
+            brew mise node ruby rust go uv pipx luarocks github_release \
             test-brew test-mise test-npm test-pipx test-gem test-cargo test-go test-uv test-luarocks test-github-release
 
   secrets:
