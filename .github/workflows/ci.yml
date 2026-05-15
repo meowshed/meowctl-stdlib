@@ -63,6 +63,7 @@ jobs:
           mkdir -p "$HOME/.local/bin"
           install -m755 meowctl "$HOME/.local/bin/meowctl"
           echo "MEOWCTL_BIN=$HOME/.local/bin/meowctl" >> "$GITHUB_ENV"
+          echo "$HOME/.local/share/mise/shims" >> "$GITHUB_PATH"
 
       - name: Smoke test (apt)
         env:
@@ -77,7 +78,7 @@ jobs:
     container: fedora:latest
     steps:
       - name: Install git and Go toolchain deps
-        run: dnf install -y git golang
+        run: dnf install -y git golang sudo
 
       - name: Checkout meowctl-stdlib
         uses: actions/checkout@v4
@@ -97,6 +98,7 @@ jobs:
           mkdir -p "$HOME/.local/bin"
           install -m755 meowctl "$HOME/.local/bin/meowctl"
           echo "MEOWCTL_BIN=$HOME/.local/bin/meowctl" >> "$GITHUB_ENV"
+          echo "$HOME/.local/share/mise/shims" >> "$GITHUB_PATH"
 
       - name: Smoke test (dnf)
         env:
@@ -111,7 +113,7 @@ jobs:
     container: archlinux:latest
     steps:
       - name: Install git and Go toolchain deps
-        run: pacman -Syu --noconfirm git go
+        run: pacman -Syu --noconfirm git go sudo
 
       - name: Checkout meowctl-stdlib
         uses: actions/checkout@v4
@@ -131,6 +133,7 @@ jobs:
           mkdir -p "$HOME/.local/bin"
           install -m755 meowctl "$HOME/.local/bin/meowctl"
           echo "MEOWCTL_BIN=$HOME/.local/bin/meowctl" >> "$GITHUB_ENV"
+          echo "$HOME/.local/share/mise/shims" >> "$GITHUB_PATH"
 
       - name: Smoke test (pacman)
         env:
@@ -145,7 +148,7 @@ jobs:
     container: alpine:latest
     steps:
       - name: Install git and Go toolchain deps
-        run: apk add --no-cache git go bash
+        run: apk add --no-cache git go bash sudo
 
       - name: Checkout meowctl-stdlib
         uses: actions/checkout@v4
@@ -165,6 +168,7 @@ jobs:
           mkdir -p "$HOME/.local/bin"
           install -m755 meowctl "$HOME/.local/bin/meowctl"
           echo "MEOWCTL_BIN=$HOME/.local/bin/meowctl" >> "$GITHUB_ENV"
+          echo "$HOME/.local/share/mise/shims" >> "$GITHUB_PATH"
 
       - name: Smoke test (apk)
         env:
@@ -200,6 +204,7 @@ jobs:
           mkdir -p "$HOME/.local/bin"
           install -m755 meowctl "$HOME/.local/bin/meowctl"
           echo "MEOWCTL_BIN=$HOME/.local/bin/meowctl" >> "$GITHUB_ENV"
+          echo "$HOME/.local/share/mise/shims" >> "$GITHUB_PATH"
 
       - name: Smoke test (brew)
         env:
