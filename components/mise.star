@@ -77,19 +77,20 @@ def install_pkg(ctx, name, version, **kwargs):
         spec = "%s@%s" % (name, version)
     else:
         spec = name
-    ctx.run("mise", ["install", spec])
-    # mise install does not activate the tool (no config file), so its bin dir
-    # is not returned by `mise bin-paths`. Discover and add it explicitly.
-    where = ctx.run("mise", ["where", name])
-    install_dir = where.stdout.strip()
-    if install_dir:
-        ctx.add_path(install_dir + "/bin")
+    # `mise use --global` installs the tool and registers it in
+    # ~/.config/mise/config.toml, activating it for all future shells.
+    # This is the correct model for a user-environment setup tool.
+    ctx.run("mise", ["use", "--global", spec])
+    # Re-activate shims so the new tool is findable in the current process.
+    _activate_shims(ctx)
 
 def uninstall_pkg(ctx, name, version, **kwargs):
     if version:
         spec = "%s@%s" % (name, version)
     else:
         spec = name
+    # Remove from global config first, then uninstall the binary.
+    ctx.run("mise", ["use", "--global", "--remove", name])
     ctx.run("mise", ["uninstall", spec])
 
 def interrogate(ctx):
