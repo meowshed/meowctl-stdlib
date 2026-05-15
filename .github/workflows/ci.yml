@@ -58,12 +58,14 @@ jobs:
 
       - name: Build meowctl
         working-directory: meowctl
-        run: CGO_ENABLED=0 go build -o meowctl ./cmd/meowctl
+        run: |
+          CGO_ENABLED=0 go build -o meowctl ./cmd/meowctl
+          echo "${{ github.workspace }}/meowctl" >> "$GITHUB_PATH"
 
       - name: Smoke test (apt)
         env:
           STDLIB_PATH: ${{ github.workspace }}/stdlib
-          MEOWCTL_BIN: ${{ github.workspace }}/meowctl/meowctl
+          MEOWCTL_BIN: meowctl
         run: |
           bash stdlib/scripts/pm-smoke-test.sh \
             "$MEOWCTL_BIN" "$STDLIB_PATH" \
@@ -90,12 +92,14 @@ jobs:
 
       - name: Build meowctl
         working-directory: meowctl
-        run: CGO_ENABLED=0 go build -o meowctl ./cmd/meowctl
+        run: |
+          CGO_ENABLED=0 go build -o meowctl ./cmd/meowctl
+          echo "${{ github.workspace }}/meowctl" >> "$GITHUB_PATH"
 
       - name: Smoke test (dnf)
         env:
           STDLIB_PATH: ${{ github.workspace }}/stdlib
-          MEOWCTL_BIN: ${{ github.workspace }}/meowctl/meowctl
+          MEOWCTL_BIN: meowctl
         run: |
           bash stdlib/scripts/pm-smoke-test.sh \
             "$MEOWCTL_BIN" "$STDLIB_PATH" \
@@ -122,12 +126,14 @@ jobs:
 
       - name: Build meowctl
         working-directory: meowctl
-        run: CGO_ENABLED=0 go build -o meowctl ./cmd/meowctl
+        run: |
+          CGO_ENABLED=0 go build -o meowctl ./cmd/meowctl
+          echo "${{ github.workspace }}/meowctl" >> "$GITHUB_PATH"
 
       - name: Smoke test (pacman)
         env:
           STDLIB_PATH: ${{ github.workspace }}/stdlib
-          MEOWCTL_BIN: ${{ github.workspace }}/meowctl/meowctl
+          MEOWCTL_BIN: meowctl
         run: |
           bash stdlib/scripts/pm-smoke-test.sh \
             "$MEOWCTL_BIN" "$STDLIB_PATH" \
@@ -154,12 +160,14 @@ jobs:
 
       - name: Build meowctl
         working-directory: meowctl
-        run: CGO_ENABLED=0 go build -o meowctl ./cmd/meowctl
+        run: |
+          CGO_ENABLED=0 go build -o meowctl ./cmd/meowctl
+          echo "${{ github.workspace }}/meowctl" >> "$GITHUB_PATH"
 
       - name: Smoke test (apk)
         env:
           STDLIB_PATH: ${{ github.workspace }}/stdlib
-          MEOWCTL_BIN: ${{ github.workspace }}/meowctl/meowctl
+          MEOWCTL_BIN: meowctl
         run: |
           bash stdlib/scripts/pm-smoke-test.sh \
             "$MEOWCTL_BIN" "$STDLIB_PATH" \
@@ -187,12 +195,14 @@ jobs:
 
       - name: Build meowctl
         working-directory: meowctl
-        run: CGO_ENABLED=0 go build -o meowctl ./cmd/meowctl
+        run: |
+          CGO_ENABLED=0 go build -o meowctl ./cmd/meowctl
+          echo "${{ github.workspace }}/meowctl" >> "$GITHUB_PATH"
 
       - name: Smoke test (brew)
         env:
           STDLIB_PATH: ${{ github.workspace }}/stdlib
-          MEOWCTL_BIN: ${{ github.workspace }}/meowctl/meowctl
+          MEOWCTL_BIN: meowctl
         run: |
           bash stdlib/scripts/pm-smoke-test.sh \
             "$MEOWCTL_BIN" "$STDLIB_PATH" \
