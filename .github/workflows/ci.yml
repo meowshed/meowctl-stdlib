@@ -10,8 +10,8 @@ permissions:
   contents: read
 
 jobs:
-  pm-validity:
-    name: PM validity tests
+  pm-contract:
+    name: PM contract tests
     runs-on: ubuntu-latest
     steps:
       - name: Checkout meowctl-stdlib
@@ -30,7 +30,7 @@ jobs:
           cache: true
           working_directory: meowctl
 
-      - name: Run PM validity tests
+      - name: Run PM contract tests
         working-directory: meowctl
         env:
           STDLIB_PATH: ${{ github.workspace }}/stdlib
