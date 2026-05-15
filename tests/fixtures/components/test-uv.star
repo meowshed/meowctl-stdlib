@@ -1,6 +1,6 @@
 # tests/fixtures/components/test-uv.star
 # Installs ruff via uv tool. Fast to install, widely known.
-after = ["@stdlib//components/uv.star"]
+after = ["@stdlib//components/uv"]
 
 pkg(manager = "uv", name = "ruff")
 

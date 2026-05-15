@@ -1,6 +1,6 @@
 # tests/fixtures/components/test-brew.star
 # Installs jq via brew. Safe, fast, no interaction required.
-after = ["@stdlib//components/brew.star"]
+after = ["@stdlib//components/brew"]
 
 pkg(manager = "brew", name = "jq")
 

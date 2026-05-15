@@ -1,6 +1,6 @@
 # tests/fixtures/components/test-npm.star
 # Installs cowsay via npm globally. Safe, fast.
-after = ["@stdlib//components/node.star"]
+after = ["@stdlib//components/node"]
 
 pkg(manager = "npm", name = "cowsay")
 
