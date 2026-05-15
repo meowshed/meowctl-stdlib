@@ -1,6 +1,6 @@
 # tests/fixtures/components/test-cargo.star
 # Installs bat via cargo. bat is small and widely used; compiles in ~60s.
-after = ["@stdlib//components/rust"]
+after = ["@stdlib//components/rust.star"]
 
 pkg(manager = "cargo", name = "bat")
 

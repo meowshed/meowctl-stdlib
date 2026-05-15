@@ -1,6 +1,6 @@
 # tests/fixtures/components/test-go.star
 # Installs staticcheck via go install. Small binary, fast to build.
-after = ["@stdlib//components/go"]
+after = ["@stdlib//components/go.star"]
 
 pkg(manager = "go_install", name = "honnef.co/go/tools/cmd/staticcheck", version = "latest")
 

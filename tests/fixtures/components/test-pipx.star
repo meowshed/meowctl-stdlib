@@ -1,6 +1,6 @@
 # tests/fixtures/components/test-pipx.star
 # Installs yt-dlp via pipx. Widely available, fast to install.
-after = ["@stdlib//components/pipx"]
+after = ["@stdlib//components/pipx.star"]
 
 pkg(manager = "pipx", name = "yt-dlp")
 
