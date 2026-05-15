@@ -78,6 +78,12 @@ def install_pkg(ctx, name, version, **kwargs):
     else:
         spec = name
     ctx.run("mise", ["install", spec])
+    # mise install does not activate the tool (no config file), so its bin dir
+    # is not returned by `mise bin-paths`. Discover and add it explicitly.
+    where = ctx.run("mise", ["where", name])
+    install_dir = where.stdout.strip()
+    if install_dir:
+        ctx.add_path(install_dir + "/bin")
 
 def uninstall_pkg(ctx, name, version, **kwargs):
     if version:
