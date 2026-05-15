@@ -33,6 +33,15 @@ def install_pkg(ctx, name, version, **kwargs):
 def uninstall_pkg(ctx, name, version, **kwargs):
     ctx.run("apk", ["del", name])
 
+def _strip_version(spec):
+    """Recursively strip trailing '-<digit>...' version segments from an apk package spec."""
+    idx = spec.rfind("-")
+    if idx == -1:
+        return spec
+    if spec[idx + 1:idx + 2] >= "0" and spec[idx + 1:idx + 2] <= "9":
+        return _strip_version(spec[:idx])
+    return spec
+
 def interrogate(ctx):
     result = ctx.run("apk", ["list", "--installed"])
     pkgs = []
@@ -52,15 +61,9 @@ def interrogate(ctx):
         idx = spec.rfind("-r")
         if idx != -1 and idx + 2 < len(spec) and spec[idx + 2:idx + 3] >= "0" and spec[idx + 2:idx + 3] <= "9":
             spec = spec[:idx]  # e.g. "py3-setuptools-67.8.0"
-        # Drop version: find last "-<digit>" boundary
-        while True:
-            idx = spec.rfind("-")
-            if idx == -1:
-                break
-            if spec[idx + 1:idx + 2] >= "0" and spec[idx + 1:idx + 2] <= "9":
-                spec = spec[:idx]
-            else:
-                break
+        # Drop version: strip trailing "-<digit>..." segments until none remain.
+        # Starlark has no while loops; use a helper function instead.
+        spec = _strip_version(spec)
         if spec:
             pkgs.append(spec)
     return pkgs
