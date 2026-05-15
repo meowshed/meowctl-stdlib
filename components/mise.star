@@ -42,6 +42,13 @@ def install(ctx):
             _curl_install(ctx)
     else:
         _curl_install(ctx)
+    # Activate mise shims for the current meowctl session so that subsequent
+    # ctx.run calls can find tools installed by mise without a shell restart.
+    result = ctx.run("mise", ["bin-paths"])
+    for path in result.stdout.splitlines():
+        path = path.strip()
+        if path:
+            ctx.add_path(path)
 
 def verify(ctx):
     ctx.run("mise", ["--version"])
