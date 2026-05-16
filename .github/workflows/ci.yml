@@ -10,6 +10,33 @@ permissions:
   contents: read
 
 jobs:
+  component-check:
+    name: Component structural check
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout meowctl-stdlib
+        uses: actions/checkout@v4
+        with:
+          path: stdlib
+
+      - name: Checkout meowctl
+        uses: actions/checkout@v4
+        with:
+          repository: meowshed/meowctl
+          path: meowctl
+
+      - uses: actions/setup-go@v6
+        with:
+          go-version-file: meowctl/go.mod
+          cache-dependency-path: meowctl/go.sum
+
+      - name: Build meowctl
+        working-directory: meowctl
+        run: CGO_ENABLED=0 go build -o meowctl ./cmd/meowctl
+
+      - name: Check all components
+        run: meowctl/meowctl component check stdlib/components
+
   pm-contract:
     name: PM contract tests
     runs-on: ubuntu-latest
