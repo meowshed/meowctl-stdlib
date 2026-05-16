@@ -1,8 +1,8 @@
-# tests/fixtures/components/test-uv.star
-# Installs ruff via uv (mise pipx backend). Fast to install, widely known.
-after = ["@stdlib//components/uv"]
+# tests/fixtures/components/test-python.star
+# Installs ruff via python (mise pipx backend). Fast to install, widely known.
+after = ["@stdlib//components/python"]
 
-pkg(manager = "uv", name = "ruff")
+pkg(manager = "python", name = "ruff")
 
 def _activate_shims(ctx):
     home = ctx.env("HOME")

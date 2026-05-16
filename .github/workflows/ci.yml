@@ -70,7 +70,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           bash stdlib/scripts/pm-smoke-test.sh \
-            test-apt test-mise test-npm test-pipx test-gem test-cargo test-go test-uv test-luarocks test-github-release
+            test-apt test-mise test-npm test-python test-gem test-cargo test-go test-luarocks test-github-release
 
   integration-fedora:
     name: Integration / Fedora (dnf)
@@ -107,7 +107,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           bash stdlib/scripts/pm-smoke-test.sh \
-            test-dnf test-mise test-npm test-pipx test-gem test-cargo test-go test-uv test-luarocks test-github-release
+            test-dnf test-mise test-npm test-python test-gem test-cargo test-go test-luarocks test-github-release
 
   integration-arch:
     name: Integration / Arch (pacman)
@@ -144,7 +144,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           bash stdlib/scripts/pm-smoke-test.sh \
-            test-pacman test-mise test-npm test-pipx test-gem test-cargo test-go test-uv test-luarocks test-github-release
+            test-pacman test-mise test-npm test-python test-gem test-cargo test-go test-luarocks test-github-release
 
   integration-alpine:
     name: Integration / Alpine (apk)
@@ -181,7 +181,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           bash stdlib/scripts/pm-smoke-test.sh \
-            test-apk test-mise test-npm test-pipx test-gem test-cargo test-go test-uv test-luarocks test-github-release
+            test-apk test-mise test-npm test-python test-gem test-cargo test-go test-luarocks test-github-release
 
   integration-macos:
     name: Integration / macOS (brew)
@@ -217,7 +217,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           bash stdlib/scripts/pm-smoke-test.sh \
-            test-brew test-mise test-npm test-pipx test-gem test-cargo test-go test-uv test-luarocks test-github-release
+            test-brew test-mise test-npm test-python test-gem test-cargo test-go test-luarocks test-github-release
 
   secrets:
     name: Secrets (trufflehog)

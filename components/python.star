@@ -1,22 +1,24 @@
-# components/pipx.star
+# components/python.star
 #
-# pm_name:  pipx
+# pm_name:  python
 # platform: all
 # after:    ["mise"]
 #
 # PM kwargs: none
 #
-# pipx tools are installed via `mise use --global pipx:<name>`.
-# mise's pipx backend uses uv when available, falling back to pipx.
-# All binaries appear in ~/.local/share/mise/shims automatically.
+# Installs Python via mise and manages Python CLI tools via the mise pipx
+# backend (`mise use --global pipx:<name>`). mise auto-selects uv when
+# available for faster installs; no need to expose uv or pipx as separate
+# components.
 #
-# interrogate: `mise ls --installed --json` → filter keys with "pipx:" prefix.
+# interrogate: `mise ls --installed --json` → filter keys with "pipx:" prefix;
+#              strip the prefix to return bare package names.
 
 after = ["mise"]
-pm_name = "pipx"
+pm_name = "python"
 
 def install(ctx):
-    pkg(manager="mise", name="pipx", version="latest")
+    pkg(manager="mise", name="python", version="latest")
 
 def _activate_shims(ctx):
     home = ctx.env("HOME")
@@ -25,7 +27,7 @@ def _activate_shims(ctx):
 
 def verify(ctx):
     _activate_shims(ctx)
-    ctx.run("pipx", ["--version"])
+    ctx.run("python", ["--version"])
 
 def install_pkg(ctx, name, version, **kwargs):
     _activate_shims(ctx)
