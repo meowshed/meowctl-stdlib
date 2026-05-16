@@ -19,6 +19,10 @@ pm_name = "brew"
 def _brew_install_self(ctx):
     # Official non-interactive Homebrew installer — only path available on
     # a fresh macOS system with no package manager present.
+    # Guard with ctx.which so we don't run the slow curl installer on every
+    # meowctl install invocation when brew is already present.
+    if ctx.which("brew"):
+        return
     ctx.run("curl", ["-fsSL", "https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh", "-o", "/tmp/brew-install.sh"])
     ctx.run("bash", ["/tmp/brew-install.sh"])
     ctx.delete_file("/tmp/brew-install.sh")
@@ -72,8 +76,13 @@ def interrogate(ctx):
     names = []
     for line in formula_result.stdout.splitlines():
         line = line.strip()
-        if line:
-            names.append(line)
+        if not line:
+            continue
+        # `brew list --full-name` includes tap prefix for non-core formulae
+        # (e.g. "homebrew/core/git" or "owner/tap/formula"). Strip any
+        # tap prefix so the name matches what a pkg() declaration uses.
+        parts = line.split("/")
+        names.append(parts[-1])
     for line in cask_result.stdout.splitlines():
         line = line.strip()
         if line:

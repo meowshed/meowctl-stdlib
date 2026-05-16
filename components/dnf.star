@@ -53,6 +53,11 @@ def interrogate(ctx):
     pkgs = []
     for line in result.stdout.splitlines():
         line = line.strip()
+        if not line:
+            continue
+        # Some RHEL builds emit "epoch:name" — strip any leading "N:" prefix.
+        if ":" in line:
+            line = line.split(":", 1)[1]
         if line:
             pkgs.append(line)
     return pkgs

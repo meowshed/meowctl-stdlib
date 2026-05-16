@@ -69,7 +69,7 @@ def uninstall_pkg(ctx, name, version, **kwargs):
         else:
             ctx.run("mise", ["uninstall", "gem:%s" % name])
     else:
-        if version:
+        if version and version != "latest":
             ctx.run("gem", ["uninstall", name, "-v", version])
         else:
             ctx.run("gem", ["uninstall", name, "--all-versions"])

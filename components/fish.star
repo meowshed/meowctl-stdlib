@@ -33,6 +33,9 @@ pm_name = "fisher"
 after = ["@stdlib//components/brew", "@stdlib//components/apt", "@stdlib//components/dnf", "@stdlib//components/pacman", "@stdlib//components/apk"]
 
 def _fish_bin(ctx):
+    found = ctx.which("fish")
+    if found:
+        return found
     p = platform()
     if p.os == "macos":
         return "/usr/local/bin/fish"

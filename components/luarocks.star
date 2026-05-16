@@ -75,7 +75,7 @@ def install_pkg(ctx, name, version, **kwargs):
 
 def uninstall_pkg(ctx, name, version, **kwargs):
     _activate_luarocks(ctx)
-    if version:
+    if version and version != "latest":
         ctx.run(_luarocks_cmd(), ["remove", name, version])
     else:
         ctx.run(_luarocks_cmd(), ["remove", name])

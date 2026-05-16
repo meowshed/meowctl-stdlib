@@ -25,6 +25,9 @@ def install(ctx):
 
 def verify(ctx):
     _activate_shims(ctx)
+    # Confirm mise is reachable and the experimental flag (required for
+    # github: backend) is enabled.
+    ctx.run("mise", ["settings", "experimental"])
 
 def install_pkg(ctx, name, version, **kwargs):
     # name: "owner/repo"

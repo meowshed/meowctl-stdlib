@@ -68,12 +68,12 @@ def interrogate(ctx):
         return []
     result = ctx.run("flatpak", ["list", "--app", "--columns=application"])
     names = []
-    first = True
     for line in result.stdout.splitlines():
-        if first:
-            first = False
-            continue  # skip header
         line = line.strip()
-        if line:
-            names.append(line)
+        # Skip the header row emitted by some flatpak versions ("Application").
+        # Use a content check rather than a positional first-line skip so that
+        # flatpak builds that omit the header don't silently drop the first app.
+        if not line or line.lower() == "application":
+            continue
+        names.append(line)
     return names

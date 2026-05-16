@@ -33,6 +33,8 @@ def add_repo(ctx, **kwargs):
     pass
 
 def install_pkg(ctx, name, version, **kwargs):
+    if version:
+        ctx.log("warning: apk does not support version pinning; installing latest %s (requested %s)" % (name, version))
     ctx.run("apk", ["add", name])
 
 def uninstall_pkg(ctx, name, version, **kwargs):

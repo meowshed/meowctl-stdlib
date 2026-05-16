@@ -2,7 +2,7 @@
 #
 # pm_name:  mas
 # platform: ["macos"]
-# after:    ["mise"]
+# after:    ["brew"]
 #
 # PM kwargs: none
 #
@@ -14,7 +14,7 @@
 #              returns the numeric ID strings (first space-delimited field).
 
 platforms = ["macos"]
-after = ["@stdlib//components/mise"]
+after = ["@stdlib//components/brew"]
 pm_name = "mas"
 
 def _activate_shims(ctx):
@@ -23,8 +23,7 @@ def _activate_shims(ctx):
         ctx.add_path(home + "/.local/share/mise/shims")
 
 def install(ctx):
-    _activate_shims(ctx)
-    pkg(manager="mise", name="mas")
+    pkg(manager="brew", name="mas")
 
 def verify(ctx):
     _activate_shims(ctx)

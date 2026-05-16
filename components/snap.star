@@ -2,7 +2,7 @@
 #
 # pm_name:  snap
 # platform: linux only (no-op on macOS)
-# after:    ["apt", "dnf"]
+# after:    ["apt", "dnf", "pacman"]
 #
 # PM kwargs:
 #   classic=True   — install with --classic confinement
@@ -16,7 +16,7 @@
 # Returns snap names (first field of each data line).
 
 pm_name = "snap"
-after = ["@stdlib//components/apt", "@stdlib//components/dnf"]
+after = ["@stdlib//components/apt", "@stdlib//components/dnf", "@stdlib//components/pacman"]
 
 def install(ctx):
     p = platform()

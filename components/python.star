@@ -11,35 +11,40 @@
 # available for faster installs; no need to expose uv or pipx as separate
 # components.
 #
+# On Alpine, mise compiles python from source (slow, complex deps). Use the
+# Alpine system packages instead. pipx is then installed via pip3 directly
+# rather than through mise, since there is no mise-managed python to anchor to.
+#
 # interrogate: `mise ls --installed --json` → filter keys with "pipx:" prefix;
 #              strip the prefix to return bare package names.
 
 after = ["@stdlib//components/mise"]
 pm_name = "python"
 
-def install(ctx):
-    # On Alpine (musl), mise compiles python from source (slow, complex deps).
-    # Use the Alpine system package instead — mise can still manage pipx:
-    # backend packages on top of the system python.
-    p = platform()
-    if p.os == "linux" and (p.distro == "alpine" or p.distro_like == "alpine"):
-        pkg(manager="apk", name="python3")
-        pkg(manager="apk", name="py3-pip")
-    else:
-        pkg(manager="mise", name="python", version="latest")
-    # mise's pipx backend requires pipx to be installed first.
-    # Installing via mise ensures it is available on all platforms.
-    _activate_shims(ctx)
-    ctx.run("mise", ["use", "--global", "pipx@latest"])
-
 def _activate_shims(ctx):
     home = ctx.env("HOME")
     if home:
         ctx.add_path(home + "/.local/share/mise/shims")
 
+def install(ctx):
+    # On Alpine (musl), mise compiles python from source (slow, complex deps).
+    # Use the Alpine system packages instead — mise can still manage pipx:
+    # backend packages on top of the system python.
+    p = platform()
+    if p.os == "linux" and (p.distro == "alpine" or p.distro_like == "alpine"):
+        pkg(manager="apk", name="python3")
+        pkg(manager="apk", name="py3-pip")
+        # On Alpine there is no mise-managed python; install pipx via pip3.
+        ctx.run("pip3", ["install", "--break-system-packages", "pipx"])
+    else:
+        pkg(manager="mise", name="python", version="latest")
+        # mise's pipx backend requires pipx to be installed first.
+        _activate_shims(ctx)
+        ctx.run("mise", ["use", "--global", "pipx@latest"])
+
 def verify(ctx):
     _activate_shims(ctx)
-    ctx.run("python", ["--version"])
+    ctx.run("python3", ["--version"])
 
 def install_pkg(ctx, name, version, **kwargs):
     _activate_shims(ctx)
