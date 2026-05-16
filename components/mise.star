@@ -26,15 +26,14 @@ def _curl_install(ctx):
         ctx.delete_file("/tmp/mise-install.sh")
 
 def _activate_shims(ctx):
-    # Registers mise shim dirs into the current process PATH so that tools
-    # installed by mise are findable by subsequent ctx.run calls.
-    # Called after install and again during verify so PATH stays current
-    # across all phases in a multi-phase run.
-    result = ctx.run("mise", ["bin-paths"])
-    for path in result.stdout.splitlines():
-        path = path.strip()
-        if path:
-            ctx.add_path(path)
+    # Add the mise shims directory to PATH so that all mise-managed tools
+    # are findable in subsequent ctx.run calls. Shims are symlinks to the
+    # mise binary that resolve the correct tool version dynamically, and
+    # are the recommended approach for non-interactive CI environments.
+    # See: https://mise.jdx.dev/dev-tools/shims.html
+    home = ctx.env("HOME")
+    if home:
+        ctx.add_path(home + "/.local/share/mise/shims")
 
 def install(ctx):
     p = platform()
@@ -94,6 +93,7 @@ def uninstall_pkg(ctx, name, version, **kwargs):
     ctx.run("mise", ["uninstall", spec])
 
 def interrogate(ctx):
+    _activate_shims(ctx)
     result = ctx.run("mise", ["ls", "--installed", "--json"])
     installed = json.decode(result.stdout)
     return list(installed.keys())

@@ -24,13 +24,9 @@ def install(ctx):
     pkg(manager="mise", name="node", version="lts")
 
 def _activate_shims(ctx):
-    # Re-add mise-managed bin dirs to PATH so node/npm are findable in verify.
-    if ctx.which("mise"):
-        result = ctx.run("mise", ["bin-paths"])
-        for path in result.stdout.splitlines():
-            path = path.strip()
-            if path:
-                ctx.add_path(path)
+    home = ctx.env("HOME")
+    if home:
+        ctx.add_path(home + "/.local/share/mise/shims")
 
 def verify(ctx):
     _activate_shims(ctx)
@@ -45,6 +41,7 @@ def verify(ctx):
             ctx.add_path(node_dir + "/bin")
 
 def install_pkg(ctx, name, version, **kwargs):
+    _activate_shims(ctx)
     if version:
         ctx.run("npm", ["install", "-g", "%s@%s" % (name, version)])
     else:
@@ -55,6 +52,7 @@ def uninstall_pkg(ctx, name, version, **kwargs):
     ctx.run("npm", ["uninstall", "-g", name])
 
 def interrogate(ctx):
+    _activate_shims(ctx)
     result = ctx.run("npm", ["list", "-g", "--depth=0", "--parseable"])
     names = []
     for line in result.stdout.splitlines():

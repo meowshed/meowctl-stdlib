@@ -19,18 +19,16 @@ def install(ctx):
     pkg(manager="mise", name="pipx", version="latest")
 
 def _activate_shims(ctx):
-    if ctx.which("mise"):
-        result = ctx.run("mise", ["bin-paths"])
-        for path in result.stdout.splitlines():
-            path = path.strip()
-            if path:
-                ctx.add_path(path)
+    home = ctx.env("HOME")
+    if home:
+        ctx.add_path(home + "/.local/share/mise/shims")
 
 def verify(ctx):
     _activate_shims(ctx)
     ctx.run("pipx", ["--version"])
 
 def install_pkg(ctx, name, version, **kwargs):
+    _activate_shims(ctx)
     if version:
         ctx.run("pipx", ["install", "%s==%s" % (name, version)])
     else:

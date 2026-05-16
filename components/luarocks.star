@@ -44,19 +44,16 @@ def install(ctx):
             ctx.add_path(home_tree + "/bin")
 
 def _activate_shims(ctx):
-    # Re-add mise-managed bin dirs to PATH so luarocks is findable in verify.
-    if ctx.which("mise"):
-        result = ctx.run("mise", ["bin-paths"])
-        for path in result.stdout.splitlines():
-            path = path.strip()
-            if path:
-                ctx.add_path(path)
+    home = ctx.env("HOME")
+    if home:
+        ctx.add_path(home + "/.local/share/mise/shims")
 
 def verify(ctx):
     _activate_shims(ctx)
     ctx.run("luarocks", ["--version"])
 
 def install_pkg(ctx, name, version, **kwargs):
+    _activate_shims(ctx)
     if version:
         ctx.run("luarocks", ["install", name, version])
     else:
@@ -70,6 +67,7 @@ def uninstall_pkg(ctx, name, version, **kwargs):
         ctx.run("luarocks", ["remove", name])
 
 def interrogate(ctx):
+    _activate_shims(ctx)
     result = ctx.run("luarocks", ["list", "--porcelain"])
     seen = {}
     names = []

@@ -5,5 +5,11 @@ after = ["@stdlib//components/mise"]
 
 pkg(manager = "mise", name = "direnv", version = "latest")
 
+def _activate_shims(ctx):
+    home = ctx.env("HOME")
+    if home:
+        ctx.add_path(home + "/.local/share/mise/shims")
+
 def verify(ctx):
+    _activate_shims(ctx)
     ctx.run("direnv", ["version"])

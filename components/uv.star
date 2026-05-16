@@ -27,13 +27,9 @@ def install(ctx):
             ctx.add_path(tool_dir + "/bin")
 
 def _activate_shims(ctx):
-    # Re-add mise-managed bin dirs to PATH so uv is findable in verify.
-    if ctx.which("mise"):
-        result = ctx.run("mise", ["bin-paths"])
-        for path in result.stdout.splitlines():
-            path = path.strip()
-            if path:
-                ctx.add_path(path)
+    home = ctx.env("HOME")
+    if home:
+        ctx.add_path(home + "/.local/share/mise/shims")
 
 def verify(ctx):
     _activate_shims(ctx)
@@ -47,6 +43,7 @@ def verify(ctx):
             ctx.add_path(tool_dir + "/bin")
 
 def install_pkg(ctx, name, version, **kwargs):
+    _activate_shims(ctx)
     if version:
         ctx.run("uv", ["tool", "install", "%s==%s" % (name, version)])
     else:
@@ -57,6 +54,7 @@ def uninstall_pkg(ctx, name, version, **kwargs):
     ctx.run("uv", ["tool", "uninstall", name])
 
 def interrogate(ctx):
+    _activate_shims(ctx)
     result = ctx.run("uv", ["tool", "list"])
     names = []
     for line in result.stdout.splitlines():
