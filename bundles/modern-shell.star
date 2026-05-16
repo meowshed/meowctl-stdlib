@@ -50,4 +50,6 @@ after = [
     "@stdlib//components/watchexec",
     # multiplexer
     "@stdlib//components/zellij",
+    # editor
+    "@stdlib//components/neovim",
 ]
