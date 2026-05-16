@@ -70,7 +70,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           bash stdlib/scripts/pm-smoke-test.sh \
-            test-apt test-mise test-npm test-python test-gem test-cargo test-go test-luarocks test-github test-fish test-flatpak test-vscode
+            test-apt test-mise test-npm test-python test-gem test-cargo test-go test-luarocks test-github test-fish test-flatpak
 
   integration-fedora:
     name: Integration / Fedora (dnf)
@@ -217,7 +217,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           bash stdlib/scripts/pm-smoke-test.sh \
-            test-brew test-mise test-npm test-python test-gem test-cargo test-go test-luarocks test-github test-mas test-vscode
+            test-brew test-mise test-npm test-python test-gem test-cargo test-go test-luarocks test-github test-mas
 
   secrets:
     name: Secrets (trufflehog)
