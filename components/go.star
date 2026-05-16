@@ -24,10 +24,20 @@ pm_name = "go_install"
 def install(ctx):
     pkg(manager="mise", name="go", version="latest")
 
+def _activate_shims(ctx):
+    if ctx.which("mise"):
+        result = ctx.run("mise", ["bin-paths"])
+        for path in result.stdout.splitlines():
+            path = path.strip()
+            if path:
+                ctx.add_path(path)
+
 def verify(ctx):
+    _activate_shims(ctx)
     ctx.run("go", ["version"])
 
 def install_pkg(ctx, name, version, **kwargs):
+    _activate_shims(ctx)
     # name: full import path, e.g. "golang.org/x/tools/cmd/goimports"
     if version:
         spec = "%s@%s" % (name, version)
@@ -36,6 +46,7 @@ def install_pkg(ctx, name, version, **kwargs):
     ctx.run("go", ["install", spec])
 
 def uninstall_pkg(ctx, name, version, **kwargs):
+    _activate_shims(ctx)
     # Derive binary name from the last component of the import path.
     binary = name.split("/")[-1]
     gopath_result = ctx.run("go", ["env", "GOPATH"])

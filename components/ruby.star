@@ -33,7 +33,16 @@ def install(ctx):
         ctx.run("mise", ["settings", "ruby.compile", "false"])
         pkg(manager="mise", name="ruby", version="latest")
 
+def _activate_shims(ctx):
+    if ctx.which("mise"):
+        result = ctx.run("mise", ["bin-paths"])
+        for path in result.stdout.splitlines():
+            path = path.strip()
+            if path:
+                ctx.add_path(path)
+
 def verify(ctx):
+    _activate_shims(ctx)
     ctx.run("ruby", ["--version"])
 
 def install_pkg(ctx, name, version, **kwargs):
@@ -43,12 +52,14 @@ def install_pkg(ctx, name, version, **kwargs):
         ctx.run("gem", ["install", name])
 
 def uninstall_pkg(ctx, name, version, **kwargs):
+    _activate_shims(ctx)
     if version:
         ctx.run("gem", ["uninstall", name, "-v", version])
     else:
         ctx.run("gem", ["uninstall", name, "--all-versions"])
 
 def interrogate(ctx):
+    _activate_shims(ctx)
     result = ctx.run("gem", ["list", "--local", "--no-versions"])
     names = []
     for line in result.stdout.splitlines():

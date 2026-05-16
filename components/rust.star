@@ -25,19 +25,31 @@ def install(ctx):
             pkg(manager="apk", name="build-base")
     pkg(manager="mise", name="rust", version="latest")
 
+def _activate_shims(ctx):
+    if ctx.which("mise"):
+        result = ctx.run("mise", ["bin-paths"])
+        for path in result.stdout.splitlines():
+            path = path.strip()
+            if path:
+                ctx.add_path(path)
+
 def verify(ctx):
+    _activate_shims(ctx)
     ctx.run("cargo", ["--version"])
 
 def install_pkg(ctx, name, version, **kwargs):
+    _activate_shims(ctx)
     if version:
         ctx.run("cargo", ["install", name, "--version", version])
     else:
         ctx.run("cargo", ["install", name])
 
 def uninstall_pkg(ctx, name, version, **kwargs):
+    _activate_shims(ctx)
     ctx.run("cargo", ["uninstall", name])
 
 def interrogate(ctx):
+    _activate_shims(ctx)
     result = ctx.run("cargo", ["install", "--list"])
     names = []
     for line in result.stdout.splitlines():
