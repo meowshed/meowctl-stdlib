@@ -33,6 +33,11 @@ pm_name = "fisher"
 after = ["@stdlib//components/brew", "@stdlib//components/apt", "@stdlib//components/dnf", "@stdlib//components/pacman", "@stdlib//components/apk"]
 
 def _fish_bin(ctx):
+    # ctx.which returns bool, not a path — use platform-based conventional paths.
+    # Note: on Apple Silicon macs, brew installs fish to /opt/homebrew/bin/fish,
+    # not /usr/local/bin/fish. If fish lands outside the conventional path, chsh
+    # and the /etc/shells append may use the wrong binary; users should ensure
+    # /opt/homebrew/bin is in their PATH before running meowctl.
     p = platform()
     if p.os == "macos":
         return "/usr/local/bin/fish"
@@ -52,10 +57,12 @@ def install(ctx):
             pkg(manager="apt", name="fish")
         elif p.distro == "fedora" or p.distro == "rhel" or p.distro_like == "fedora" or p.distro_like == "rhel":
             pkg(manager="dnf", name="fish")
-        elif p.distro == "arch":
+        elif p.distro == "arch" or p.distro_like == "arch":
             pkg(manager="pacman", name="fish")
-        elif p.distro == "alpine":
+        elif p.distro == "alpine" or p.distro_like == "alpine":
+            # shadow provides chsh, which is not installed by default on Alpine.
             pkg(manager="apk", name="fish")
+            pkg(manager="apk", name="shadow")
         else:
             ctx.log("fish: unsupported distro %r — install fish manually then re-run" % p.distro)
             return

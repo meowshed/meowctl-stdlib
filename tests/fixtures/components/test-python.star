@@ -9,6 +9,16 @@ def _activate_shims(ctx):
     if home:
         ctx.add_path(home + "/.local/share/mise/shims")
 
+def _activate_pipx_bin(ctx):
+    # On Alpine, pipx installs tool binaries into ~/.local/bin (not mise shims).
+    home = ctx.env("HOME")
+    if home:
+        ctx.add_path(home + "/.local/bin")
+
 def verify(ctx):
-    _activate_shims(ctx)
+    p = platform()
+    if p.os == "linux" and (p.distro == "alpine" or p.distro_like == "alpine"):
+        _activate_pipx_bin(ctx)
+    else:
+        _activate_shims(ctx)
     ctx.run("ruff", ["--version"])

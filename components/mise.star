@@ -52,9 +52,9 @@ def install(ctx):
             if not ctx.which("mise"):
                 repo(manager="dnf", copr="jdxcode/mise")
                 pkg(manager="dnf", name="mise")
-        elif p.distro == "arch":
+        elif p.distro == "arch" or p.distro_like == "arch":
             pkg(manager="pacman", name="mise")
-        elif p.distro == "alpine":
+        elif p.distro == "alpine" or p.distro_like == "alpine":
             pkg(manager="apk", name="mise")
         else:
             _curl_install(ctx)
@@ -96,4 +96,11 @@ def interrogate(ctx):
     _activate_shims(ctx)
     result = ctx.run("mise", ["ls", "--installed", "--json"])
     installed = json.decode(result.stdout)
-    return list(installed.keys())
+    names = []
+    for key in installed.keys():
+        # Skip keys owned by sub-backend PMs (npm:, cargo:, pipx:, go:, etc.).
+        # Those are reported by their own components; including them here would
+        # cause two PMs to claim ownership of the same artifact.
+        if ":" not in key:
+            names.append(key)
+    return names

@@ -18,19 +18,19 @@
 pm_name = "luarocks"
 after = ["@stdlib//components/mise"]
 
-def _is_alpine():
-    p = platform()
+def _is_alpine(p):
     return p.os == "linux" and (p.distro == "alpine" or p.distro_like == "alpine")
 
 def _luarocks_cmd():
-    if _is_alpine():
+    p = platform()
+    if _is_alpine(p):
         return "luarocks-5.4"
     return "luarocks"
 
 def install(ctx):
     p = platform()
     if p.os == "linux":
-        if _is_alpine():
+        if _is_alpine(p):
             # Use system packages — no source compilation.
             pkg(manager="apk", name="lua5.4")
             pkg(manager="apk", name="lua5.4-dev")
@@ -49,7 +49,8 @@ def install(ctx):
         ctx.add_path(lua_dir + "/luarocks/bin")
 
 def _activate_luarocks(ctx):
-    if _is_alpine():
+    p = platform()
+    if _is_alpine(p):
         return  # system luarocks-5.4 is already on PATH
     _activate_shims(ctx)
     result = ctx.run("mise", ["where", "lua"])
@@ -75,7 +76,7 @@ def install_pkg(ctx, name, version, **kwargs):
 
 def uninstall_pkg(ctx, name, version, **kwargs):
     _activate_luarocks(ctx)
-    if version:
+    if version and version != "latest":
         ctx.run(_luarocks_cmd(), ["remove", name, version])
     else:
         ctx.run(_luarocks_cmd(), ["remove", name])
