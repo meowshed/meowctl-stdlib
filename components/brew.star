@@ -54,7 +54,7 @@ def install_pkg(ctx, name, version, **kwargs):
             ctx.log("brew cask: version pinning not supported; installing latest %s" % name)
         ctx.run("brew", ["install", "--cask", name])
     else:
-        if version:
+        if version and version != "latest":
             ctx.run("brew", ["install", "%s@%s" % (name, version)])
         else:
             ctx.run("brew", ["install", name])

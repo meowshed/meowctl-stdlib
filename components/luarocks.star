@@ -33,7 +33,7 @@ def install(ctx):
         elif p.distro == "alpine" or p.distro_like == "alpine":
             pkg(manager="apk", name="build-base")
             pkg(manager="apk", name="curl")
-    pkg(manager="mise", name="lua", version="latest")
+    pkg(manager="mise", name="lua", version="5.4")
     # The vfox-lua plugin adds <install-dir>/luarocks/bin to PATH via EnvKeys,
     # but that only takes effect after mise activation. Re-activate shims to
     # pick up the new paths, then add luarocks bin explicitly via its config.
