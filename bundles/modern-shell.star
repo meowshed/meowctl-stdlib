@@ -22,6 +22,11 @@ after = [
     "@stdlib//components/openssh",
     "@stdlib//components/curl",
     "@stdlib//components/wget",
+    # security
+    "@stdlib//components/age",
+    "@stdlib//components/gpg",
+    "@stdlib//components/openssl",
+    "@stdlib//components/mkcert",
     # fuzzy / search
     "@stdlib//components/fzf",
     "@stdlib//components/ripgrep",
