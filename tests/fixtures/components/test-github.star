@@ -6,10 +6,6 @@ after = ["@stdlib//components/github"]
 pkg(manager = "github", name = "jqlang/jq")
 
 def verify(ctx):
-    # mise github: backend does not always create a shim; locate the binary
-    # via `mise where github:jqlang/jq` and add its dir to PATH.
-    result = ctx.run("mise", ["where", "github:jqlang/jq"])
-    install_dir = result.stdout.strip()
-    if install_dir:
-        ctx.add_path(install_dir)
-    ctx.run("jq", ["--version"])
+    # mise github: backend may name the binary jq-linux-amd64 or similar;
+    # use `mise exec` to run it without relying on PATH or binary name.
+    ctx.run("mise", ["exec", "github:jqlang/jq", "--", "jq", "--version"])
