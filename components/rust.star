@@ -16,6 +16,13 @@ after = ["mise"]
 pm_name = "cargo"
 
 def install(ctx):
+    # Ensure a C linker is available for `cargo install` (compiling crates).
+    p = platform()
+    if p.os == "linux":
+        if p.distro == "arch" or p.distro_like == "arch":
+            pkg(manager="pacman", name="base-devel")
+        elif p.distro == "alpine" or p.distro_like == "alpine":
+            pkg(manager="apk", name="build-base")
     pkg(manager="mise", name="rust", version="latest")
 
 def verify(ctx):

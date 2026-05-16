@@ -76,6 +76,8 @@ jobs:
     name: Integration / Fedora (dnf)
     runs-on: ubuntu-latest
     container: fedora:latest
+    env:
+      HOME: /root
     steps:
       - name: Install git and Go toolchain deps
         run: dnf install -y git golang sudo
@@ -111,6 +113,8 @@ jobs:
     name: Integration / Arch (pacman)
     runs-on: ubuntu-latest
     container: archlinux:latest
+    env:
+      HOME: /root
     steps:
       - name: Install git and Go toolchain deps
         run: pacman -Syu --noconfirm git go sudo
@@ -146,6 +150,8 @@ jobs:
     name: Integration / Alpine (apk)
     runs-on: ubuntu-latest
     container: alpine:latest
+    env:
+      HOME: /root
     steps:
       - name: Install git and Go toolchain deps
         run: apk add --no-cache git go bash sudo

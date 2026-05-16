@@ -15,6 +15,12 @@ after = ["mise"]
 pm_name = "npm"
 
 def install(ctx):
+    # On Alpine (musl), mise builds node from source — needs python3, make, g++.
+    p = platform()
+    if p.os == "linux" and (p.distro == "alpine" or p.distro_like == "alpine"):
+        pkg(manager="apk", name="python3")
+        pkg(manager="apk", name="make")
+        pkg(manager="apk", name="g++")
     pkg(manager="mise", name="node", version="lts")
 
 def _activate_shims(ctx):

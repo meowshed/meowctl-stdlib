@@ -25,6 +25,14 @@ after = ["mise"]
 def install(ctx):
     # mise's lua plugin (vfox-lua) compiles Lua from source and installs
     # LuaRocks into <lua-install-dir>/luarocks/bin alongside it.
+    # Ensure build tools are present on distros that lack them by default.
+    p = platform()
+    if p.os == "linux":
+        if p.distro == "arch" or p.distro_like == "arch":
+            pkg(manager="pacman", name="base-devel")
+        elif p.distro == "alpine" or p.distro_like == "alpine":
+            pkg(manager="apk", name="build-base")
+            pkg(manager="apk", name="curl")
     pkg(manager="mise", name="lua", version="latest")
     # The vfox-lua plugin adds <install-dir>/luarocks/bin to PATH via EnvKeys,
     # but that only takes effect after mise activation. Re-activate shims to

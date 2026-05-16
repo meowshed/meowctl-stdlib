@@ -1,8 +1,9 @@
 # tests/fixtures/components/test-mise.star
-# Installs node@lts via mise. Tests the full mise tool install lifecycle.
+# Installs direnv via mise. Tests the full mise tool install lifecycle.
+# direnv is a small, self-contained binary — quick to install, no shared deps.
 after = ["@stdlib//components/mise"]
 
-pkg(manager = "mise", name = "node", version = "lts")
+pkg(manager = "mise", name = "direnv", version = "latest")
 
 def verify(ctx):
-    ctx.run("node", ["--version"])
+    ctx.run("direnv", ["version"])
