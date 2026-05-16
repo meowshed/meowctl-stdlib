@@ -56,18 +56,21 @@ def interrogate(ctx):
         line = line.strip()
         if not line:
             continue
+
         # line format: "<name>-<version>-r<N> <arch> {<origin>} ..."
         # Per apk-package(5): the version boundary is the LAST occurrence of
         # "-<digit>", so we must split from the right.
         # Algorithm: strip the trailing "-r<N>" release suffix, then strip
         # the remaining version by finding the last "-<digit>" boundary.
         spec = line.split(" ")[0]  # e.g. "py3-setuptools-67.8.0-r1"
+
         # Drop -r<N> release suffix — guard: char after "-r" must be a digit
         # and index must be in bounds (spec[idx+2:idx+3] returns "" when OOB,
         # which compares less than "0" and would silently skip stripping).
         idx = spec.rfind("-r")
         if idx != -1 and idx + 2 < len(spec) and spec[idx + 2:idx + 3] >= "0" and spec[idx + 2:idx + 3] <= "9":
             spec = spec[:idx]  # e.g. "py3-setuptools-67.8.0"
+
         # Drop version: strip trailing "-<digit>..." segments until none remain.
         # Starlark has no while loops; use a helper function instead.
         spec = _strip_version(spec)

@@ -25,6 +25,7 @@ def install(ctx):
 
 def verify(ctx):
     _activate_shims(ctx)
+
     # Confirm mise is reachable. Note: checking whether `experimental` is
     # enabled via `mise settings` is unreliable because the command exits 0
     # regardless of the value. We verify mise is installed; the github:
@@ -41,6 +42,7 @@ def install_pkg(ctx, name, version, **kwargs):
 def uninstall_pkg(ctx, name, version, **kwargs):
     _activate_shims(ctx)
     spec = "github:%s" % name
+
     # mise use --remove takes the unversioned spec; mise uninstall takes the versioned one.
     uninstall_spec = "%s@%s" % (spec, version) if version else spec
     ctx.run("mise", ["use", "--global", "--remove", spec])

@@ -32,16 +32,18 @@ def install(ctx):
     if p.os == "linux":
         if _is_alpine(p):
             # Use system packages — no source compilation.
-            pkg(manager="apk", name="lua5.4")
-            pkg(manager="apk", name="lua5.4-dev")
-            pkg(manager="apk", name="luarocks5.4")
+            pkg(manager = "apk", name = "lua5.4")
+            pkg(manager = "apk", name = "lua5.4-dev")
+            pkg(manager = "apk", name = "luarocks5.4")
             return
         elif p.distro == "arch" or p.distro_like == "arch":
             # vfox-lua requires unzip to install LuaRocks alongside Lua.
-            pkg(manager="pacman", name="base-devel")
-            pkg(manager="pacman", name="unzip")
+            pkg(manager = "pacman", name = "base-devel")
+            pkg(manager = "pacman", name = "unzip")
+
     # mise's vfox-lua plugin compiles Lua and bundles luarocks.
-    pkg(manager="mise", name="lua", version="5.4")
+    pkg(manager = "mise", name = "lua", version = "5.4")
+
     # Locate the install dir and add luarocks/bin to PATH.
     result = ctx.run("mise", ["where", "lua"])
     lua_dir = result.stdout.strip()

@@ -21,7 +21,7 @@ pm_name = "go_install"
 def install(ctx):
     # Enable experimental backends required for go: tool installs.
     ctx.run("mise", ["settings", "experimental", "true"])
-    pkg(manager="mise", name="go", version="latest")
+    pkg(manager = "mise", name = "go", version = "latest")
 
 def _activate_shims(ctx):
     home = ctx.env("HOME")

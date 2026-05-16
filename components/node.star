@@ -22,10 +22,10 @@ def install(ctx):
     # still manage npm: backend packages on top of the system node.
     p = platform()
     if p.os == "linux" and (p.distro == "alpine" or p.distro_like == "alpine"):
-        pkg(manager="apk", name="nodejs")
-        pkg(manager="apk", name="npm")
+        pkg(manager = "apk", name = "nodejs")
+        pkg(manager = "apk", name = "npm")
     else:
-        pkg(manager="mise", name="node", version="lts")
+        pkg(manager = "mise", name = "node", version = "lts")
 
 def _activate_shims(ctx):
     home = ctx.env("HOME")
