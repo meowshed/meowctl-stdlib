@@ -29,6 +29,14 @@ def _activate_shims(ctx):
 def verify(ctx):
     _activate_shims(ctx)
     ctx.run("node", ["--version"])
+    # npm global packages land in `npm prefix -g`/bin; this dir is NOT always
+    # listed by `mise bin-paths`, so add it explicitly so downstream verify
+    # hooks (e.g. test-npm checking cowsay) can find npm-installed binaries.
+    if ctx.which("npm"):
+        result = ctx.run("npm", ["prefix", "-g"])
+        prefix = result.stdout.strip()
+        if prefix:
+            ctx.add_path(prefix + "/bin")
 
 def install_pkg(ctx, name, version, **kwargs):
     if version:
@@ -37,6 +45,7 @@ def install_pkg(ctx, name, version, **kwargs):
         ctx.run("npm", ["install", "-g", name])
 
 def uninstall_pkg(ctx, name, version, **kwargs):
+    _activate_shims(ctx)
     ctx.run("npm", ["uninstall", "-g", name])
 
 def interrogate(ctx):

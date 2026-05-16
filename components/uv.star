@@ -53,6 +53,7 @@ def install_pkg(ctx, name, version, **kwargs):
         ctx.run("uv", ["tool", "install", name])
 
 def uninstall_pkg(ctx, name, version, **kwargs):
+    _activate_shims(ctx)
     ctx.run("uv", ["tool", "uninstall", name])
 
 def interrogate(ctx):

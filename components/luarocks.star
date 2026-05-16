@@ -55,6 +55,7 @@ def install_pkg(ctx, name, version, **kwargs):
         ctx.run("luarocks", ["install", name])
 
 def uninstall_pkg(ctx, name, version, **kwargs):
+    _activate_shims(ctx)
     if version:
         ctx.run("luarocks", ["remove", name, version])
     else:
