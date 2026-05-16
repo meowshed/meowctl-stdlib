@@ -23,14 +23,14 @@ def install(ctx):
     p = platform()
     if p.os == "linux":
         if p.distro == "ubuntu" or p.distro == "debian" or p.distro_like == "debian":
-            pkg(manager="apt", name="build-essential")
+            pkg(manager = "apt", name = "build-essential")
         elif p.distro == "fedora" or p.distro == "rhel" or p.distro_like == "fedora" or p.distro_like == "rhel":
-            pkg(manager="dnf", name="gcc")
+            pkg(manager = "dnf", name = "gcc")
         elif p.distro == "arch" or p.distro_like == "arch":
-            pkg(manager="pacman", name="base-devel")
+            pkg(manager = "pacman", name = "base-devel")
         elif p.distro == "alpine" or p.distro_like == "alpine":
-            pkg(manager="apk", name="build-base")
-    pkg(manager="mise", name="rust", version="latest")
+            pkg(manager = "apk", name = "build-base")
+    pkg(manager = "mise", name = "rust", version = "latest")
 
 def _activate_shims(ctx):
     home = ctx.env("HOME")

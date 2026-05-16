@@ -10,8 +10,46 @@ permissions:
   contents: read
 
 jobs:
+  lint:
+    name: Check / Formatting
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: jdx/mise-action@c37c93293d6b742fc901e1406b8f764f6fb19dac # v2
+      - name: Check formatting
+        run: mise run lint
+
+  component-check:
+    name: Check / Components
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout meowctl-stdlib
+        uses: actions/checkout@v4
+        with:
+          path: stdlib
+
+      - name: Checkout meowctl
+        uses: actions/checkout@v4
+        with:
+          repository: meowshed/meowctl
+          path: meowctl
+
+      - uses: actions/setup-go@v6
+        with:
+          go-version-file: meowctl/go.mod
+          cache-dependency-path: meowctl/go.sum
+
+      - name: Build meowctl
+        working-directory: meowctl
+        run: CGO_ENABLED=0 go build -o meowctl ./cmd/meowctl
+
+      - name: Check all components
+        run: |
+          meowctl/meowctl component check stdlib/components
+          meowctl/meowctl component check stdlib/bundles
+
   pm-contract:
-    name: PM contract tests
+    name: Check / PM contracts
     runs-on: ubuntu-latest
     steps:
       - name: Checkout meowctl-stdlib
@@ -37,7 +75,7 @@ jobs:
         run: CGO_ENABLED=0 go test -tags integration -count=1 -v ./internal/lifecycle/...
 
   integration-ubuntu:
-    name: Integration / Ubuntu (apt)
+    name: Integration / Ubuntu
     runs-on: ubuntu-latest
     steps:
       - name: Checkout meowctl-stdlib
@@ -73,7 +111,7 @@ jobs:
             test-apt test-mise test-npm test-python test-gem test-cargo test-go test-luarocks test-github test-fish test-flatpak
 
   integration-fedora:
-    name: Integration / Fedora (dnf)
+    name: Integration / Fedora
     runs-on: ubuntu-latest
     container: fedora:latest
     env:
@@ -110,7 +148,7 @@ jobs:
             test-dnf test-mise test-npm test-python test-gem test-cargo test-go test-luarocks test-github
 
   integration-arch:
-    name: Integration / Arch (pacman)
+    name: Integration / Arch
     runs-on: ubuntu-latest
     container: archlinux:latest
     env:

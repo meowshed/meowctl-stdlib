@@ -24,12 +24,12 @@ def install(ctx):
     if p.os == "linux" and (p.distro == "alpine" or p.distro_like == "alpine"):
         # Alpine uses musl libc; mise precompiled ruby (glibc) won't run.
         # ruby-dev is required for gems with native C extensions (e.g. nokogiri).
-        pkg(manager="apk", name="ruby")
-        pkg(manager="apk", name="ruby-dev")
+        pkg(manager = "apk", name = "ruby")
+        pkg(manager = "apk", name = "ruby-dev")
     else:
         # Use precompiled binaries to avoid ruby-build compile failures.
         ctx.run("mise", ["settings", "ruby.compile", "false"])
-        pkg(manager="mise", name="ruby", version="latest")
+        pkg(manager = "mise", name = "ruby", version = "latest")
 
 def _activate_shims(ctx):
     home = ctx.env("HOME")
@@ -69,11 +69,10 @@ def uninstall_pkg(ctx, name, version, **kwargs):
             ctx.run("mise", ["uninstall", "gem:%s@%s" % (name, version)])
         else:
             ctx.run("mise", ["uninstall", "gem:%s" % name])
+    elif version and version != "latest":
+        ctx.run("gem", ["uninstall", name, "-v", version])
     else:
-        if version and version != "latest":
-            ctx.run("gem", ["uninstall", name, "-v", version])
-        else:
-            ctx.run("gem", ["uninstall", name, "--all-versions"])
+        ctx.run("gem", ["uninstall", name, "--all-versions"])
 
 def interrogate(ctx):
     _activate_shims(ctx)

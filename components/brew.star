@@ -57,11 +57,10 @@ def install_pkg(ctx, name, version, **kwargs):
             # Install the current cask and log the version expectation.
             ctx.log("brew cask: version pinning not supported; installing latest %s" % name)
         ctx.run("brew", ["install", "--cask", name])
+    elif version and version != "latest":
+        ctx.run("brew", ["install", "%s@%s" % (name, version)])
     else:
-        if version and version != "latest":
-            ctx.run("brew", ["install", "%s@%s" % (name, version)])
-        else:
-            ctx.run("brew", ["install", name])
+        ctx.run("brew", ["install", name])
 
 def uninstall_pkg(ctx, name, version, **kwargs):
     # tap= is intentionally ignored on uninstall — brew resolves the formula
@@ -81,6 +80,7 @@ def interrogate(ctx):
         line = line.strip()
         if not line:
             continue
+
         # `brew list --full-name` prefixes only formulae from third-party taps
         # (e.g. "owner/tap/formula"). Core formulae are emitted bare (e.g. "git").
         # Strip any tap prefix so the name matches what a pkg() declaration uses.
