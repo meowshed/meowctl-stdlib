@@ -6,11 +6,14 @@
 #
 # PM kwargs: none
 #
-# Pinning: cargo does not lock installed binaries; `cargo install --list`
-# shows the current version but meowctl cannot guarantee exact version on
-# reinstall when no explicit version is given.
-# interrogate: `cargo install --list` → lines ending in `:` are `<name> v<ver>:`;
-#              extract the name (first word before the space).
+# Rust crates are installed via `mise use --global cargo:<name>`.
+# mise's cargo backend calls `cargo install` and shims the binaries via
+# ~/.local/share/mise/shims automatically.
+#
+# Pinning: cargo does not lock installed binaries; pass an explicit version
+# for reproducible installs.
+#
+# interrogate: `mise ls --installed --json` → filter keys with "cargo:" prefix.
 
 after = ["mise"]
 pm_name = "cargo"
@@ -37,20 +40,25 @@ def verify(ctx):
 def install_pkg(ctx, name, version, **kwargs):
     _activate_shims(ctx)
     if version:
-        ctx.run("cargo", ["install", name, "--version", version])
+        spec = "cargo:%s@%s" % (name, version)
     else:
-        ctx.run("cargo", ["install", name])
+        spec = "cargo:%s" % name
+    ctx.run("mise", ["use", "--global", spec])
 
 def uninstall_pkg(ctx, name, version, **kwargs):
     _activate_shims(ctx)
-    ctx.run("cargo", ["uninstall", name])
+    ctx.run("mise", ["use", "--global", "--remove", "cargo:%s" % name])
+    if version:
+        ctx.run("mise", ["uninstall", "cargo:%s@%s" % (name, version)])
+    else:
+        ctx.run("mise", ["uninstall", "cargo:%s" % name])
 
 def interrogate(ctx):
     _activate_shims(ctx)
-    result = ctx.run("cargo", ["install", "--list"])
+    result = ctx.run("mise", ["ls", "--installed", "--json"])
+    installed = json.decode(result.stdout)
     names = []
-    for line in result.stdout.splitlines():
-        # Lines for installed crates end with `:`, e.g. `ripgrep v13.0.0:`
-        if line.endswith(":") and not line.startswith(" "):
-            names.append(line.split(" ")[0])
+    for key in installed.keys():
+        if key.startswith("cargo:"):
+            names.append(key[6:])
     return names

@@ -6,11 +6,11 @@
 #
 # PM kwargs: none
 #
-# pipx installs Python CLI tools in isolated virtual environments.
-# install: installs pipx via mise.
-# install_pkg: `pipx install <name>` (optionally with version specifier).
-# uninstall_pkg: `pipx uninstall <name>`.
-# interrogate: `pipx list --json` → parse JSON; venvs keys are package names.
+# pipx tools are installed via `mise use --global pipx:<name>`.
+# mise's pipx backend uses uv when available, falling back to pipx.
+# All binaries appear in ~/.local/share/mise/shims automatically.
+#
+# interrogate: `mise ls --installed --json` → filter keys with "pipx:" prefix.
 
 after = ["mise"]
 pm_name = "pipx"
@@ -30,16 +30,25 @@ def verify(ctx):
 def install_pkg(ctx, name, version, **kwargs):
     _activate_shims(ctx)
     if version:
-        ctx.run("pipx", ["install", "%s==%s" % (name, version)])
+        spec = "pipx:%s@%s" % (name, version)
     else:
-        ctx.run("pipx", ["install", name])
+        spec = "pipx:%s" % name
+    ctx.run("mise", ["use", "--global", spec])
 
 def uninstall_pkg(ctx, name, version, **kwargs):
     _activate_shims(ctx)
-    ctx.run("pipx", ["uninstall", name])
+    ctx.run("mise", ["use", "--global", "--remove", "pipx:%s" % name])
+    if version:
+        ctx.run("mise", ["uninstall", "pipx:%s@%s" % (name, version)])
+    else:
+        ctx.run("mise", ["uninstall", "pipx:%s" % name])
 
 def interrogate(ctx):
     _activate_shims(ctx)
-    result = ctx.run("pipx", ["list", "--json"])
-    data = json.decode(result.stdout)
-    return list(data["venvs"].keys())
+    result = ctx.run("mise", ["ls", "--installed", "--json"])
+    installed = json.decode(result.stdout)
+    names = []
+    for key in installed.keys():
+        if key.startswith("pipx:"):
+            names.append(key[5:])
+    return names

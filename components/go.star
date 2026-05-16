@@ -6,17 +6,14 @@
 #
 # PM kwargs: none
 #
-# Install: `go install <import-path>@<version>` — @version is mandatory;
-#          use "latest" when no version is specified.
-# Uninstall: remove the binary from $(go env GOPATH)/bin; the basename is
-#            the last path component of the import path.
-# interrogate: go install does not record the source import path after
-#              installation; GOPATH/bin contains only binaries with no mapping
-#              back to import paths. interrogate therefore returns an empty list.
-#              Reconciliation must rely on the meowctl lock file, not runtime
-#              inspection.
-# Pinning: @latest is non-reproducible; use explicit version tags for
-#          reproducible installs.
+# Go tools are installed via `mise use --global go:<import-path>`.
+# mise's go backend calls `go install <import-path>@<version>` and places
+# the binary in its own tool dir, shimmed via ~/.local/share/mise/shims.
+#
+# Version format: passed as <name>@<version>; use "latest" when unspecified.
+#
+# interrogate: `mise ls --installed --json` → filter keys with "go:" prefix;
+#              strip the prefix to return the full import path.
 
 after = ["mise"]
 pm_name = "go_install"
@@ -35,23 +32,26 @@ def verify(ctx):
 
 def install_pkg(ctx, name, version, **kwargs):
     _activate_shims(ctx)
-    # name: full import path, e.g. "golang.org/x/tools/cmd/goimports"
     if version:
-        spec = "%s@%s" % (name, version)
+        spec = "go:%s@%s" % (name, version)
     else:
-        spec = "%s@latest" % name
-    ctx.run("go", ["install", spec])
+        spec = "go:%s@latest" % name
+    ctx.run("mise", ["use", "--global", spec])
 
 def uninstall_pkg(ctx, name, version, **kwargs):
     _activate_shims(ctx)
-    # Derive binary name from the last component of the import path.
-    binary = name.split("/")[-1]
-    gopath_result = ctx.run("go", ["env", "GOPATH"])
-    gopath = gopath_result.stdout.strip()
-    ctx.delete_file("%s/bin/%s" % (gopath, binary))
+    ctx.run("mise", ["use", "--global", "--remove", "go:%s" % name])
+    if version:
+        ctx.run("mise", ["uninstall", "go:%s@%s" % (name, version)])
+    else:
+        ctx.run("mise", ["uninstall", "go:%s" % name])
 
 def interrogate(ctx):
-    # go install does not record import paths after installation — GOPATH/bin
-    # holds only binary names with no reverse mapping. Return empty list;
-    # meowctl reconciles via the lock file.
-    return []
+    _activate_shims(ctx)
+    result = ctx.run("mise", ["ls", "--installed", "--json"])
+    installed = json.decode(result.stdout)
+    names = []
+    for key in installed.keys():
+        if key.startswith("go:"):
+            names.append(key[3:])
+    return names
