@@ -6,35 +6,59 @@
 #
 # PM kwargs: none
 #
-# Pinning: cargo does not lock installed binaries; `cargo install --list`
-# shows the current version but meowctl cannot guarantee exact version on
-# reinstall when no explicit version is given.
-# interrogate: `cargo install --list` → lines ending in `:` are `<name> v<ver>:`;
-#              extract the name (first word before the space).
+# Rust crates are installed via `mise use --global cargo:<name>`.
+# mise's cargo backend calls `cargo install` and shims the binaries via
+# ~/.local/share/mise/shims automatically.
+#
+# Pinning: cargo does not lock installed binaries; pass an explicit version
+# for reproducible installs.
+#
+# interrogate: `mise ls --installed --json` → filter keys with "cargo:" prefix.
 
-after = ["mise"]
+after = ["@stdlib//components/mise"]
 pm_name = "cargo"
 
 def install(ctx):
+    # Ensure a C linker is available for `cargo install` (compiling crates).
+    p = platform()
+    if p.os == "linux":
+        if p.distro == "arch" or p.distro_like == "arch":
+            pkg(manager="pacman", name="base-devel")
+        elif p.distro == "alpine" or p.distro_like == "alpine":
+            pkg(manager="apk", name="build-base")
     pkg(manager="mise", name="rust", version="latest")
 
+def _activate_shims(ctx):
+    home = ctx.env("HOME")
+    if home:
+        ctx.add_path(home + "/.local/share/mise/shims")
+
 def verify(ctx):
+    _activate_shims(ctx)
     ctx.run("cargo", ["--version"])
 
 def install_pkg(ctx, name, version, **kwargs):
+    _activate_shims(ctx)
     if version:
-        ctx.run("cargo", ["install", name, "--version", version])
+        spec = "cargo:%s@%s" % (name, version)
     else:
-        ctx.run("cargo", ["install", name])
+        spec = "cargo:%s" % name
+    ctx.run("mise", ["use", "--global", spec])
 
 def uninstall_pkg(ctx, name, version, **kwargs):
-    ctx.run("cargo", ["uninstall", name])
+    _activate_shims(ctx)
+    ctx.run("mise", ["use", "--global", "--remove", "cargo:%s" % name])
+    if version:
+        ctx.run("mise", ["uninstall", "cargo:%s@%s" % (name, version)])
+    else:
+        ctx.run("mise", ["uninstall", "cargo:%s" % name])
 
 def interrogate(ctx):
-    result = ctx.run("cargo", ["install", "--list"])
+    _activate_shims(ctx)
+    result = ctx.run("mise", ["ls", "--installed", "--json"])
+    installed = json.decode(result.stdout)
     names = []
-    for line in result.stdout.splitlines():
-        # Lines for installed crates end with `:`, e.g. `ripgrep v13.0.0:`
-        if line.endswith(":") and not line.startswith(" "):
-            names.append(line.split(" ")[0])
+    for key in installed.keys():
+        if key.startswith("cargo:"):
+            names.append(key[6:])
     return names

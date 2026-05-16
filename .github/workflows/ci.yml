@@ -10,8 +10,8 @@ permissions:
   contents: read
 
 jobs:
-  integration:
-    name: Integration tests
+  pm-contract:
+    name: PM contract tests
     runs-on: ubuntu-latest
     steps:
       - name: Checkout meowctl-stdlib
@@ -25,16 +25,199 @@ jobs:
           repository: meowshed/meowctl
           path: meowctl
 
-      - uses: jdx/mise-action@1648a7812b9aeae629881980618f079932869151 # v4.0.1
+      - uses: actions/setup-go@v6
         with:
-          cache: true
-          working_directory: meowctl
+          go-version-file: meowctl/go.mod
+          cache-dependency-path: meowctl/go.sum
 
-      - name: Run stdlib integration tests
+      - name: Run PM contract tests
         working-directory: meowctl
         env:
           STDLIB_PATH: ${{ github.workspace }}/stdlib
         run: CGO_ENABLED=0 go test -tags integration -count=1 -v ./internal/lifecycle/...
+
+  integration-ubuntu:
+    name: Integration / Ubuntu (apt)
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout meowctl-stdlib
+        uses: actions/checkout@v4
+        with:
+          path: stdlib
+
+      - name: Checkout meowctl
+        uses: actions/checkout@v4
+        with:
+          repository: meowshed/meowctl
+          path: meowctl
+
+      - uses: actions/setup-go@v6
+        with:
+          go-version-file: meowctl/go.mod
+          cache-dependency-path: meowctl/go.sum
+
+      - name: Build and install meowctl
+        working-directory: meowctl
+        run: |
+          CGO_ENABLED=0 go build -o meowctl ./cmd/meowctl
+          mkdir -p "$HOME/.local/bin"
+          install -m755 meowctl "$HOME/.local/bin/meowctl"
+          echo "MEOWCTL_BIN=$HOME/.local/bin/meowctl" >> "$GITHUB_ENV"
+
+      - name: Smoke test (apt)
+        env:
+          STDLIB_PATH: ${{ github.workspace }}/stdlib
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          bash stdlib/scripts/pm-smoke-test.sh \
+            test-apt test-mise test-npm test-python test-gem test-cargo test-go test-luarocks test-github test-fish test-flatpak
+
+  integration-fedora:
+    name: Integration / Fedora (dnf)
+    runs-on: ubuntu-latest
+    container: fedora:latest
+    env:
+      HOME: /root
+    steps:
+      - name: Install git and Go toolchain deps
+        run: dnf install -y git golang sudo
+
+      - name: Checkout meowctl-stdlib
+        uses: actions/checkout@v4
+        with:
+          path: stdlib
+
+      - name: Checkout meowctl
+        uses: actions/checkout@v4
+        with:
+          repository: meowshed/meowctl
+          path: meowctl
+
+      - name: Build and install meowctl
+        working-directory: meowctl
+        run: |
+          CGO_ENABLED=0 go build -o meowctl ./cmd/meowctl
+          mkdir -p "$HOME/.local/bin"
+          install -m755 meowctl "$HOME/.local/bin/meowctl"
+          echo "MEOWCTL_BIN=$HOME/.local/bin/meowctl" >> "$GITHUB_ENV"
+
+      - name: Smoke test (dnf)
+        env:
+          STDLIB_PATH: ${{ github.workspace }}/stdlib
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          bash stdlib/scripts/pm-smoke-test.sh \
+            test-dnf test-mise test-npm test-python test-gem test-cargo test-go test-luarocks test-github
+
+  integration-arch:
+    name: Integration / Arch (pacman)
+    runs-on: ubuntu-latest
+    container: archlinux:latest
+    env:
+      HOME: /root
+    steps:
+      - name: Install git and Go toolchain deps
+        run: pacman -Syu --noconfirm git go sudo
+
+      - name: Checkout meowctl-stdlib
+        uses: actions/checkout@v4
+        with:
+          path: stdlib
+
+      - name: Checkout meowctl
+        uses: actions/checkout@v4
+        with:
+          repository: meowshed/meowctl
+          path: meowctl
+
+      - name: Build and install meowctl
+        working-directory: meowctl
+        run: |
+          CGO_ENABLED=0 go build -o meowctl ./cmd/meowctl
+          mkdir -p "$HOME/.local/bin"
+          install -m755 meowctl "$HOME/.local/bin/meowctl"
+          echo "MEOWCTL_BIN=$HOME/.local/bin/meowctl" >> "$GITHUB_ENV"
+
+      - name: Smoke test (pacman)
+        env:
+          STDLIB_PATH: ${{ github.workspace }}/stdlib
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          bash stdlib/scripts/pm-smoke-test.sh \
+            test-pacman test-mise test-npm test-python test-gem test-cargo test-go test-luarocks test-github
+
+  integration-alpine:
+    name: Integration / Alpine (apk)
+    runs-on: ubuntu-latest
+    container: alpine:latest
+    env:
+      HOME: /root
+    steps:
+      - name: Install git and Go toolchain deps
+        run: apk add --no-cache git go bash sudo
+
+      - name: Checkout meowctl-stdlib
+        uses: actions/checkout@v4
+        with:
+          path: stdlib
+
+      - name: Checkout meowctl
+        uses: actions/checkout@v4
+        with:
+          repository: meowshed/meowctl
+          path: meowctl
+
+      - name: Build and install meowctl
+        working-directory: meowctl
+        run: |
+          CGO_ENABLED=0 go build -o meowctl ./cmd/meowctl
+          mkdir -p "$HOME/.local/bin"
+          install -m755 meowctl "$HOME/.local/bin/meowctl"
+          echo "MEOWCTL_BIN=$HOME/.local/bin/meowctl" >> "$GITHUB_ENV"
+
+      - name: Smoke test (apk)
+        env:
+          STDLIB_PATH: ${{ github.workspace }}/stdlib
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          bash stdlib/scripts/pm-smoke-test.sh \
+            test-apk test-mise test-npm test-python test-gem test-cargo test-go test-luarocks test-github
+
+  integration-macos:
+    name: Integration / macOS (brew)
+    runs-on: macos-latest
+    steps:
+      - name: Checkout meowctl-stdlib
+        uses: actions/checkout@v4
+        with:
+          path: stdlib
+
+      - name: Checkout meowctl
+        uses: actions/checkout@v4
+        with:
+          repository: meowshed/meowctl
+          path: meowctl
+
+      - uses: actions/setup-go@v6
+        with:
+          go-version-file: meowctl/go.mod
+          cache-dependency-path: meowctl/go.sum
+
+      - name: Build and install meowctl
+        working-directory: meowctl
+        run: |
+          CGO_ENABLED=0 go build -o meowctl ./cmd/meowctl
+          mkdir -p "$HOME/.local/bin"
+          install -m755 meowctl "$HOME/.local/bin/meowctl"
+          echo "MEOWCTL_BIN=$HOME/.local/bin/meowctl" >> "$GITHUB_ENV"
+
+      - name: Smoke test (brew)
+        env:
+          STDLIB_PATH: ${{ github.workspace }}/stdlib
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          bash stdlib/scripts/pm-smoke-test.sh \
+            test-brew test-mise test-npm test-python test-gem test-cargo test-go test-luarocks test-github test-mas
 
   secrets:
     name: Secrets (trufflehog)
