@@ -154,7 +154,7 @@ jobs:
       HOME: /root
     steps:
       - name: Install git and Go toolchain deps
-        run: apk add --no-cache git go bash sudo
+        run: apk add --no-cache git go bash sudo linux-headers
 
       - name: Checkout meowctl-stdlib
         uses: actions/checkout@v4

@@ -34,40 +34,48 @@ def install(ctx):
             pkg(manager="apk", name="build-base")
             pkg(manager="apk", name="curl")
     pkg(manager="mise", name="lua", version="5.4")
-    # The vfox-lua plugin adds <install-dir>/luarocks/bin to PATH via EnvKeys,
-    # but that only takes effect after mise activation. Re-activate shims to
-    # pick up the new paths, then add luarocks bin explicitly via its config.
-    if ctx.which("luarocks"):
-        result = ctx.run("luarocks", ["config", "home_tree"])
-        home_tree = result.stdout.strip()
-        if home_tree:
-            ctx.add_path(home_tree + "/bin")
+    # The vfox-lua plugin installs luarocks alongside lua. Use mise where to
+    # locate the install directory and add luarocks/bin to PATH.
+    result = ctx.run("mise", ["where", "lua"])
+    lua_dir = result.stdout.strip()
+    if lua_dir:
+        ctx.add_path(lua_dir + "/luarocks/bin")
 
 def _activate_shims(ctx):
     home = ctx.env("HOME")
     if home:
         ctx.add_path(home + "/.local/share/mise/shims")
 
-def verify(ctx):
+def _activate_luarocks(ctx):
     _activate_shims(ctx)
+    # luarocks is bundled inside the vfox-lua install directory.
+    # mise shims do not cover it, so we ask mise where lua is installed and
+    # add <lua-install-dir>/luarocks/bin to PATH.
+    result = ctx.run("mise", ["where", "lua"])
+    lua_dir = result.stdout.strip()
+    if lua_dir:
+        ctx.add_path(lua_dir + "/luarocks/bin")
+
+def verify(ctx):
+    _activate_luarocks(ctx)
     ctx.run("luarocks", ["--version"])
 
 def install_pkg(ctx, name, version, **kwargs):
-    _activate_shims(ctx)
+    _activate_luarocks(ctx)
     if version:
         ctx.run("luarocks", ["install", name, version])
     else:
         ctx.run("luarocks", ["install", name])
 
 def uninstall_pkg(ctx, name, version, **kwargs):
-    _activate_shims(ctx)
+    _activate_luarocks(ctx)
     if version:
         ctx.run("luarocks", ["remove", name, version])
     else:
         ctx.run("luarocks", ["remove", name])
 
 def interrogate(ctx):
-    _activate_shims(ctx)
+    _activate_luarocks(ctx)
     result = ctx.run("luarocks", ["list", "--porcelain"])
     seen = {}
     names = []

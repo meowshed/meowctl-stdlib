@@ -19,6 +19,10 @@ pm_name = "python"
 
 def install(ctx):
     pkg(manager="mise", name="python", version="latest")
+    # mise's pipx backend requires pipx to be installed first.
+    # Installing via mise ensures it is available on all platforms.
+    _activate_shims(ctx)
+    ctx.run("mise", ["use", "--global", "pipx@latest"])
 
 def _activate_shims(ctx):
     home = ctx.env("HOME")
