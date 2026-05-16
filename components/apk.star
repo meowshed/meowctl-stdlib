@@ -1,8 +1,8 @@
 # components/apk.star
 #
 # pm_name:  apk
-# platform: ["linux"]
-# distro:   alpine
+# platforms: ["linux"]
+# distros:   ["alpine"]
 # after:    —
 #
 # PM kwargs: none
@@ -18,6 +18,7 @@
 #              extracts the package name by stripping the trailing version suffix.
 
 platforms = ["linux"]
+distros = ["alpine"]
 pm_name = "apk"
 
 def install(ctx):

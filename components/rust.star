@@ -15,7 +15,7 @@
 #
 # interrogate: `mise ls --installed --json` → filter keys with "cargo:" prefix.
 
-after = ["mise"]
+after = ["@stdlib//components/mise"]
 pm_name = "cargo"
 
 def install(ctx):

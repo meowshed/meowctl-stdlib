@@ -20,7 +20,7 @@
 # interrogate: `code --list-extensions` → one extension ID per line.
 
 pm_name = "vscode"
-after = ["brew", "apt", "dnf", "pacman"]
+after = ["@stdlib//components/brew", "@stdlib//components/apt", "@stdlib//components/dnf", "@stdlib//components/pacman"]
 
 def install(ctx):
     p = platform()

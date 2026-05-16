@@ -13,20 +13,19 @@
 # interrogate: `mise ls --installed --json` → filter keys with "npm:" prefix;
 #              strip the prefix to return bare package names.
 
-after = ["mise"]
+after = ["@stdlib//components/mise"]
 pm_name = "npm"
 
 def install(ctx):
-    # On Alpine (musl), mise builds node from source — needs python3, make, g++.
+    # On Alpine (musl), mise has no prebuilt node binary and compiles from
+    # source (20+ minutes). Use the Alpine system package instead — mise can
+    # still manage npm: backend packages on top of the system node.
     p = platform()
     if p.os == "linux" and (p.distro == "alpine" or p.distro_like == "alpine"):
-        pkg(manager="apk", name="python3")
-        pkg(manager="apk", name="make")
-        pkg(manager="apk", name="g++")
-        # mise compiles node from source on Alpine; linux-headers provides
-        # linux/mman.h required by OpenSSL during the build.
-        pkg(manager="apk", name="linux-headers")
-    pkg(manager="mise", name="node", version="lts")
+        pkg(manager="apk", name="nodejs")
+        pkg(manager="apk", name="npm")
+    else:
+        pkg(manager="mise", name="node", version="lts")
 
 def _activate_shims(ctx):
     home = ctx.env("HOME")

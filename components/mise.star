@@ -16,7 +16,7 @@
 # Each key is accepted verbatim by install_pkg as the `name` argument.
 
 pm_name = "mise"
-after = ["brew", "apt", "dnf", "pacman", "apk"]
+after = ["@stdlib//components/brew", "@stdlib//components/apt", "@stdlib//components/dnf", "@stdlib//components/pacman", "@stdlib//components/apk"]
 
 def _curl_install(ctx):
     # Official curl installer. Guarded by ctx.which for idempotency.

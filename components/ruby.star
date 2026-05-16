@@ -16,7 +16,7 @@
 #
 # interrogate: `mise ls --installed --json` → filter keys with "gem:" prefix.
 
-after = ["mise"]
+after = ["@stdlib//components/mise"]
 pm_name = "gem"
 
 def install(ctx):
@@ -54,7 +54,8 @@ def install_pkg(ctx, name, version, **kwargs):
             ctx.run("mise", ["use", "--global", "gem:%s" % name])
     else:
         # Alpine fallback: call gem directly (system ruby from apk).
-        if version:
+        # Do not pass a version if it's empty or "latest" — gem rejects "latest" as a version spec.
+        if version and version != "latest":
             ctx.run("gem", ["install", name, "-v", version])
         else:
             ctx.run("gem", ["install", name])

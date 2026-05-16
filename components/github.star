@@ -11,7 +11,7 @@
 # uninstall_pkg: ctx.run("mise", ["use", "--global", "--remove", "github:owner/repo"])
 # interrogate: mise ls --installed --json → filter keys starting with "github:"; strip prefix.
 
-after = ["mise"]
+after = ["@stdlib//components/mise"]
 pm_name = "github"
 
 def _activate_shims(ctx):
@@ -20,8 +20,8 @@ def _activate_shims(ctx):
         ctx.add_path(home + "/.local/share/mise/shims")
 
 def install(ctx):
-    # mise handles all github: installs; nothing to bootstrap here.
-    pass
+    # Enable experimental backends required for github: tool installs.
+    ctx.run("mise", ["settings", "experimental", "true"])
 
 def verify(ctx):
     _activate_shims(ctx)

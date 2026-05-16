@@ -1,8 +1,8 @@
 # components/dnf.star
 #
 # pm_name:  dnf
-# platform: ["linux"]
-# distro:   fedora, rhel, and fedora-like
+# platforms: ["linux"]
+# distros:   ["fedora", "rhel"]
 # after:    —
 #
 # PM kwargs: none
@@ -23,6 +23,7 @@
 #          Requires dnf-plugins-core to be installed first.
 
 platforms = ["linux"]
+distros = ["fedora", "rhel"]
 pm_name = "dnf"
 
 def install(ctx):

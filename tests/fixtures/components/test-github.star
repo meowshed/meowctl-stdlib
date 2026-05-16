@@ -5,11 +5,11 @@ after = ["@stdlib//components/github"]
 
 pkg(manager = "github", name = "jqlang/jq")
 
-def _activate_shims(ctx):
-    home = ctx.env("HOME")
-    if home:
-        ctx.add_path(home + "/.local/share/mise/shims")
-
 def verify(ctx):
-    _activate_shims(ctx)
+    # mise github: backend does not always create a shim; locate the binary
+    # via `mise where github:jqlang/jq` and add its dir to PATH.
+    result = ctx.run("mise", ["where", "github:jqlang/jq"])
+    install_dir = result.stdout.strip()
+    if install_dir:
+        ctx.add_path(install_dir)
     ctx.run("jq", ["--version"])

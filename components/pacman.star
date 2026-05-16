@@ -1,8 +1,8 @@
 # components/pacman.star
 #
 # pm_name:  pacman
-# platform: ["linux"]
-# distro:   arch
+# platforms: ["linux"]
+# distros:   ["arch"]
 # after:    —
 #
 # PM kwargs: none
@@ -16,6 +16,7 @@
 # interrogate: `pacman -Qq` → list of installed package names.
 
 platforms = ["linux"]
+distros = ["arch"]
 pm_name = "pacman"
 
 def install(ctx):

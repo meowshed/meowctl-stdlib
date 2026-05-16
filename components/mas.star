@@ -14,7 +14,7 @@
 #              returns the numeric ID strings (first space-delimited field).
 
 platforms = ["macos"]
-after = ["mise"]
+after = ["@stdlib//components/mise"]
 pm_name = "mas"
 
 def _activate_shims(ctx):

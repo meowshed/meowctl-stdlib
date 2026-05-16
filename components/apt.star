@@ -1,8 +1,8 @@
 # components/apt.star
 #
 # pm_name:  apt
-# platform: ["linux"]
-# distro:   ubuntu, debian, and debian-like
+# platforms: ["linux"]
+# distros:   ["ubuntu", "debian"]
 # after:    —
 #
 # PM kwargs: none
@@ -25,6 +25,7 @@
 #              Example: "deb [signed-by=...] https://mise.jdx.dev/deb stable main"
 
 platforms = ["linux"]
+distros = ["ubuntu", "debian"]
 pm_name = "apt"
 
 def install(ctx):

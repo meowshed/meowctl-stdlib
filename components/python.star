@@ -14,20 +14,19 @@
 # interrogate: `mise ls --installed --json` → filter keys with "pipx:" prefix;
 #              strip the prefix to return bare package names.
 
-after = ["mise"]
+after = ["@stdlib//components/mise"]
 pm_name = "python"
 
 def install(ctx):
-    # On Alpine (musl), mise compiles python from source — needs build tools
-    # and linux-headers (for linux/mman.h required by OpenSSL).
+    # On Alpine (musl), mise compiles python from source (slow, complex deps).
+    # Use the Alpine system package instead — mise can still manage pipx:
+    # backend packages on top of the system python.
     p = platform()
     if p.os == "linux" and (p.distro == "alpine" or p.distro_like == "alpine"):
-        pkg(manager="apk", name="build-base")
-        pkg(manager="apk", name="linux-headers")
-        pkg(manager="apk", name="zlib-dev")
-        pkg(manager="apk", name="openssl-dev")
-        pkg(manager="apk", name="libffi-dev")
-    pkg(manager="mise", name="python", version="latest")
+        pkg(manager="apk", name="python3")
+        pkg(manager="apk", name="py3-pip")
+    else:
+        pkg(manager="mise", name="python", version="latest")
     # mise's pipx backend requires pipx to be installed first.
     # Installing via mise ensures it is available on all platforms.
     _activate_shims(ctx)
