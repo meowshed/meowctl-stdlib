@@ -9,7 +9,7 @@
 
 after = [
     # shell + prompt
-    "@stdlib//components/zsh",
+    "@stdlib//components/bash",
     "@stdlib//components/fish",
     "@stdlib//components/fish_bass",
     "@stdlib//components/fish_fzf",
