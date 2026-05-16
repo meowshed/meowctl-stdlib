@@ -22,7 +22,11 @@ def install(ctx):
     # Ensure a C linker is available for `cargo install` (compiling crates).
     p = platform()
     if p.os == "linux":
-        if p.distro == "arch" or p.distro_like == "arch":
+        if p.distro == "ubuntu" or p.distro == "debian" or p.distro_like == "debian":
+            pkg(manager="apt", name="build-essential")
+        elif p.distro == "fedora" or p.distro == "rhel" or p.distro_like == "fedora" or p.distro_like == "rhel":
+            pkg(manager="dnf", name="gcc")
+        elif p.distro == "arch" or p.distro_like == "arch":
             pkg(manager="pacman", name="base-devel")
         elif p.distro == "alpine" or p.distro_like == "alpine":
             pkg(manager="apk", name="build-base")
@@ -39,7 +43,7 @@ def verify(ctx):
 
 def install_pkg(ctx, name, version, **kwargs):
     _activate_shims(ctx)
-    if version:
+    if version and version != "latest":
         spec = "cargo:%s@%s" % (name, version)
     else:
         spec = "cargo:%s" % name
