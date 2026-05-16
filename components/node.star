@@ -23,6 +23,9 @@ def install(ctx):
         pkg(manager="apk", name="python3")
         pkg(manager="apk", name="make")
         pkg(manager="apk", name="g++")
+        # mise compiles node from source on Alpine; linux-headers provides
+        # linux/mman.h required by OpenSSL during the build.
+        pkg(manager="apk", name="linux-headers")
     pkg(manager="mise", name="node", version="lts")
 
 def _activate_shims(ctx):

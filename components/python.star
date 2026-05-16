@@ -18,6 +18,15 @@ after = ["mise"]
 pm_name = "python"
 
 def install(ctx):
+    # On Alpine (musl), mise compiles python from source — needs build tools
+    # and linux-headers (for linux/mman.h required by OpenSSL).
+    p = platform()
+    if p.os == "linux" and (p.distro == "alpine" or p.distro_like == "alpine"):
+        pkg(manager="apk", name="build-base")
+        pkg(manager="apk", name="linux-headers")
+        pkg(manager="apk", name="zlib-dev")
+        pkg(manager="apk", name="openssl-dev")
+        pkg(manager="apk", name="libffi-dev")
     pkg(manager="mise", name="python", version="latest")
     # mise's pipx backend requires pipx to be installed first.
     # Installing via mise ensures it is available on all platforms.

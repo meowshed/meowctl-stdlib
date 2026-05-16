@@ -36,6 +36,7 @@ def install(ctx):
             pkg(manager="apk", name="build-base")
             pkg(manager="apk", name="curl")
             pkg(manager="apk", name="unzip")
+            pkg(manager="apk", name="linux-headers")
     pkg(manager="mise", name="lua", version="5.4")
     # The vfox-lua plugin installs luarocks alongside lua. Use mise where to
     # locate the install directory and add luarocks/bin to PATH.
