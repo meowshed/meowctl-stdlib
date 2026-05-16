@@ -44,7 +44,9 @@ jobs:
         run: CGO_ENABLED=0 go build -o meowctl ./cmd/meowctl
 
       - name: Check all components
-        run: meowctl/meowctl component check stdlib/components
+        run: |
+          meowctl/meowctl component check stdlib/components
+          meowctl/meowctl component check stdlib/bundles
 
   pm-contract:
     name: Check / PM contracts
