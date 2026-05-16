@@ -38,7 +38,7 @@ jobs:
         run: meowctl/meowctl component check stdlib/components
 
   pm-contract:
-    name: PM contract tests
+    name: Package manager contract tests
     runs-on: ubuntu-latest
     steps:
       - name: Checkout meowctl-stdlib
