@@ -11,6 +11,10 @@ after = [
     # shell + prompt
     "@stdlib//components/zsh",
     "@stdlib//components/fish",
+    "@stdlib//components/fish_bass",
+    "@stdlib//components/fish_fzf",
+    "@stdlib//components/fish_autopair",
+    "@stdlib//components/fish_sponge",
     "@stdlib//components/starship",
     "@stdlib//components/zoxide",
     # fuzzy / search
