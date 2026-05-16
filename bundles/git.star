@@ -1,4 +1,4 @@
-# bundles/git-tools.star
+# bundles/git.star
 #
 # platform: all
 # after:    (see below)
@@ -10,7 +10,6 @@ after = [
     "@stdlib//components/gh",
     "@stdlib//components/git_lfs",
     "@stdlib//components/lazygit",
-    "@stdlib//components/gitui",
     "@stdlib//components/tig",
     "@stdlib//components/delta",
     "@stdlib//components/forgit",

@@ -12,4 +12,4 @@ def install(ctx):
     pkg(manager = "fisher", name = "patrickf1/fzf.fish")
 
 def verify(ctx):
-    ctx.run("fish", ["-c", "fisher list | grep fzf.fish"])
+    ctx.run("fish", ["-c", "fisher list | grep -F fzf.fish"])

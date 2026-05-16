@@ -8,3 +8,10 @@ run = "buildifier --type=bzl components/*.star bundles/*.star tests/fixtures/com
 [tasks.lint]
 description = "Check .star file formatting with buildifier (no writes)"
 run = "buildifier --mode=check --type=bzl components/*.star bundles/*.star tests/fixtures/components/*.star tests/fixtures/*.star"
+
+[tasks.check]
+description = "Validate all component and bundle .star files with meowctl"
+run = """
+meowctl component check components
+meowctl component check bundles
+"""

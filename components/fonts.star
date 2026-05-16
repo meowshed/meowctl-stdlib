@@ -13,4 +13,4 @@ def install(ctx):
     pkg(manager = "brew", name = "font-hack-nerd-font")
 
 def verify(ctx):
-    ctx.run("fc-list", ["| grep", "Hack"])
+    ctx.run("brew", ["list", "font-hack-nerd-font"])

@@ -1,9 +1,9 @@
-# bundles/shell-essentials.star
+# bundles/modern-shell.star
 #
 # platform: all
 # after:    (see below)
 #
-# Core modern shell environment.
+# Modern shell environment.
 # Installs a curated set of CLI tools that replace or enhance standard
 # Unix utilities with faster, friendlier, and more featureful alternatives.
 
@@ -24,7 +24,6 @@ after = [
     # file viewing
     "@stdlib//components/bat",
     "@stdlib//components/eza",
-    "@stdlib//components/delta",
     "@stdlib//components/glow",
     # disk utils
     "@stdlib//components/dust",
@@ -40,6 +39,6 @@ after = [
     "@stdlib//components/tealdeer",
     # multiplexer
     "@stdlib//components/zellij",
-    # git
-    "@stdlib//bundles/git-tools",
+    # git tooling
+    "@stdlib//bundles/git",
 ]

@@ -19,4 +19,4 @@ def install(ctx):
 
 def verify(ctx):
     _activate_shims(ctx)
-    ctx.run("batgrep", ["--version"])
+    ctx.run("batgrep", ["--help"])
