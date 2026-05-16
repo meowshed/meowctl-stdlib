@@ -1,4 +1,4 @@
-# bundles/macos-base.star
+# bundles/modern-macos.star
 #
 # platform: ["macos"]
 # after:    (see below)
