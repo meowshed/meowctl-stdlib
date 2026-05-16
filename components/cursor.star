@@ -1,16 +1,30 @@
 # components/cursor.star
 #
-# platforms: ["macos"]
-# after:     ["@stdlib//components/brew"]
+# platform: all
+# after:     ["@stdlib//components/brew", "@stdlib//components/flatpak"]
 #
 # Cursor AI code editor.
-# Installed via Homebrew cask.
+# macOS: Homebrew cask. Linux: official AppImage via Flatpak or direct download.
 
-platforms = ["macos"]
-after = ["@stdlib//components/brew"]
+after = ["@stdlib//components/brew", "@stdlib//components/flatpak"]
 
 def install(ctx):
-    pkg(manager = "brew", name = "cursor", cask = True)
+    p = platform()
+    if p.os == "macos":
+        pkg(manager = "brew", name = "cursor", cask = True)
+    elif p.os == "linux":
+        if p.distro_like == "debian":
+            pkg(manager = "flatpak", name = "com.cursor.Cursor")
+        elif p.distro_like == "fedora":
+            pkg(manager = "flatpak", name = "com.cursor.Cursor")
+        elif p.distro_like == "arch":
+            pkg(manager = "pacman", name = "cursor-bin")
+        else:
+            pkg(manager = "flatpak", name = "com.cursor.Cursor")
 
 def verify(ctx):
-    ctx.run("open", ["-a", "Cursor"])
+    p = platform()
+    if p.os == "macos":
+        ctx.run("open", ["-a", "Cursor"])
+    else:
+        ctx.run("cursor", ["--version"])

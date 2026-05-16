@@ -1,16 +1,23 @@
 # components/postman.star
 #
-# platforms: ["macos"]
-# after:     ["@stdlib//components/brew"]
+# platform: all
+# after:     ["@stdlib//components/brew", "@stdlib//components/flatpak"]
 #
 # Postman API client.
-# Installed via Homebrew cask.
+# macOS: Homebrew cask. Linux: Flatpak.
 
-platforms = ["macos"]
-after = ["@stdlib//components/brew"]
+after = ["@stdlib//components/brew", "@stdlib//components/flatpak"]
 
 def install(ctx):
-    pkg(manager = "brew", name = "postman", cask = True)
+    p = platform()
+    if p.os == "macos":
+        pkg(manager = "brew", name = "postman", cask = True)
+    elif p.os == "linux":
+        pkg(manager = "flatpak", name = "com.getpostman.Postman")
 
 def verify(ctx):
-    ctx.run("open", ["-a", "Postman"])
+    p = platform()
+    if p.os == "macos":
+        ctx.run("open", ["-a", "Postman"])
+    else:
+        ctx.run("flatpak", ["run", "com.getpostman.Postman", "--version"])

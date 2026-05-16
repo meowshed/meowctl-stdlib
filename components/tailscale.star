@@ -1,16 +1,19 @@
 # components/tailscale.star
 #
-# platforms: ["macos"]
+# platform: all
 # after:     ["@stdlib//components/brew"]
 #
 # Tailscale VPN client.
-# Installed via Homebrew cask.
+# macOS: Homebrew cask. Linux: official install script (all distros).
 
-platforms = ["macos"]
 after = ["@stdlib//components/brew"]
 
 def install(ctx):
-    pkg(manager = "brew", name = "tailscale", cask = True)
+    p = platform()
+    if p.os == "macos":
+        pkg(manager = "brew", name = "tailscale", cask = True)
+    elif p.os == "linux":
+        ctx.run("bash", ["-c", "curl -fsSL https://tailscale.com/install.sh | sh"])
 
 def verify(ctx):
-    ctx.run("open", ["-a", "Tailscale"])
+    ctx.run("tailscale", ["version"])

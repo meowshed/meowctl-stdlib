@@ -1,16 +1,30 @@
 # components/discord.star
 #
-# platforms: ["macos"]
-# after:     ["@stdlib//components/brew"]
+# platform: all
+# after:     ["@stdlib//components/brew", "@stdlib//components/flatpak"]
 #
 # Discord voice and text chat.
-# Installed via Homebrew cask.
+# macOS: Homebrew cask. Linux: official .deb or Flatpak.
 
-platforms = ["macos"]
-after = ["@stdlib//components/brew"]
+after = ["@stdlib//components/brew", "@stdlib//components/flatpak"]
 
 def install(ctx):
-    pkg(manager = "brew", name = "discord", cask = True)
+    p = platform()
+    if p.os == "macos":
+        pkg(manager = "brew", name = "discord", cask = True)
+    elif p.os == "linux":
+        if p.distro_like == "debian":
+            ctx.run("bash", ["-c", "wget -qO /tmp/discord.deb 'https://discord.com/api/download?platform=linux&format=deb' && apt-get install -y /tmp/discord.deb"])
+        elif p.distro_like == "fedora":
+            ctx.run("bash", ["-c", "wget -qO /tmp/discord.rpm 'https://discord.com/api/download?platform=linux&format=rpm' && dnf install -y /tmp/discord.rpm"])
+        elif p.distro_like == "arch":
+            pkg(manager = "pacman", name = "discord")
+        else:
+            pkg(manager = "flatpak", name = "com.discordapp.Discord")
 
 def verify(ctx):
-    ctx.run("open", ["-a", "Discord"])
+    p = platform()
+    if p.os == "macos":
+        ctx.run("open", ["-a", "Discord"])
+    else:
+        ctx.run("discord", ["--version"])

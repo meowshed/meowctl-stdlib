@@ -1,16 +1,34 @@
 # components/brave.star
 #
-# platforms: ["macos"]
-# after:     ["@stdlib//components/brew"]
+# platform: all
+# after:     ["@stdlib//components/brew", "@stdlib//components/flatpak"]
 #
 # Brave browser.
-# Installed via Homebrew cask.
+# macOS: Homebrew cask. Linux: official Brave apt/dnf/pacman repo or Flatpak.
 
-platforms = ["macos"]
-after = ["@stdlib//components/brew"]
+after = ["@stdlib//components/brew", "@stdlib//components/flatpak"]
 
 def install(ctx):
-    pkg(manager = "brew", name = "brave-browser", cask = True)
+    p = platform()
+    if p.os == "macos":
+        pkg(manager = "brew", name = "brave-browser", cask = True)
+    elif p.os == "linux":
+        if p.distro_like == "debian":
+            ctx.run("bash", ["-c", "curl -fsSLo /usr/share/keyrings/brave-browser-archive-keyring.gpg https://brave-browser-apt-release.s3.brave.com/brave-browser-archive-keyring.gpg"])
+            ctx.run("bash", ["-c", "echo 'deb [signed-by=/usr/share/keyrings/brave-browser-archive-keyring.gpg] https://brave-browser-apt-release.s3.brave.com/ stable main' > /etc/apt/sources.list.d/brave-browser-release.list"])
+            ctx.run("apt-get", ["update"])
+            pkg(manager = "apt", name = "brave-browser")
+        elif p.distro_like == "fedora":
+            ctx.run("bash", ["-c", "dnf config-manager --add-repo https://brave-browser-rpm-release.s3.brave.com/brave-browser.repo"])
+            pkg(manager = "dnf", name = "brave-browser")
+        elif p.distro_like == "arch":
+            pkg(manager = "pacman", name = "brave-bin")
+        else:
+            pkg(manager = "flatpak", name = "com.brave.Browser")
 
 def verify(ctx):
-    ctx.run("open", ["-a", "Brave Browser"])
+    p = platform()
+    if p.os == "macos":
+        ctx.run("open", ["-a", "Brave Browser"])
+    else:
+        ctx.run("brave-browser", ["--version"])
