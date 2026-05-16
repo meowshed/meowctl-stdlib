@@ -30,7 +30,7 @@
 # interrogate: `fish -c "fisher list"` → one plugin slug per line.
 
 pm_name = "fisher"
-after = ["brew", "apt", "dnf", "pacman", "apk"]
+after = ["@stdlib//components/brew", "@stdlib//components/apt", "@stdlib//components/dnf", "@stdlib//components/pacman", "@stdlib//components/apk"]
 
 def _fish_bin(ctx):
     p = platform()

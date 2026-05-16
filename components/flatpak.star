@@ -18,7 +18,7 @@
 #              one application ID per line (skip header).
 
 pm_name = "flatpak"
-after = ["apt", "dnf", "pacman"]
+after = ["@stdlib//components/apt", "@stdlib//components/dnf", "@stdlib//components/pacman"]
 
 def _ensure_flathub(ctx, system):
     scope_args = [] if system else ["--user"]

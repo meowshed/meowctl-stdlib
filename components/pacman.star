@@ -1,8 +1,8 @@
 # components/pacman.star
 #
 # pm_name:  pacman
-# platform: ["linux"]
-# distro:   arch
+# platforms: ["linux"]
+# distros:   ["arch"]
 # after:    —
 #
 # PM kwargs: none
@@ -16,6 +16,7 @@
 # interrogate: `pacman -Qq` → list of installed package names.
 
 platforms = ["linux"]
+distros = ["arch"]
 pm_name = "pacman"
 
 def install(ctx):
@@ -24,6 +25,10 @@ def install(ctx):
 
 def verify(ctx):
     ctx.run("pacman", ["--version"])
+
+def add_repo(ctx, **kwargs):
+    # pacman uses /etc/pacman.conf for repos; no generic add_repo supported.
+    pass
 
 def install_pkg(ctx, name, version, **kwargs):
     if version:

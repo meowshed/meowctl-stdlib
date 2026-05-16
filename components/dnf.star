@@ -1,8 +1,8 @@
 # components/dnf.star
 #
 # pm_name:  dnf
-# platform: ["linux"]
-# distro:   fedora, rhel, and fedora-like
+# platforms: ["linux"]
+# distros:   ["fedora", "rhel"]
 # after:    —
 #
 # PM kwargs: none
@@ -17,8 +17,13 @@
 # interrogate: `dnf --quiet repoquery --installed --qf '%{name}'` → list of
 #              installed package names. (--quiet placed before subcommand to
 #              avoid dnf5 stdout contamination on some Fedora 41 builds.)
+#
+# add_repo kwargs:
+#   copr=  COPR repo slug in "owner/repo" format (e.g. "jdxcode/mise").
+#          Requires dnf-plugins-core to be installed first.
 
 platforms = ["linux"]
+distros = ["fedora", "rhel"]
 pm_name = "dnf"
 
 def install(ctx):
@@ -27,6 +32,12 @@ def install(ctx):
 
 def verify(ctx):
     ctx.run("dnf", ["--version"])
+
+def add_repo(ctx, **kwargs):
+    copr = kwargs.get("copr", "")
+    if copr:
+        ctx.run("sudo", ["dnf", "install", "-y", "dnf-plugins-core"])
+        ctx.run("sudo", ["dnf", "copr", "enable", "-y", copr])
 
 def install_pkg(ctx, name, version, **kwargs):
     if version:

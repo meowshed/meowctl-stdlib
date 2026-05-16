@@ -6,33 +6,58 @@
 #
 # PM kwargs: none
 #
-# npm packages are always installed globally (-g).
-# interrogate: `npm list -g --depth=0 --parseable` → one path per line;
-#              strip the `<prefix>/node_modules/` prefix to get the package name.
-# Scoped packages (@scope/name) are returned verbatim including the leading @.
+# npm packages are installed globally via `mise use --global npm:<name>`.
+# This delegates installation and PATH management entirely to mise, so all
+# binaries appear in ~/.local/share/mise/shims automatically.
+#
+# interrogate: `mise ls --installed --json` → filter keys with "npm:" prefix;
+#              strip the prefix to return bare package names.
 
-after = ["mise"]
+after = ["@stdlib//components/mise"]
 pm_name = "npm"
 
 def install(ctx):
-    pkg(manager="mise", name="node", version="lts")
+    # On Alpine (musl), mise has no prebuilt node binary and compiles from
+    # source (20+ minutes). Use the Alpine system package instead — mise can
+    # still manage npm: backend packages on top of the system node.
+    p = platform()
+    if p.os == "linux" and (p.distro == "alpine" or p.distro_like == "alpine"):
+        pkg(manager="apk", name="nodejs")
+        pkg(manager="apk", name="npm")
+    else:
+        pkg(manager="mise", name="node", version="lts")
+
+def _activate_shims(ctx):
+    home = ctx.env("HOME")
+    if home:
+        ctx.add_path(home + "/.local/share/mise/shims")
 
 def verify(ctx):
+    _activate_shims(ctx)
     ctx.run("node", ["--version"])
 
 def install_pkg(ctx, name, version, **kwargs):
+    _activate_shims(ctx)
     if version:
-        ctx.run("npm", ["install", "-g", "%s@%s" % (name, version)])
+        spec = "npm:%s@%s" % (name, version)
     else:
-        ctx.run("npm", ["install", "-g", name])
+        spec = "npm:%s" % name
+    ctx.run("mise", ["use", "--global", spec])
 
 def uninstall_pkg(ctx, name, version, **kwargs):
-    ctx.run("npm", ["uninstall", "-g", name])
+    _activate_shims(ctx)
+    ctx.run("mise", ["use", "--global", "--remove", "npm:%s" % name])
+    if version:
+        ctx.run("mise", ["uninstall", "npm:%s@%s" % (name, version)])
+    else:
+        ctx.run("mise", ["uninstall", "npm:%s" % name])
 
 def interrogate(ctx):
-    result = ctx.run("npm", ["list", "-g", "--depth=0", "--parseable"])
+    _activate_shims(ctx)
+    result = ctx.run("mise", ["ls", "--installed", "--json"])
+    installed = json.decode(result.stdout)
     names = []
-    for line in result.stdout.splitlines():
-        if "node_modules/" in line:
-            names.append(line.split("node_modules/")[-1])
+    for key in installed.keys():
+        if key.startswith("npm:"):
+            names.append(key[4:])
     return names

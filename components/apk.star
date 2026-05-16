@@ -1,8 +1,8 @@
 # components/apk.star
 #
 # pm_name:  apk
-# platform: ["linux"]
-# distro:   alpine
+# platforms: ["linux"]
+# distros:   ["alpine"]
 # after:    —
 #
 # PM kwargs: none
@@ -18,6 +18,7 @@
 #              extracts the package name by stripping the trailing version suffix.
 
 platforms = ["linux"]
+distros = ["alpine"]
 pm_name = "apk"
 
 def install(ctx):
@@ -26,6 +27,10 @@ def install(ctx):
 
 def verify(ctx):
     ctx.run("apk", ["--version"])
+
+def add_repo(ctx, **kwargs):
+    # apk uses /etc/apk/repositories for repos; no generic add_repo supported.
+    pass
 
 def install_pkg(ctx, name, version, **kwargs):
     ctx.run("apk", ["add", name])

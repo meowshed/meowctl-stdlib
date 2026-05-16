@@ -8,15 +8,15 @@
 #
 # Installs mise via the native package manager for the current platform.
 # On macOS: brew only (brew is the canonical macOS package manager for mise).
-# On Linux: distro-native PM; falls back to the official curl installer for
-# unrecognised distros.
+# On Linux: distro-native PM with repo setup where required; falls back to
+# the official curl installer for unrecognised distros.
 #
-# Version format: <name>@<version> passed verbatim to `mise install`.
+# Version format: <name>@<version> passed verbatim to `mise use --global`.
 # interrogate: `mise ls --installed --json` → JSON object; keys are tool names.
 # Each key is accepted verbatim by install_pkg as the `name` argument.
 
 pm_name = "mise"
-after = ["brew", "apt", "dnf", "pacman", "apk"]
+after = ["@stdlib//components/brew", "@stdlib//components/apt", "@stdlib//components/dnf", "@stdlib//components/pacman", "@stdlib//components/apk"]
 
 def _curl_install(ctx):
     # Official curl installer. Guarded by ctx.which for idempotency.
@@ -25,15 +25,33 @@ def _curl_install(ctx):
         ctx.run("sh", ["/tmp/mise-install.sh"])
         ctx.delete_file("/tmp/mise-install.sh")
 
+def _activate_shims(ctx):
+    # Add the mise shims directory to PATH so that all mise-managed tools
+    # are findable in subsequent ctx.run calls. Shims are symlinks to the
+    # mise binary that resolve the correct tool version dynamically, and
+    # are the recommended approach for non-interactive CI environments.
+    # See: https://mise.jdx.dev/dev-tools/shims.html
+    home = ctx.env("HOME")
+    if home:
+        ctx.add_path(home + "/.local/share/mise/shims")
+
 def install(ctx):
     p = platform()
     if p.os == "macos":
         pkg(manager="brew", name="mise")
     elif p.os == "linux":
         if p.distro == "ubuntu" or p.distro == "debian" or p.distro_like == "debian":
-            pkg(manager="apt", name="mise")
+            if not ctx.which("mise"):
+                repo(
+                    manager="apt",
+                    key_url="https://mise.jdx.dev/gpg-key.pub",
+                    repo_line="deb [signed-by=/etc/apt/keyrings/gpg-key.asc] https://mise.jdx.dev/deb stable main",
+                )
+                pkg(manager="apt", name="mise")
         elif p.distro == "fedora" or p.distro == "rhel" or p.distro_like == "fedora" or p.distro_like == "rhel":
-            pkg(manager="dnf", name="mise")
+            if not ctx.which("mise"):
+                repo(manager="dnf", copr="jdxcode/mise")
+                pkg(manager="dnf", name="mise")
         elif p.distro == "arch":
             pkg(manager="pacman", name="mise")
         elif p.distro == "alpine":
@@ -42,9 +60,11 @@ def install(ctx):
             _curl_install(ctx)
     else:
         _curl_install(ctx)
+    _activate_shims(ctx)
 
 def verify(ctx):
     ctx.run("mise", ["--version"])
+    _activate_shims(ctx)
 
 def shell(ctx):
     ctx.emit("eval \"$(mise activate %s)\"" % ctx.shell)
@@ -56,16 +76,24 @@ def install_pkg(ctx, name, version, **kwargs):
         spec = "%s@%s" % (name, version)
     else:
         spec = name
-    ctx.run("mise", ["install", spec])
+    # `mise use --global` installs the tool and registers it in
+    # ~/.config/mise/config.toml, activating it for all future shells.
+    # This is the correct model for a user-environment setup tool.
+    ctx.run("mise", ["use", "--global", spec])
+    # Re-activate shims so the new tool is findable in the current process.
+    _activate_shims(ctx)
 
 def uninstall_pkg(ctx, name, version, **kwargs):
     if version:
         spec = "%s@%s" % (name, version)
     else:
         spec = name
+    # Remove from global config first, then uninstall the binary.
+    ctx.run("mise", ["use", "--global", "--remove", name])
     ctx.run("mise", ["uninstall", spec])
 
 def interrogate(ctx):
+    _activate_shims(ctx)
     result = ctx.run("mise", ["ls", "--installed", "--json"])
     installed = json.decode(result.stdout)
     return list(installed.keys())

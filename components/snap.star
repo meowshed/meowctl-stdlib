@@ -16,7 +16,7 @@
 # Returns snap names (first field of each data line).
 
 pm_name = "snap"
-after = ["apt", "dnf"]
+after = ["@stdlib//components/apt", "@stdlib//components/dnf"]
 
 def install(ctx):
     p = platform()

@@ -4,43 +4,85 @@
 # platform: all
 # after:    ["mise"]
 #
-# PM kwargs: none
+# On Alpine, uses system packages (lua5.4 + luarocks5.4) to avoid source
+# compilation. The system binary is luarocks-5.4; _luarocks_cmd() returns
+# the correct name for the current platform.
 #
-# Installs luarocks via mise (mise install luarocks), which also brings a
-# managed Lua runtime. This avoids relying on distro-packaged luarocks versions
-# which are often outdated.
+# On all other platforms, installs lua + luarocks via mise's vfox-lua plugin,
+# which compiles lua from source and bundles luarocks alongside it. The
+# install dir is located via `mise where lua` and added to PATH.
 #
 # install_pkg / uninstall_pkg delegate to `luarocks install` / `luarocks remove`.
-# Rocks are installed into the user tree so they are available on the default
-# LUA_PATH without requiring root.
-#
-# Version format: passed verbatim as the second positional arg to luarocks.
-# interrogate: `luarocks list --porcelain` → lines of "<name> <version> ...";
-#              returns unique rock names (first field of each line).
+# interrogate: `luarocks list --porcelain` → unique rock names (first field).
 
 pm_name = "luarocks"
-after = ["mise"]
+after = ["@stdlib//components/mise"]
+
+def _is_alpine():
+    p = platform()
+    return p.os == "linux" and (p.distro == "alpine" or p.distro_like == "alpine")
+
+def _luarocks_cmd():
+    if _is_alpine():
+        return "luarocks-5.4"
+    return "luarocks"
 
 def install(ctx):
-    pkg(manager="mise", name="luarocks")
+    p = platform()
+    if p.os == "linux":
+        if _is_alpine():
+            # Use system packages — no source compilation.
+            pkg(manager="apk", name="lua5.4")
+            pkg(manager="apk", name="lua5.4-dev")
+            pkg(manager="apk", name="luarocks5.4")
+            return
+        elif p.distro == "arch" or p.distro_like == "arch":
+            # vfox-lua requires unzip to install LuaRocks alongside Lua.
+            pkg(manager="pacman", name="base-devel")
+            pkg(manager="pacman", name="unzip")
+    # mise's vfox-lua plugin compiles Lua and bundles luarocks.
+    pkg(manager="mise", name="lua", version="5.4")
+    # Locate the install dir and add luarocks/bin to PATH.
+    result = ctx.run("mise", ["where", "lua"])
+    lua_dir = result.stdout.strip()
+    if lua_dir:
+        ctx.add_path(lua_dir + "/luarocks/bin")
+
+def _activate_luarocks(ctx):
+    if _is_alpine():
+        return  # system luarocks-5.4 is already on PATH
+    _activate_shims(ctx)
+    result = ctx.run("mise", ["where", "lua"])
+    lua_dir = result.stdout.strip()
+    if lua_dir:
+        ctx.add_path(lua_dir + "/luarocks/bin")
+
+def _activate_shims(ctx):
+    home = ctx.env("HOME")
+    if home:
+        ctx.add_path(home + "/.local/share/mise/shims")
 
 def verify(ctx):
-    ctx.run("luarocks", ["--version"])
+    _activate_luarocks(ctx)
+    ctx.run(_luarocks_cmd(), ["--version"])
 
 def install_pkg(ctx, name, version, **kwargs):
-    if version:
-        ctx.run("luarocks", ["install", name, version])
+    _activate_luarocks(ctx)
+    if version and version != "latest":
+        ctx.run(_luarocks_cmd(), ["install", name, version])
     else:
-        ctx.run("luarocks", ["install", name])
+        ctx.run(_luarocks_cmd(), ["install", name])
 
 def uninstall_pkg(ctx, name, version, **kwargs):
+    _activate_luarocks(ctx)
     if version:
-        ctx.run("luarocks", ["remove", name, version])
+        ctx.run(_luarocks_cmd(), ["remove", name, version])
     else:
-        ctx.run("luarocks", ["remove", name])
+        ctx.run(_luarocks_cmd(), ["remove", name])
 
 def interrogate(ctx):
-    result = ctx.run("luarocks", ["list", "--porcelain"])
+    _activate_luarocks(ctx)
+    result = ctx.run(_luarocks_cmd(), ["list", "--porcelain"])
     seen = {}
     names = []
     for line in result.stdout.splitlines():
