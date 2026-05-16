@@ -8,13 +8,30 @@
 #
 # Requires the ruby mise tool to be installed first (system ruby on macOS is
 # sandboxed; system gem cannot install into writable locations).
+#
+# On Alpine Linux, precompiled Ruby binaries (glibc) don't work with musl libc.
+# We install ruby from apk instead. On all other platforms we use mise with
+# precompiled binaries (MISE_RUBY_COMPILE=false) to avoid build-dep requirements.
+#
 # interrogate: `gem list --local --no-versions` → one gem name per line.
 
 after = ["mise"]
 pm_name = "gem"
 
 def install(ctx):
-    pkg(manager="mise", name="ruby", version="latest")
+    p = platform()
+    if p.os == "linux" and p.distro == "alpine":
+        # Alpine uses musl libc; mise precompiled ruby (glibc) won't run.
+        # Compile-from-source requires many build deps not present in CI.
+        # Use apk ruby instead.
+        pkg(manager="apk", name="ruby")
+        pkg(manager="apk", name="ruby-dev")
+    else:
+        # Use precompiled binaries to avoid ruby-build compile failures.
+        # mise settings ruby.compile=false: try precompiled first, fall back to
+        # source only if no precompiled binary is available for the platform.
+        ctx.run("mise", ["settings", "ruby.compile", "false"])
+        pkg(manager="mise", name="ruby", version="latest")
 
 def verify(ctx):
     ctx.run("ruby", ["--version"])

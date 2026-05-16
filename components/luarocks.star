@@ -6,9 +6,10 @@
 #
 # PM kwargs: none
 #
-# Installs luarocks via mise (mise install luarocks), which also brings a
-# managed Lua runtime. This avoids relying on distro-packaged luarocks versions
-# which are often outdated.
+# Installs luarocks via mise's lua plugin (vfox:mise-plugins/vfox-lua), which
+# compiles Lua from source and automatically installs LuaRocks alongside it.
+# luarocks is not a separate entry in the mise registry — it ships bundled
+# with the lua vfox plugin's PostInstall hook.
 #
 # install_pkg / uninstall_pkg delegate to `luarocks install` / `luarocks remove`.
 # Rocks are installed into the user tree so they are available on the default
@@ -22,12 +23,17 @@ pm_name = "luarocks"
 after = ["mise"]
 
 def install(ctx):
-    pkg(manager="mise", name="luarocks")
-    # luarocks installs rock executables into ~/.luarocks/bin; add to PATH.
-    result = ctx.run("luarocks", ["config", "home_tree"])
-    home_tree = result.stdout.strip()
-    if home_tree:
-        ctx.add_path(home_tree + "/bin")
+    # mise's lua plugin (vfox-lua) compiles Lua from source and installs
+    # LuaRocks into <lua-install-dir>/luarocks/bin alongside it.
+    pkg(manager="mise", name="lua", version="latest")
+    # The vfox-lua plugin adds <install-dir>/luarocks/bin to PATH via EnvKeys,
+    # but that only takes effect after mise activation. Re-activate shims to
+    # pick up the new paths, then add luarocks bin explicitly via its config.
+    if ctx.which("luarocks"):
+        result = ctx.run("luarocks", ["config", "home_tree"])
+        home_tree = result.stdout.strip()
+        if home_tree:
+            ctx.add_path(home_tree + "/bin")
 
 def verify(ctx):
     ctx.run("luarocks", ["--version"])
