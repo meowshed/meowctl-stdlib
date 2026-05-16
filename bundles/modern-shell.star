@@ -17,6 +17,11 @@ after = [
     "@stdlib//components/fish_sponge",
     "@stdlib//components/starship",
     "@stdlib//components/zoxide",
+    "@stdlib//components/atuin",
+    # network / connectivity
+    "@stdlib//components/openssh",
+    "@stdlib//components/curl",
+    "@stdlib//components/wget",
     # fuzzy / search
     "@stdlib//components/fzf",
     "@stdlib//components/ripgrep",
@@ -33,12 +38,16 @@ after = [
     # data
     "@stdlib//components/jq",
     "@stdlib//components/yq",
-    # scripting
+    "@stdlib//components/dasel",
+    "@stdlib//components/miller",
+    # text processing
+    "@stdlib//components/sd",
+    # scripting / automation
     "@stdlib//components/gum",
     "@stdlib//components/direnv",
     "@stdlib//components/tealdeer",
+    "@stdlib//components/navi",
+    "@stdlib//components/watchexec",
     # multiplexer
     "@stdlib//components/zellij",
-    # git tooling
-    "@stdlib//bundles/git",
 ]

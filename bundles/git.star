@@ -7,8 +7,6 @@
 # Installs a curated set of git-related CLI tools beyond the base git install.
 
 after = [
-    "@stdlib//components/gh",
-    "@stdlib//components/git_lfs",
     "@stdlib//components/lazygit",
     "@stdlib//components/tig",
     "@stdlib//components/delta",
