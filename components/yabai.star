@@ -10,7 +10,7 @@ platforms = ["macos"]
 after = ["@stdlib//components/brew"]
 
 def install(ctx):
-    pkg(manager="brew", name="yabai")
+    pkg(manager = "brew", name = "yabai")
 
 def verify(ctx):
     ctx.run("yabai", ["--version"])

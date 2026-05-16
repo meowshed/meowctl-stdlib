@@ -10,7 +10,7 @@ platforms = ["macos"]
 after = ["@stdlib//components/brew"]
 
 def install(ctx):
-    pkg(manager="brew", name="alfred", cask=True)
+    pkg(manager = "brew", name = "alfred", cask = True)
 
 def verify(ctx):
     ctx.run("open", ["-a", "Alfred"])

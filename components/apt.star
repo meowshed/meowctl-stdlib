@@ -43,6 +43,7 @@ def add_repo(ctx, **kwargs):
         # Derive keyring filename from the last URL segment, force .asc extension.
         parts = key_url.split("/")
         key_file = parts[-1] if parts[-1] else "repo-key.asc"
+
         # Strip any existing extension and append .asc
         dot = key_file.rfind(".")
         if dot != -1:
@@ -63,6 +64,7 @@ def add_repo(ctx, **kwargs):
             if token.startswith("https://") or token.startswith("http://"):
                 # Strip scheme and use host as filename base
                 host = token.split("//", 1)[1].split("/")[0]
+
                 # Replace dots with dashes for a safe filename
                 list_name = host.replace(".", "-")
                 break

@@ -9,16 +9,16 @@
 def install(ctx):
     p = platform()
     if p.os == "macos":
-        pkg(manager="brew", name="zsh")
+        pkg(manager = "brew", name = "zsh")
     elif p.os == "linux":
         if p.distro == "ubuntu" or p.distro == "debian" or p.distro_like == "debian":
-            pkg(manager="apt", name="zsh")
+            pkg(manager = "apt", name = "zsh")
         elif p.distro == "fedora" or p.distro == "rhel" or p.distro_like == "fedora" or p.distro_like == "rhel":
-            pkg(manager="dnf", name="zsh")
+            pkg(manager = "dnf", name = "zsh")
         elif p.distro == "arch" or p.distro_like == "arch":
-            pkg(manager="pacman", name="zsh")
+            pkg(manager = "pacman", name = "zsh")
         elif p.distro == "alpine" or p.distro_like == "alpine":
-            pkg(manager="apk", name="zsh")
+            pkg(manager = "apk", name = "zsh")
         else:
             ctx.log("zsh: unsupported distro %r — install manually then re-run" % p.distro)
 

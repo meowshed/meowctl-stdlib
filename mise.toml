@@ -1,0 +1,10 @@
+[tools]
+buildifier = "latest"
+
+[tasks.fmt]
+description = "Format all .star files with buildifier"
+run = "buildifier --type=bzl components/*.star tests/fixtures/components/*.star tests/fixtures/*.star"
+
+[tasks.lint]
+description = "Check .star file formatting with buildifier (no writes)"
+run = "buildifier --mode=check --type=bzl components/*.star tests/fixtures/components/*.star tests/fixtures/*.star"

@@ -51,18 +51,18 @@ def _install_fisher(ctx):
 def install(ctx):
     p = platform()
     if p.os == "macos":
-        pkg(manager="brew", name="fish")
+        pkg(manager = "brew", name = "fish")
     elif p.os == "linux":
         if p.distro == "ubuntu" or p.distro == "debian" or p.distro_like == "debian":
-            pkg(manager="apt", name="fish")
+            pkg(manager = "apt", name = "fish")
         elif p.distro == "fedora" or p.distro == "rhel" or p.distro_like == "fedora" or p.distro_like == "rhel":
-            pkg(manager="dnf", name="fish")
+            pkg(manager = "dnf", name = "fish")
         elif p.distro == "arch" or p.distro_like == "arch":
-            pkg(manager="pacman", name="fish")
+            pkg(manager = "pacman", name = "fish")
         elif p.distro == "alpine" or p.distro_like == "alpine":
             # shadow provides chsh, which is not installed by default on Alpine.
-            pkg(manager="apk", name="fish")
-            pkg(manager="apk", name="shadow")
+            pkg(manager = "apk", name = "fish")
+            pkg(manager = "apk", name = "shadow")
         else:
             ctx.log("fish: unsupported distro %r — install fish manually then re-run" % p.distro)
             return

@@ -9,16 +9,16 @@
 def install(ctx):
     p = platform()
     if p.os == "macos":
-        pkg(manager="brew", name="ffmpeg")
+        pkg(manager = "brew", name = "ffmpeg")
     elif p.os == "linux":
         if p.distro == "ubuntu" or p.distro == "debian" or p.distro_like == "debian":
-            pkg(manager="apt", name="ffmpeg")
+            pkg(manager = "apt", name = "ffmpeg")
         elif p.distro == "fedora" or p.distro == "rhel" or p.distro_like == "fedora" or p.distro_like == "rhel":
-            pkg(manager="dnf", name="ffmpeg")
+            pkg(manager = "dnf", name = "ffmpeg")
         elif p.distro == "arch" or p.distro_like == "arch":
-            pkg(manager="pacman", name="ffmpeg")
+            pkg(manager = "pacman", name = "ffmpeg")
         elif p.distro == "alpine" or p.distro_like == "alpine":
-            pkg(manager="apk", name="ffmpeg")
+            pkg(manager = "apk", name = "ffmpeg")
         else:
             ctx.log("ffmpeg: unsupported distro %r — install manually then re-run" % p.distro)
 

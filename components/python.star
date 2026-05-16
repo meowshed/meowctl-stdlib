@@ -44,12 +44,14 @@ def install(ctx):
     # backend packages on top of the system python.
     p = platform()
     if _is_alpine(p):
-        pkg(manager="apk", name="python3")
-        pkg(manager="apk", name="py3-pip")
+        pkg(manager = "apk", name = "python3")
+        pkg(manager = "apk", name = "py3-pip")
+
         # On Alpine there is no mise-managed python; install pipx via pip3.
         ctx.run("pip3", ["install", "--break-system-packages", "pipx"])
     else:
-        pkg(manager="mise", name="python", version="latest")
+        pkg(manager = "mise", name = "python", version = "latest")
+
         # mise's pipx backend requires pipx to be installed first.
         _activate_shims(ctx)
         ctx.run("mise", ["use", "--global", "pipx@latest"])

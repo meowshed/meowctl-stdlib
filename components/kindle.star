@@ -10,7 +10,7 @@ platforms = ["macos"]
 after = ["@stdlib//components/mas"]
 
 def install(ctx):
-    pkg(manager="mas", name="Kindle", version="302584613")
+    pkg(manager = "mas", name = "Kindle", version = "302584613")
 
 def verify(ctx):
     ctx.run("mas", ["list"])

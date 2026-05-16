@@ -10,7 +10,7 @@ platforms = ["macos"]
 after = ["@stdlib//components/brew"]
 
 def install(ctx):
-    pkg(manager="brew", name="font-hack-nerd-font")
+    pkg(manager = "brew", name = "font-hack-nerd-font")
 
 def verify(ctx):
     ctx.run("fc-list", ["| grep", "Hack"])

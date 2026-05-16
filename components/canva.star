@@ -10,7 +10,7 @@ platforms = ["macos"]
 after = ["@stdlib//components/brew"]
 
 def install(ctx):
-    pkg(manager="brew", name="canva", cask=True)
+    pkg(manager = "brew", name = "canva", cask = True)
 
 def verify(ctx):
     ctx.run("open", ["-a", "Canva"])

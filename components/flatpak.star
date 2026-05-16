@@ -29,11 +29,11 @@ def install(ctx):
     if p.os != "linux":
         return
     if p.distro == "ubuntu" or p.distro == "debian" or p.distro_like == "debian":
-        pkg(manager="apt", name="flatpak")
+        pkg(manager = "apt", name = "flatpak")
     elif p.distro == "fedora" or p.distro == "rhel" or p.distro_like == "fedora" or p.distro_like == "rhel":
-        pkg(manager="dnf", name="flatpak")
+        pkg(manager = "dnf", name = "flatpak")
     elif p.distro == "arch" or p.distro_like == "arch":
-        pkg(manager="pacman", name="flatpak")
+        pkg(manager = "pacman", name = "flatpak")
     else:
         ctx.log("flatpak: unsupported distro %r — install flatpak manually then re-run" % p.distro)
         return
@@ -70,6 +70,7 @@ def interrogate(ctx):
     names = []
     for line in result.stdout.splitlines():
         line = line.strip()
+
         # Skip the header row emitted by some flatpak versions ("Application").
         # Use a content check rather than a positional first-line skip so that
         # flatpak builds that omit the header don't silently drop the first app.

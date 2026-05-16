@@ -18,7 +18,7 @@ after = ["@stdlib//components/brew"]
 pm_name = "mas"
 
 def install(ctx):
-    pkg(manager="brew", name="mas")
+    pkg(manager = "brew", name = "mas")
 
 def verify(ctx):
     ctx.run("mas", ["version"])

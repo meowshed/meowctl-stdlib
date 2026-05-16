@@ -10,7 +10,7 @@ platforms = ["macos"]
 after = ["@stdlib//components/mas"]
 
 def install(ctx):
-    pkg(manager="mas", name="Prime Video", version="545519333")
+    pkg(manager = "mas", name = "Prime Video", version = "545519333")
 
 def verify(ctx):
     ctx.run("mas", ["list"])

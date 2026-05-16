@@ -29,7 +29,7 @@ after = ["@stdlib//components/brew", "@stdlib//components/apt", "@stdlib//compon
 def install(ctx):
     p = platform()
     if p.os == "macos":
-        pkg(manager="brew", name="visual-studio-code", cask=True)
+        pkg(manager = "brew", name = "visual-studio-code", cask = True)
     elif p.os == "linux":
         if p.distro == "ubuntu" or p.distro == "debian" or p.distro_like == "debian":
             # Add Microsoft apt repo using the modern /etc/apt/keyrings/ approach
@@ -39,13 +39,13 @@ def install(ctx):
             ctx.run("bash", ["-c", "chmod 644 /etc/apt/keyrings/microsoft.gpg"])
             ctx.run("bash", ["-c", "echo 'deb [arch=amd64 signed-by=/etc/apt/keyrings/microsoft.gpg] https://packages.microsoft.com/repos/vscode stable main' > /etc/apt/sources.list.d/vscode.list"])
             ctx.run("apt-get", ["update"])
-            pkg(manager="apt", name="code")
+            pkg(manager = "apt", name = "code")
         elif p.distro == "fedora" or p.distro == "rhel" or p.distro_like == "fedora" or p.distro_like == "rhel":
             ctx.run("rpm", ["--import", "https://packages.microsoft.com/keys/microsoft.asc"])
             ctx.run("bash", ["-c", "echo -e '[code]\\nname=Visual Studio Code\\nbaseurl=https://packages.microsoft.com/yumrepos/vscode\\nenabled=1\\ngpgcheck=1\\ngpgkey=https://packages.microsoft.com/keys/microsoft.asc' > /etc/yum.repos.d/vscode.repo"])
-            pkg(manager="dnf", name="code")
+            pkg(manager = "dnf", name = "code")
         elif p.distro == "arch" or p.distro_like == "arch":
-            pkg(manager="pacman", name="code")
+            pkg(manager = "pacman", name = "code")
         elif p.distro == "alpine" or p.distro_like == "alpine":
             ctx.log("vscode: VS Code is not supported on Alpine (glibc dependency)")
         else:
@@ -55,6 +55,7 @@ def install(ctx):
 
 def verify(ctx):
     p = platform()
+
     # VS Code is not supported on Alpine (glibc dependency).
     if p.os == "linux" and (p.distro == "alpine" or p.distro_like == "alpine"):
         return
@@ -62,9 +63,11 @@ def verify(ctx):
 
 def install_pkg(ctx, name, version, **kwargs):
     p = platform()
+
     # VS Code is not supported on Alpine (glibc dependency); skip silently.
     if p.os == "linux" and (p.distro == "alpine" or p.distro_like == "alpine"):
         return
+
     # version is ignored — VS Code extension marketplace does not support
     # pinning via the CLI installer.
     ctx.run("code", ["--install-extension", name, "--force"])

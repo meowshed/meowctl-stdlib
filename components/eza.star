@@ -16,21 +16,21 @@ def _activate_shims(ctx):
 def install(ctx):
     p = platform()
     if p.os == "macos":
-        pkg(manager="brew", name="eza")
+        pkg(manager = "brew", name = "eza")
     elif p.os == "linux":
         if p.distro == "ubuntu" or p.distro == "debian" or p.distro_like == "debian":
             # eza not in official apt repos; install via cargo
             _activate_shims(ctx)
-            pkg(manager="cargo", name="eza")
+            pkg(manager = "cargo", name = "eza")
         elif p.distro == "fedora" or p.distro == "rhel" or p.distro_like == "fedora" or p.distro_like == "rhel":
-            pkg(manager="dnf", name="eza")
+            pkg(manager = "dnf", name = "eza")
         elif p.distro == "arch" or p.distro_like == "arch":
-            pkg(manager="pacman", name="eza")
+            pkg(manager = "pacman", name = "eza")
         elif p.distro == "alpine" or p.distro_like == "alpine":
-            pkg(manager="apk", name="eza")
+            pkg(manager = "apk", name = "eza")
         else:
             _activate_shims(ctx)
-            pkg(manager="cargo", name="eza")
+            pkg(manager = "cargo", name = "eza")
 
 def verify(ctx):
     _activate_shims(ctx)

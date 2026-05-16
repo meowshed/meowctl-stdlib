@@ -15,7 +15,7 @@ def _activate_shims(ctx):
 
 def install(ctx):
     _activate_shims(ctx)
-    pkg(manager="mise", name="fzf", version="latest")
+    pkg(manager = "mise", name = "fzf", version = "latest")
 
 def verify(ctx):
     _activate_shims(ctx)

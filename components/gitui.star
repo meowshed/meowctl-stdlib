@@ -15,7 +15,7 @@ def _activate_shims(ctx):
 
 def install(ctx):
     _activate_shims(ctx)
-    pkg(manager="mise", name="gitui", version="latest")
+    pkg(manager = "mise", name = "gitui", version = "latest")
 
 def verify(ctx):
     _activate_shims(ctx)

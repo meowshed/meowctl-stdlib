@@ -38,24 +38,24 @@ def _activate_shims(ctx):
 def install(ctx):
     p = platform()
     if p.os == "macos":
-        pkg(manager="brew", name="mise")
+        pkg(manager = "brew", name = "mise")
     elif p.os == "linux":
         if p.distro == "ubuntu" or p.distro == "debian" or p.distro_like == "debian":
             if not ctx.which("mise"):
                 repo(
-                    manager="apt",
-                    key_url="https://mise.jdx.dev/gpg-key.pub",
-                    repo_line="deb [signed-by=/etc/apt/keyrings/gpg-key.asc] https://mise.jdx.dev/deb stable main",
+                    manager = "apt",
+                    key_url = "https://mise.jdx.dev/gpg-key.pub",
+                    repo_line = "deb [signed-by=/etc/apt/keyrings/gpg-key.asc] https://mise.jdx.dev/deb stable main",
                 )
-                pkg(manager="apt", name="mise")
+                pkg(manager = "apt", name = "mise")
         elif p.distro == "fedora" or p.distro == "rhel" or p.distro_like == "fedora" or p.distro_like == "rhel":
             if not ctx.which("mise"):
-                repo(manager="dnf", copr="jdxcode/mise")
-                pkg(manager="dnf", name="mise")
+                repo(manager = "dnf", copr = "jdxcode/mise")
+                pkg(manager = "dnf", name = "mise")
         elif p.distro == "arch" or p.distro_like == "arch":
-            pkg(manager="pacman", name="mise")
+            pkg(manager = "pacman", name = "mise")
         elif p.distro == "alpine" or p.distro_like == "alpine":
-            pkg(manager="apk", name="mise")
+            pkg(manager = "apk", name = "mise")
         else:
             _curl_install(ctx)
     else:
@@ -76,10 +76,12 @@ def install_pkg(ctx, name, version, **kwargs):
         spec = "%s@%s" % (name, version)
     else:
         spec = name
+
     # `mise use --global` installs the tool and registers it in
     # ~/.config/mise/config.toml, activating it for all future shells.
     # This is the correct model for a user-environment setup tool.
     ctx.run("mise", ["use", "--global", spec])
+
     # Re-activate shims so the new tool is findable in the current process.
     _activate_shims(ctx)
 
@@ -88,6 +90,7 @@ def uninstall_pkg(ctx, name, version, **kwargs):
         spec = "%s@%s" % (name, version)
     else:
         spec = name
+
     # Remove from global config first, then uninstall the binary.
     ctx.run("mise", ["use", "--global", "--remove", name])
     ctx.run("mise", ["uninstall", spec])
