@@ -11,6 +11,7 @@
 # snapd is installed via the native package manager on supported distros.
 # On distros where snapd is pre-installed (e.g. Ubuntu) the install hook is
 # effectively idempotent — `apt install snapd` is a no-op if already present.
+# snapd is not available in Arch official repos (AUR-only); unsupported here.
 #
 # interrogate: `snap list` → lines of "<name> <version> ..."; skip header line.
 # Returns snap names (first field of each data line).
@@ -60,12 +61,11 @@ def interrogate(ctx):
         return []
     result = ctx.run("snap", ["list"])
     names = []
-    first = True
     for line in result.stdout.splitlines():
-        if first:
-            first = False
-            continue  # skip header
         line = line.strip()
-        if line:
-            names.append(line.split()[0])
+        # Skip the header row ("Name ...") by content rather than position,
+        # consistent with the flatpak interrogate approach.
+        if not line or line.lower().startswith("name ") or line.lower() == "name":
+            continue
+        names.append(line.split()[0])
     return names

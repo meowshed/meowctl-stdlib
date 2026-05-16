@@ -21,8 +21,9 @@ pm_name = "gem"
 
 def install(ctx):
     p = platform()
-    if p.os == "linux" and p.distro == "alpine":
+    if p.os == "linux" and (p.distro == "alpine" or p.distro_like == "alpine"):
         # Alpine uses musl libc; mise precompiled ruby (glibc) won't run.
+        # ruby-dev is required for gems with native C extensions (e.g. nokogiri).
         pkg(manager="apk", name="ruby")
         pkg(manager="apk", name="ruby-dev")
     else:
@@ -69,7 +70,7 @@ def uninstall_pkg(ctx, name, version, **kwargs):
         else:
             ctx.run("mise", ["uninstall", "gem:%s" % name])
     else:
-        if version:
+        if version and version != "latest":
             ctx.run("gem", ["uninstall", name, "-v", version])
         else:
             ctx.run("gem", ["uninstall", name, "--all-versions"])
