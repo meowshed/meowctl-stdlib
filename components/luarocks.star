@@ -35,7 +35,17 @@ def install(ctx):
         if home_tree:
             ctx.add_path(home_tree + "/bin")
 
+def _activate_shims(ctx):
+    # Re-add mise-managed bin dirs to PATH so luarocks is findable in verify.
+    if ctx.which("mise"):
+        result = ctx.run("mise", ["bin-paths"])
+        for path in result.stdout.splitlines():
+            path = path.strip()
+            if path:
+                ctx.add_path(path)
+
 def verify(ctx):
+    _activate_shims(ctx)
     ctx.run("luarocks", ["--version"])
 
 def install_pkg(ctx, name, version, **kwargs):

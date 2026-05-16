@@ -17,7 +17,17 @@ pm_name = "npm"
 def install(ctx):
     pkg(manager="mise", name="node", version="lts")
 
+def _activate_shims(ctx):
+    # Re-add mise-managed bin dirs to PATH so node/npm are findable in verify.
+    if ctx.which("mise"):
+        result = ctx.run("mise", ["bin-paths"])
+        for path in result.stdout.splitlines():
+            path = path.strip()
+            if path:
+                ctx.add_path(path)
+
 def verify(ctx):
+    _activate_shims(ctx)
     ctx.run("node", ["--version"])
 
 def install_pkg(ctx, name, version, **kwargs):

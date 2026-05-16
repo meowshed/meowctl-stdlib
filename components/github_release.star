@@ -14,20 +14,38 @@
 after = ["mise"]
 pm_name = "github-release"
 
+def _activate_shims(ctx):
+    # Re-add mise-managed bin dirs to PATH so mise-installed github release
+    # tools are findable in verify.
+    if ctx.which("mise"):
+        result = ctx.run("mise", ["bin-paths"])
+        for path in result.stdout.splitlines():
+            path = path.strip()
+            if path:
+                ctx.add_path(path)
+
 def install(ctx):
     # mise handles all github: installs; nothing to bootstrap here.
     pass
 
 def verify(ctx):
-    # mise is already verified by its own component; nothing to check here.
-    pass
+    _activate_shims(ctx)
 
 def install_pkg(ctx, name, version, **kwargs):
     # name: "owner/repo"
     pkg(manager="mise", name="github:%s" % name, version=version)
 
 def uninstall_pkg(ctx, name, version, **kwargs):
-    unpkg(manager="mise", name="github:%s" % name, version=version or "")
+    # Call mise directly to avoid PMRegistry dispatch — more reliable than
+    # routing through unpkg(manager="mise", ...) which requires the mise handler
+    # to be available in the current phase's registry context.
+    spec = "github:%s" % name
+    if version:
+        versioned_spec = "%s@%s" % (spec, version)
+    else:
+        versioned_spec = spec
+    ctx.run("mise", ["use", "--global", "--remove", spec])
+    ctx.run("mise", ["uninstall", versioned_spec])
 
 def interrogate(ctx):
     # query_pm("mise") returns all mise-managed tool names; filter for github: prefix.

@@ -26,8 +26,25 @@ def install(ctx):
         if tool_dir:
             ctx.add_path(tool_dir + "/bin")
 
+def _activate_shims(ctx):
+    # Re-add mise-managed bin dirs to PATH so uv is findable in verify.
+    if ctx.which("mise"):
+        result = ctx.run("mise", ["bin-paths"])
+        for path in result.stdout.splitlines():
+            path = path.strip()
+            if path:
+                ctx.add_path(path)
+
 def verify(ctx):
+    _activate_shims(ctx)
     ctx.run("uv", ["--version"])
+    # Also add $(uv tool dir)/bin so tools installed via `uv tool install`
+    # are findable in subsequent verify hooks (e.g. test-uv checking ruff).
+    if ctx.which("uv"):
+        result = ctx.run("uv", ["tool", "dir"])
+        tool_dir = result.stdout.strip()
+        if tool_dir:
+            ctx.add_path(tool_dir + "/bin")
 
 def install_pkg(ctx, name, version, **kwargs):
     if version:
