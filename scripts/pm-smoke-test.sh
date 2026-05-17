@@ -53,9 +53,10 @@ mkdir -p "$CONFIG_DIR/components"
 # Copy fixture test-pkg components (user test components only).
 cp "$REPO_ROOT"/tests/fixtures/components/*.star "$CONFIG_DIR/components/"
 
-# Copy fixture init.star (stdlib PM deps are auto-discovered at runtime via
-# each test component's after= globals).
-cp "$REPO_ROOT/tests/fixtures/init.star" "$CONFIG_DIR/init.star"
+# Write a minimal init.star (required by meowctl but must be empty so that
+# test-* components are only declared in local.star — meowctl remove refuses
+# to remove components declared in init.star).
+echo "# init.star — managed by meowctl init" > "$CONFIG_DIR/init.star"
 
 # Write local.star declaring all test-* components. meowctl remove requires
 # components to be declared in local.star (init.star is read-only).
