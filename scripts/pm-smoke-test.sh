@@ -10,7 +10,7 @@
 # The script:
 #   1. Creates a temp config dir, copies fixture test-pkg components and
 #      init.star into it, writes a local.star declaring all test-* components,
-#      and writes a meowctl.mod with a replace() directive pointing @stdlib//
+#      and writes a deps.mod with a replace() directive pointing @stdlib//
 #      to the local STDLIB_PATH checkout.
 #   2. Runs meowctl apply for all requested components in one call so that
 #      dependency ordering (after=) is respected — PM components are applied
@@ -67,9 +67,9 @@ cp "$REPO_ROOT/tests/fixtures/init.star" "$CONFIG_DIR/init.star"
   done
 } > "$CONFIG_DIR/local.star"
 
-# Write meowctl.mod with a replace() directive so @stdlib// resolves to the
+# Write deps.mod with a replace() directive so @stdlib// resolves to the
 # local STDLIB_PATH checkout instead of the registry.
-cat > "$CONFIG_DIR/meowctl.mod" <<EOF
+cat > "$CONFIG_DIR/deps.mod" <<EOF
 module(name = "test-fixtures", version = "0.0.0")
 
 replace(module = "stdlib", path = "$STDLIB_PATH")
