@@ -64,7 +64,7 @@ echo "# init.star — managed by meowctl init" > "$CONFIG_DIR/init.star"
   echo "# local.star — test-* component declarations for smoke test"
   for component in "${COMPONENTS[@]}"; do
     [[ "$component" != test-* ]] && continue
-    echo "component(name = \"$component\")"
+  echo "component(\"$component\")"
   done
 } > "$CONFIG_DIR/local.star"
 
