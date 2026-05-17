@@ -1,1 +1,1 @@
-module(name = "meowctl-stdlib", version = "0.1.0", compat = 1)
+module(name = "meowctl-stdlib", version = "0.1.1", compat = 1)
