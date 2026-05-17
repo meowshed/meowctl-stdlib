@@ -49,7 +49,7 @@ jobs:
           meowctl/meowctl check stdlib/bundles
 
   pm-contract:
-    name: Check / PM contracts
+    name: Check / Package Managers
     runs-on: ubuntu-latest
     steps:
       - name: Checkout meowctl-stdlib
