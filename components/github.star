@@ -21,9 +21,11 @@ def _activate_shims(ctx):
 
 def install(ctx):
     # Enable experimental backends required for github: tool installs.
+    _activate_shims(ctx)
     ctx.run("mise", ["settings", "experimental", "true"])
 
 def upgrade(ctx):
+    _activate_shims(ctx)
     ctx.run("mise", ["settings", "experimental", "true"])
 
 def uninstall(ctx):

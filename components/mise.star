@@ -63,6 +63,7 @@ def install(ctx):
     _activate_shims(ctx)
 
 def upgrade(ctx):
+    _activate_shims(ctx)
     ctx.run("mise", ["self-update", "--yes"])
     _activate_shims(ctx)
 
