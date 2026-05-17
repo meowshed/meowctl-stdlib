@@ -28,3 +28,31 @@ def verify(ctx):
         ctx.run("open", ["-a", "Steam"])
     else:
         ctx.run("steam", ["-version"])
+
+def upgrade(ctx):
+    p = platform()
+    if p.os == "macos":
+        uppkg(manager = "brew", name = "steam", cask = True)
+    elif p.os == "linux":
+        if p.distro_like == "debian":
+            uppkg(manager = "apt", name = "steam")
+        elif p.distro_like == "fedora":
+            uppkg(manager = "dnf", name = "steam")
+        elif p.distro_like == "arch":
+            uppkg(manager = "pacman", name = "steam")
+        else:
+            uppkg(manager = "flatpak", name = "com.valvesoftware.Steam")
+
+def uninstall(ctx):
+    p = platform()
+    if p.os == "macos":
+        unpkg(manager = "brew", name = "steam", cask = True)
+    elif p.os == "linux":
+        if p.distro_like == "debian":
+            unpkg(manager = "apt", name = "steam")
+        elif p.distro_like == "fedora":
+            unpkg(manager = "dnf", name = "steam")
+        elif p.distro_like == "arch":
+            unpkg(manager = "pacman", name = "steam")
+        else:
+            unpkg(manager = "flatpak", name = "com.valvesoftware.Steam")

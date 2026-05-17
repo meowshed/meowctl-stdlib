@@ -28,3 +28,31 @@ def verify(ctx):
         ctx.run("open", ["-a", "Firefox"])
     else:
         ctx.run("firefox", ["--version"])
+
+def upgrade(ctx):
+    p = platform()
+    if p.os == "macos":
+        uppkg(manager = "brew", name = "firefox", cask = True)
+    elif p.os == "linux":
+        if p.distro_like == "debian":
+            uppkg(manager = "apt", name = "firefox")
+        elif p.distro_like == "fedora":
+            uppkg(manager = "dnf", name = "firefox")
+        elif p.distro_like == "arch":
+            uppkg(manager = "pacman", name = "firefox")
+        else:
+            uppkg(manager = "flatpak", name = "org.mozilla.firefox")
+
+def uninstall(ctx):
+    p = platform()
+    if p.os == "macos":
+        unpkg(manager = "brew", name = "firefox", cask = True)
+    elif p.os == "linux":
+        if p.distro_like == "debian":
+            unpkg(manager = "apt", name = "firefox")
+        elif p.distro_like == "fedora":
+            unpkg(manager = "dnf", name = "firefox")
+        elif p.distro_like == "arch":
+            unpkg(manager = "pacman", name = "firefox")
+        else:
+            unpkg(manager = "flatpak", name = "org.mozilla.firefox")

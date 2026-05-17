@@ -16,3 +16,9 @@ def install(ctx):
 
 def verify(ctx):
     ctx.run("fish", ["-c", "fisher list | grep forgit"])
+
+def upgrade(ctx):
+    uppkg(manager = "fisher", name = "wfxr/forgit")
+
+def uninstall(ctx):
+    unpkg(manager = "fisher", name = "wfxr/forgit")

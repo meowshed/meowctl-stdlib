@@ -21,3 +21,17 @@ def verify(ctx):
         ctx.run("open", ["-a", "Postman"])
     else:
         ctx.run("flatpak", ["run", "com.getpostman.Postman", "--version"])
+
+def upgrade(ctx):
+    p = platform()
+    if p.os == "macos":
+        uppkg(manager = "brew", name = "postman", cask = True)
+    elif p.os == "linux":
+        uppkg(manager = "flatpak", name = "com.getpostman.Postman")
+
+def uninstall(ctx):
+    p = platform()
+    if p.os == "macos":
+        unpkg(manager = "brew", name = "postman", cask = True)
+    elif p.os == "linux":
+        unpkg(manager = "flatpak", name = "com.getpostman.Postman")

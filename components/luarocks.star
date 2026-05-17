@@ -50,6 +50,24 @@ def install(ctx):
     if lua_dir:
         ctx.add_path(lua_dir + "/luarocks/bin")
 
+def upgrade(ctx):
+    p = platform()
+    if _is_alpine(p):
+        uppkg(manager = "apk", name = "lua5.4")
+        uppkg(manager = "apk", name = "lua5.4-dev")
+        uppkg(manager = "apk", name = "luarocks5.4")
+    else:
+        uppkg(manager = "mise", name = "lua")
+
+def uninstall(ctx):
+    p = platform()
+    if _is_alpine(p):
+        unpkg(manager = "apk", name = "lua5.4")
+        unpkg(manager = "apk", name = "lua5.4-dev")
+        unpkg(manager = "apk", name = "luarocks5.4")
+    else:
+        unpkg(manager = "mise", name = "lua")
+
 def _activate_luarocks(ctx):
     p = platform()
     if _is_alpine(p):

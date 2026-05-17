@@ -14,3 +14,9 @@ def install(ctx):
 
 def verify(ctx):
     ctx.run("open", ["-a", "OrbStack"])
+
+def upgrade(ctx):
+    uppkg(manager = "brew", name = "orbstack", cask = True)
+
+def uninstall(ctx):
+    unpkg(manager = "brew", name = "orbstack", cask = True)

@@ -20,3 +20,11 @@ def install(ctx):
 def verify(ctx):
     _activate_shims(ctx)
     ctx.run("dust", ["--version"])
+
+def upgrade(ctx):
+    _activate_shims(ctx)
+    uppkg(manager = "mise", name = "dust")
+
+def uninstall(ctx):
+    _activate_shims(ctx)
+    unpkg(manager = "mise", name = "dust")

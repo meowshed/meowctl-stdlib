@@ -14,3 +14,9 @@ def install(ctx):
 
 def verify(ctx):
     ctx.run("open", ["-a", "AeroSpace"])
+
+def upgrade(ctx):
+    uppkg(manager = "brew", name = "aerospace", cask = True)
+
+def uninstall(ctx):
+    unpkg(manager = "brew", name = "aerospace", cask = True)

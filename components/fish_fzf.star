@@ -13,3 +13,9 @@ def install(ctx):
 
 def verify(ctx):
     ctx.run("fish", ["-c", "fisher list | grep -F fzf.fish"])
+
+def upgrade(ctx):
+    uppkg(manager = "fisher", name = "patrickf1/fzf.fish")
+
+def uninstall(ctx):
+    unpkg(manager = "fisher", name = "patrickf1/fzf.fish")

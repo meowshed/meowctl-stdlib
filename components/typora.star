@@ -14,3 +14,9 @@ def install(ctx):
 
 def verify(ctx):
     ctx.run("open", ["-a", "Typora"])
+
+def upgrade(ctx):
+    uppkg(manager = "brew", name = "typora", cask = True)
+
+def uninstall(ctx):
+    unpkg(manager = "brew", name = "typora", cask = True)

@@ -17,3 +17,9 @@ def install(ctx):
 
 def verify(ctx):
     ctx.run("zed", ["--version"])
+
+def upgrade(ctx):
+    uppkg(manager = "brew", name = "zed", cask = True)
+
+def uninstall(ctx):
+    unpkg(manager = "brew", name = "zed", cask = True)

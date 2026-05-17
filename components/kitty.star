@@ -28,3 +28,31 @@ def verify(ctx):
         ctx.run("open", ["-a", "kitty"])
     else:
         ctx.run("kitty", ["--version"])
+
+def upgrade(ctx):
+    p = platform()
+    if p.os == "macos":
+        uppkg(manager = "brew", name = "kitty", cask = True)
+    elif p.os == "linux":
+        if p.distro_like == "debian":
+            uppkg(manager = "apt", name = "kitty")
+        elif p.distro_like == "fedora":
+            uppkg(manager = "dnf", name = "kitty")
+        elif p.distro_like == "arch":
+            uppkg(manager = "pacman", name = "kitty")
+        else:
+            uppkg(manager = "flatpak", name = "net.kovidgoyal.kitty")
+
+def uninstall(ctx):
+    p = platform()
+    if p.os == "macos":
+        unpkg(manager = "brew", name = "kitty", cask = True)
+    elif p.os == "linux":
+        if p.distro_like == "debian":
+            unpkg(manager = "apt", name = "kitty")
+        elif p.distro_like == "fedora":
+            unpkg(manager = "dnf", name = "kitty")
+        elif p.distro_like == "arch":
+            unpkg(manager = "pacman", name = "kitty")
+        else:
+            unpkg(manager = "flatpak", name = "net.kovidgoyal.kitty")

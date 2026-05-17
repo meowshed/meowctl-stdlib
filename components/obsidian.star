@@ -28,3 +28,31 @@ def verify(ctx):
         ctx.run("open", ["-a", "Obsidian"])
     else:
         ctx.run("obsidian", ["--version"])
+
+def upgrade(ctx):
+    p = platform()
+    if p.os == "macos":
+        uppkg(manager = "brew", name = "obsidian", cask = True)
+    elif p.os == "linux":
+        if p.distro_like == "debian":
+            ctx.run("bash", ["-c", "wget -qO /tmp/obsidian.deb $(curl -s https://api.github.com/repos/obsidianmd/obsidian-releases/releases/latest | grep 'browser_download_url.*amd64.deb' | cut -d '\"' -f 4) && apt-get install -y /tmp/obsidian.deb"])
+        elif p.distro_like == "fedora":
+            ctx.run("bash", ["-c", "wget -qO /tmp/obsidian.rpm $(curl -s https://api.github.com/repos/obsidianmd/obsidian-releases/releases/latest | grep 'browser_download_url.*x86_64.rpm' | cut -d '\"' -f 4) && dnf install -y /tmp/obsidian.rpm"])
+        elif p.distro_like == "arch":
+            uppkg(manager = "pacman", name = "obsidian")
+        else:
+            uppkg(manager = "flatpak", name = "md.obsidian.Obsidian")
+
+def uninstall(ctx):
+    p = platform()
+    if p.os == "macos":
+        unpkg(manager = "brew", name = "obsidian", cask = True)
+    elif p.os == "linux":
+        if p.distro_like == "debian":
+            unpkg(manager = "apt", name = "obsidian")
+        elif p.distro_like == "fedora":
+            unpkg(manager = "dnf", name = "obsidian")
+        elif p.distro_like == "arch":
+            unpkg(manager = "pacman", name = "obsidian")
+        else:
+            unpkg(manager = "flatpak", name = "md.obsidian.Obsidian")

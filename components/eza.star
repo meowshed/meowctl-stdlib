@@ -35,3 +35,39 @@ def install(ctx):
 def verify(ctx):
     _activate_shims(ctx)
     ctx.run("eza", ["--version"])
+
+def upgrade(ctx):
+    p = platform()
+    if p.os == "macos":
+        uppkg(manager = "brew", name = "eza")
+    elif p.os == "linux":
+        if p.distro == "ubuntu" or p.distro == "debian" or p.distro_like == "debian":
+            _activate_shims(ctx)
+            uppkg(manager = "cargo", name = "eza")
+        elif p.distro == "fedora" or p.distro == "rhel" or p.distro_like == "fedora" or p.distro_like == "rhel":
+            uppkg(manager = "dnf", name = "eza")
+        elif p.distro == "arch" or p.distro_like == "arch":
+            uppkg(manager = "pacman", name = "eza")
+        elif p.distro == "alpine" or p.distro_like == "alpine":
+            uppkg(manager = "apk", name = "eza")
+        else:
+            _activate_shims(ctx)
+            uppkg(manager = "cargo", name = "eza")
+
+def uninstall(ctx):
+    p = platform()
+    if p.os == "macos":
+        unpkg(manager = "brew", name = "eza")
+    elif p.os == "linux":
+        if p.distro == "ubuntu" or p.distro == "debian" or p.distro_like == "debian":
+            _activate_shims(ctx)
+            unpkg(manager = "cargo", name = "eza")
+        elif p.distro == "fedora" or p.distro == "rhel" or p.distro_like == "fedora" or p.distro_like == "rhel":
+            unpkg(manager = "dnf", name = "eza")
+        elif p.distro == "arch" or p.distro_like == "arch":
+            unpkg(manager = "pacman", name = "eza")
+        elif p.distro == "alpine" or p.distro_like == "alpine":
+            unpkg(manager = "apk", name = "eza")
+        else:
+            _activate_shims(ctx)
+            unpkg(manager = "cargo", name = "eza")

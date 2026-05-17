@@ -14,3 +14,9 @@ def install(ctx):
 
 def verify(ctx):
     ctx.run("vhs", ["--version"])
+
+def upgrade(ctx):
+    uppkg(manager = "brew", name = "vhs", cask = True)
+
+def uninstall(ctx):
+    unpkg(manager = "brew", name = "vhs", cask = True)

@@ -33,6 +33,24 @@ def install(ctx):
         return
     _brew_install_self(ctx)
 
+def update(ctx):
+    p = platform()
+    if p.os != "macos":
+        return
+    ctx.run("brew", ["update"])
+
+def upgrade(ctx):
+    # brew self-upgrades as part of upgrade_update (brew update); nothing to do here.
+    pass
+
+def uninstall(ctx):
+    p = platform()
+    if p.os != "macos":
+        return
+    ctx.run("curl", ["-fsSL", "https://raw.githubusercontent.com/Homebrew/install/HEAD/uninstall.sh", "-o", "/tmp/brew-uninstall.sh"])
+    ctx.run("bash", ["/tmp/brew-uninstall.sh", "--force"])
+    ctx.delete_file("/tmp/brew-uninstall.sh")
+
 def verify(ctx):
     p = platform()
     if p.os != "macos":

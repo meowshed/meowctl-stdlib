@@ -14,3 +14,9 @@ def install(ctx):
 
 def verify(ctx):
     ctx.run("open", ["-a", "Epic Games Launcher"])
+
+def upgrade(ctx):
+    uppkg(manager = "brew", name = "epic-games", cask = True)
+
+def uninstall(ctx):
+    unpkg(manager = "brew", name = "epic-games", cask = True)

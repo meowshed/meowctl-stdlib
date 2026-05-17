@@ -32,6 +32,12 @@ def install(ctx):
             pkg(manager = "apk", name = "build-base")
     pkg(manager = "mise", name = "rust", version = "latest")
 
+def upgrade(ctx):
+    uppkg(manager = "mise", name = "rust")
+
+def uninstall(ctx):
+    unpkg(manager = "mise", name = "rust")
+
 def _activate_shims(ctx):
     home = ctx.env("HOME")
     if home:

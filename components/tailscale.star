@@ -17,3 +17,9 @@ def install(ctx):
 
 def verify(ctx):
     ctx.run("tailscale", ["version"])
+
+def upgrade(ctx):
+    uppkg(manager = "brew", name = "tailscale", cask = True)
+
+def uninstall(ctx):
+    unpkg(manager = "brew", name = "tailscale", cask = True)

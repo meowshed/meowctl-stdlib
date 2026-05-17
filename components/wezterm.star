@@ -32,3 +32,31 @@ def verify(ctx):
         ctx.run("open", ["-a", "WezTerm"])
     else:
         ctx.run("wezterm", ["--version"])
+
+def upgrade(ctx):
+    p = platform()
+    if p.os == "macos":
+        uppkg(manager = "brew", name = "wezterm", cask = True)
+    elif p.os == "linux":
+        if p.distro_like == "debian":
+            uppkg(manager = "apt", name = "wezterm")
+        elif p.distro_like == "fedora":
+            uppkg(manager = "dnf", name = "wezterm")
+        elif p.distro_like == "arch":
+            uppkg(manager = "pacman", name = "wezterm")
+        else:
+            uppkg(manager = "flatpak", name = "org.wezfurlong.wezterm")
+
+def uninstall(ctx):
+    p = platform()
+    if p.os == "macos":
+        unpkg(manager = "brew", name = "wezterm", cask = True)
+    elif p.os == "linux":
+        if p.distro_like == "debian":
+            unpkg(manager = "apt", name = "wezterm")
+        elif p.distro_like == "fedora":
+            unpkg(manager = "dnf", name = "wezterm")
+        elif p.distro_like == "arch":
+            unpkg(manager = "pacman", name = "wezterm")
+        else:
+            unpkg(manager = "flatpak", name = "org.wezfurlong.wezterm")

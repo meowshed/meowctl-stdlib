@@ -14,3 +14,9 @@ def install(ctx):
 
 def verify(ctx):
     ctx.run("mas", ["list"])
+
+def upgrade(ctx):
+    uppkg(manager = "mas", name = "682658836")
+
+def uninstall(ctx):
+    unpkg(manager = "mas", name = "682658836")

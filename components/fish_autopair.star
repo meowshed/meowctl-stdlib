@@ -13,3 +13,9 @@ def install(ctx):
 
 def verify(ctx):
     ctx.run("fish", ["-c", "fisher list | grep autopair.fish"])
+
+def upgrade(ctx):
+    uppkg(manager = "fisher", name = "jorgebucaran/autopair.fish")
+
+def uninstall(ctx):
+    unpkg(manager = "fisher", name = "jorgebucaran/autopair.fish")
