@@ -108,6 +108,7 @@ def install_pkg(ctx, name, version, **kwargs):
     _activate_shims(ctx)
 
 def uninstall_pkg(ctx, name, version, **kwargs):
+    _activate_shims(ctx)
     if version:
         spec = "%s@%s" % (name, version)
     else:
