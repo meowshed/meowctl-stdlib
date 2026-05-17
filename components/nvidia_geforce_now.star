@@ -14,3 +14,9 @@ def install(ctx):
 
 def verify(ctx):
     ctx.run("open", ["-a", "GeForce NOW"])
+
+def upgrade(ctx):
+    uppkg(manager = "brew", name = "nvidia-geforce-now", cask = True)
+
+def uninstall(ctx):
+    unpkg(manager = "brew", name = "nvidia-geforce-now", cask = True)

@@ -23,6 +23,12 @@ def install(ctx):
     ctx.run("mise", ["settings", "experimental", "true"])
     pkg(manager = "mise", name = "go", version = "latest")
 
+def upgrade(ctx):
+    uppkg(manager = "mise", name = "go")
+
+def uninstall(ctx):
+    unpkg(manager = "mise", name = "go")
+
 def _activate_shims(ctx):
     home = ctx.env("HOME")
     if home:

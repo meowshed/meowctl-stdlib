@@ -14,3 +14,9 @@ def install(ctx):
 
 def verify(ctx):
     ctx.run("open", ["-a", "WhatsApp"])
+
+def upgrade(ctx):
+    uppkg(manager = "brew", name = "whatsapp", cask = True)
+
+def uninstall(ctx):
+    unpkg(manager = "brew", name = "whatsapp", cask = True)

@@ -17,3 +17,31 @@ def install(ctx):
 
 def verify(ctx):
     ctx.run("tailscale", ["version"])
+
+def upgrade(ctx):
+    p = platform()
+    if p.os == "macos":
+        uppkg(manager = "brew", name = "tailscale", cask = True)
+    elif p.os == "linux":
+        if p.distro_like == "debian":
+            uppkg(manager = "apt", name = "tailscale")
+        elif p.distro_like == "fedora":
+            uppkg(manager = "dnf", name = "tailscale")
+        elif p.distro_like == "arch":
+            uppkg(manager = "pacman", name = "tailscale")
+        else:
+            ctx.log("tailscale: re-run install script to upgrade on distro %r" % p.distro)
+
+def uninstall(ctx):
+    p = platform()
+    if p.os == "macos":
+        unpkg(manager = "brew", name = "tailscale", cask = True)
+    elif p.os == "linux":
+        if p.distro_like == "debian":
+            unpkg(manager = "apt", name = "tailscale")
+        elif p.distro_like == "fedora":
+            unpkg(manager = "dnf", name = "tailscale")
+        elif p.distro_like == "arch":
+            unpkg(manager = "pacman", name = "tailscale")
+        else:
+            ctx.log("tailscale: remove manually — distro %r not recognised" % p.distro)

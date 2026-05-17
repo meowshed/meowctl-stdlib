@@ -62,6 +62,29 @@ def install(ctx):
         _curl_install(ctx)
     _activate_shims(ctx)
 
+def upgrade(ctx):
+    _activate_shims(ctx)
+    ctx.run("mise", ["self-update", "--yes"])
+    _activate_shims(ctx)
+
+def uninstall(ctx):
+    p = platform()
+    if p.os == "macos":
+        unpkg(manager = "brew", name = "mise")
+    elif p.os == "linux":
+        if p.distro == "ubuntu" or p.distro == "debian" or p.distro_like == "debian":
+            unpkg(manager = "apt", name = "mise")
+        elif p.distro == "fedora" or p.distro == "rhel" or p.distro_like == "fedora" or p.distro_like == "rhel":
+            unpkg(manager = "dnf", name = "mise")
+        elif p.distro == "arch" or p.distro_like == "arch":
+            unpkg(manager = "pacman", name = "mise")
+        elif p.distro == "alpine" or p.distro_like == "alpine":
+            unpkg(manager = "apk", name = "mise")
+        else:
+            ctx.log("mise: cannot auto-uninstall on distro %r — remove ~/.local/bin/mise manually" % p.distro)
+    else:
+        ctx.log("mise: cannot auto-uninstall on OS %r — remove ~/.local/bin/mise manually" % p.os)
+
 def verify(ctx):
     ctx.run("mise", ["--version"])
     _activate_shims(ctx)
@@ -86,6 +109,7 @@ def install_pkg(ctx, name, version, **kwargs):
     _activate_shims(ctx)
 
 def uninstall_pkg(ctx, name, version, **kwargs):
+    _activate_shims(ctx)
     if version:
         spec = "%s@%s" % (name, version)
     else:

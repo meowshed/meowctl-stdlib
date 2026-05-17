@@ -14,3 +14,9 @@ def install(ctx):
 
 def verify(ctx):
     ctx.run("mole", ["--version"])
+
+def upgrade(ctx):
+    uppkg(manager = "brew", name = "mole")
+
+def uninstall(ctx):
+    unpkg(manager = "brew", name = "mole")

@@ -14,3 +14,9 @@ def install(ctx):
 
 def verify(ctx):
     ctx.run("open", ["-a", "Notion"])
+
+def upgrade(ctx):
+    uppkg(manager = "brew", name = "notion", cask = True)
+
+def uninstall(ctx):
+    unpkg(manager = "brew", name = "notion", cask = True)

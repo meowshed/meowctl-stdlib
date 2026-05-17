@@ -28,3 +28,31 @@ def verify(ctx):
         ctx.run("open", ["-a", "Alacritty"])
     else:
         ctx.run("alacritty", ["--version"])
+
+def upgrade(ctx):
+    p = platform()
+    if p.os == "macos":
+        uppkg(manager = "brew", name = "alacritty", cask = True)
+    elif p.os == "linux":
+        if p.distro_like == "debian":
+            uppkg(manager = "apt", name = "alacritty")
+        elif p.distro_like == "fedora":
+            uppkg(manager = "dnf", name = "alacritty")
+        elif p.distro_like == "arch":
+            uppkg(manager = "pacman", name = "alacritty")
+        else:
+            uppkg(manager = "flatpak", name = "org.alacritty.Alacritty")
+
+def uninstall(ctx):
+    p = platform()
+    if p.os == "macos":
+        unpkg(manager = "brew", name = "alacritty", cask = True)
+    elif p.os == "linux":
+        if p.distro_like == "debian":
+            unpkg(manager = "apt", name = "alacritty")
+        elif p.distro_like == "fedora":
+            unpkg(manager = "dnf", name = "alacritty")
+        elif p.distro_like == "arch":
+            unpkg(manager = "pacman", name = "alacritty")
+        else:
+            unpkg(manager = "flatpak", name = "org.alacritty.Alacritty")

@@ -30,6 +30,23 @@ def install(ctx):
     else:
         ctx.log("snap: snapd not available for distro %r — install snapd manually then re-run" % p.distro)
 
+def upgrade(ctx):
+    p = platform()
+    if p.os != "linux":
+        return
+    ctx.run("snap", ["refresh", "snapd"])
+
+def uninstall(ctx):
+    p = platform()
+    if p.os != "linux":
+        return
+    if p.distro == "ubuntu" or p.distro == "debian" or p.distro_like == "debian":
+        unpkg(manager = "apt", name = "snapd")
+    elif p.distro == "fedora" or p.distro == "rhel" or p.distro_like == "fedora" or p.distro_like == "rhel":
+        unpkg(manager = "dnf", name = "snapd")
+    else:
+        ctx.log("snap: cannot uninstall snapd on distro %r — remove manually" % p.distro)
+
 def verify(ctx):
     p = platform()
     if p.os != "linux":

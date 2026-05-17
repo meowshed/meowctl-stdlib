@@ -37,6 +37,15 @@ def install_pkg(ctx, name, version, **kwargs):
         ctx.log("warning: apk does not support version pinning; installing latest %s (requested %s)" % (name, version))
     ctx.run("apk", ["add", name])
 
+def update(ctx):
+    ctx.run("apk", ["update"])
+
+def upgrade(ctx):
+    ctx.run("apk", ["add", "--upgrade", "apk-tools"])
+
+def uninstall(ctx):
+    ctx.log("warning: apk is a system package manager and cannot be uninstalled")
+
 def uninstall_pkg(ctx, name, version, **kwargs):
     ctx.run("apk", ["del", name])
 

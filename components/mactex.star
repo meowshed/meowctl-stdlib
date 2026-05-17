@@ -14,3 +14,9 @@ def install(ctx):
 
 def verify(ctx):
     ctx.run("tex", ["--version"])
+
+def upgrade(ctx):
+    uppkg(manager = "brew", name = "mactex-no-gui", cask = True)
+
+def uninstall(ctx):
+    unpkg(manager = "brew", name = "mactex-no-gui", cask = True)

@@ -14,3 +14,9 @@ def install(ctx):
 
 def verify(ctx):
     ctx.run("open", ["-a", "Hammerspoon"])
+
+def upgrade(ctx):
+    uppkg(manager = "brew", name = "hammerspoon", cask = True)
+
+def uninstall(ctx):
+    unpkg(manager = "brew", name = "hammerspoon", cask = True)

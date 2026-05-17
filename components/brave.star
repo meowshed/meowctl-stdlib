@@ -32,3 +32,31 @@ def verify(ctx):
         ctx.run("open", ["-a", "Brave Browser"])
     else:
         ctx.run("brave-browser", ["--version"])
+
+def upgrade(ctx):
+    p = platform()
+    if p.os == "macos":
+        uppkg(manager = "brew", name = "brave-browser", cask = True)
+    elif p.os == "linux":
+        if p.distro_like == "debian":
+            uppkg(manager = "apt", name = "brave-browser")
+        elif p.distro_like == "fedora":
+            uppkg(manager = "dnf", name = "brave-browser")
+        elif p.distro_like == "arch":
+            uppkg(manager = "pacman", name = "brave-bin")
+        else:
+            uppkg(manager = "flatpak", name = "com.brave.Browser")
+
+def uninstall(ctx):
+    p = platform()
+    if p.os == "macos":
+        unpkg(manager = "brew", name = "brave-browser", cask = True)
+    elif p.os == "linux":
+        if p.distro_like == "debian":
+            unpkg(manager = "apt", name = "brave-browser")
+        elif p.distro_like == "fedora":
+            unpkg(manager = "dnf", name = "brave-browser")
+        elif p.distro_like == "arch":
+            unpkg(manager = "pacman", name = "brave-bin")
+        else:
+            unpkg(manager = "flatpak", name = "com.brave.Browser")

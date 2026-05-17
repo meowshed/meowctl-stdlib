@@ -14,3 +14,9 @@ def install(ctx):
 
 def verify(ctx):
     ctx.run("open", ["-a", "TablePlus"])
+
+def upgrade(ctx):
+    uppkg(manager = "brew", name = "tableplus", cask = True)
+
+def uninstall(ctx):
+    unpkg(manager = "brew", name = "tableplus", cask = True)

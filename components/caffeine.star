@@ -14,3 +14,9 @@ def install(ctx):
 
 def verify(ctx):
     ctx.run("open", ["-a", "Caffeine"])
+
+def upgrade(ctx):
+    uppkg(manager = "brew", name = "caffeine", cask = True)
+
+def uninstall(ctx):
+    unpkg(manager = "brew", name = "caffeine", cask = True)

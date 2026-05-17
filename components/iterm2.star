@@ -14,3 +14,9 @@ def install(ctx):
 
 def verify(ctx):
     ctx.run("open", ["-a", "iTerm"])
+
+def upgrade(ctx):
+    uppkg(manager = "brew", name = "iterm2", cask = True)
+
+def uninstall(ctx):
+    unpkg(manager = "brew", name = "iterm2", cask = True)

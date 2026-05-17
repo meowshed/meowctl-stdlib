@@ -27,6 +27,22 @@ def install(ctx):
     else:
         pkg(manager = "mise", name = "node", version = "lts")
 
+def upgrade(ctx):
+    p = platform()
+    if p.os == "linux" and (p.distro == "alpine" or p.distro_like == "alpine"):
+        uppkg(manager = "apk", name = "nodejs")
+        uppkg(manager = "apk", name = "npm")
+    else:
+        uppkg(manager = "mise", name = "node")
+
+def uninstall(ctx):
+    p = platform()
+    if p.os == "linux" and (p.distro == "alpine" or p.distro_like == "alpine"):
+        unpkg(manager = "apk", name = "nodejs")
+        unpkg(manager = "apk", name = "npm")
+    else:
+        unpkg(manager = "mise", name = "node")
+
 def _activate_shims(ctx):
     home = ctx.env("HOME")
     if home:

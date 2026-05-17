@@ -24,3 +24,35 @@ def install(ctx):
 
 def verify(ctx):
     ctx.run("ffmpeg", ["--version"])
+
+def upgrade(ctx):
+    p = platform()
+    if p.os == "macos":
+        uppkg(manager = "brew", name = "ffmpeg")
+    elif p.os == "linux":
+        if p.distro == "ubuntu" or p.distro == "debian" or p.distro_like == "debian":
+            uppkg(manager = "apt", name = "ffmpeg")
+        elif p.distro == "fedora" or p.distro == "rhel" or p.distro_like == "fedora" or p.distro_like == "rhel":
+            uppkg(manager = "dnf", name = "ffmpeg")
+        elif p.distro == "arch" or p.distro_like == "arch":
+            uppkg(manager = "pacman", name = "ffmpeg")
+        elif p.distro == "alpine" or p.distro_like == "alpine":
+            uppkg(manager = "apk", name = "ffmpeg")
+        else:
+            ctx.log("ffmpeg: unsupported distro %r — install manually then re-run" % p.distro)
+
+def uninstall(ctx):
+    p = platform()
+    if p.os == "macos":
+        unpkg(manager = "brew", name = "ffmpeg")
+    elif p.os == "linux":
+        if p.distro == "ubuntu" or p.distro == "debian" or p.distro_like == "debian":
+            unpkg(manager = "apt", name = "ffmpeg")
+        elif p.distro == "fedora" or p.distro == "rhel" or p.distro_like == "fedora" or p.distro_like == "rhel":
+            unpkg(manager = "dnf", name = "ffmpeg")
+        elif p.distro == "arch" or p.distro_like == "arch":
+            unpkg(manager = "pacman", name = "ffmpeg")
+        elif p.distro == "alpine" or p.distro_like == "alpine":
+            unpkg(manager = "apk", name = "ffmpeg")
+        else:
+            ctx.log("ffmpeg: unsupported distro %r — install manually then re-run" % p.distro)

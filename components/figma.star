@@ -14,3 +14,9 @@ def install(ctx):
 
 def verify(ctx):
     ctx.run("open", ["-a", "Figma"])
+
+def upgrade(ctx):
+    uppkg(manager = "brew", name = "figma", cask = True)
+
+def uninstall(ctx):
+    unpkg(manager = "brew", name = "figma", cask = True)
