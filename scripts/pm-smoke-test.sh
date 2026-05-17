@@ -59,12 +59,13 @@ cp "$REPO_ROOT"/tests/fixtures/components/*.star "$CONFIG_DIR/components/"
 echo "# init.star — managed by meowctl init" > "$CONFIG_DIR/init.star"
 
 # Write local.star declaring all test-* components. meowctl remove requires
-# components to be declared in local.star (init.star is read-only).
+# components to be declared in local.star (init.star declarations are immutable).
+# Only test-* components are declared here; the script contract is that all
+# COMPONENTS arguments must be test-* names (enforced by the caller in ci.yml).
 {
   echo "# local.star — test-* component declarations for smoke test"
   for component in "${COMPONENTS[@]}"; do
-    [[ "$component" != test-* ]] && continue
-  echo "component(\"$component\")"
+    echo "component(\"$component\")"
   done
 } > "$CONFIG_DIR/local.star"
 
@@ -85,6 +86,11 @@ echo "==> upgrade: ${COMPONENTS[*]}"
 "$MEOWCTL_BIN" --config "$CONFIG_DIR" upgrade --verbose "${COMPONENTS[@]}"
 
 # --- phase 3: verify + remove each test-pkg component individually ---
+# Components are removed one at a time to exercise the remove path per PM.
+# Each `meowctl remove` atomically rewrites local.star (removing only the
+# named component's declaration), so subsequent iterations still find their
+# own entries intact. PM bootstrap components (e.g. mise, apt) are left
+# installed throughout — they are shared deps and not declared in local.star.
 FAILED=()
 
 run_phase() {
@@ -98,7 +104,7 @@ run_phase() {
 }
 
 for component in "${COMPONENTS[@]}"; do
-  # Only verify/remove test-pkg components; PM bootstrap components are
+  # Only verify/remove test-* components; PM bootstrap components are
   # intentionally left installed (other components depend on them).
   [[ "$component" != test-* ]] && continue
   echo "==> smoke: ${component}"
