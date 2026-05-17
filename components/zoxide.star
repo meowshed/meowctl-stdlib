@@ -28,3 +28,7 @@ def upgrade(ctx):
 def uninstall(ctx):
     _activate_shims(ctx)
     unpkg(manager = "mise", name = "zoxide")
+
+def shell(ctx):
+    if ctx.shell in ("fish", "bash", "zsh"):
+        ctx.emit("eval \"$(zoxide init %s)\"" % ctx.shell)
