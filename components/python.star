@@ -56,6 +56,22 @@ def install(ctx):
         _activate_shims(ctx)
         ctx.run("mise", ["use", "--global", "pipx@latest"])
 
+def upgrade(ctx):
+    p = platform()
+    if _is_alpine(p):
+        uppkg(manager = "apk", name = "python3")
+        uppkg(manager = "apk", name = "py3-pip")
+    else:
+        uppkg(manager = "mise", name = "python")
+
+def uninstall(ctx):
+    p = platform()
+    if _is_alpine(p):
+        unpkg(manager = "apk", name = "python3")
+        unpkg(manager = "apk", name = "py3-pip")
+    else:
+        unpkg(manager = "mise", name = "python")
+
 def verify(ctx):
     # On Alpine, python3 comes from apk — no mise shims needed.
     # Add ~/.local/bin so pipx-installed tool binaries are visible.

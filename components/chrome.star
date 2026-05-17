@@ -31,3 +31,31 @@ def verify(ctx):
         ctx.run("open", ["-a", "Google Chrome"])
     else:
         ctx.run("google-chrome", ["--version"])
+
+def upgrade(ctx):
+    p = platform()
+    if p.os == "macos":
+        uppkg(manager = "brew", name = "google-chrome", cask = True)
+    elif p.os == "linux":
+        if p.distro_like == "debian":
+            uppkg(manager = "apt", name = "google-chrome-stable")
+        elif p.distro_like == "fedora":
+            uppkg(manager = "dnf", name = "google-chrome-stable")
+        elif p.distro_like == "arch":
+            uppkg(manager = "pacman", name = "chromium")
+        else:
+            uppkg(manager = "flatpak", name = "com.google.Chrome")
+
+def uninstall(ctx):
+    p = platform()
+    if p.os == "macos":
+        unpkg(manager = "brew", name = "google-chrome", cask = True)
+    elif p.os == "linux":
+        if p.distro_like == "debian":
+            unpkg(manager = "apt", name = "google-chrome-stable")
+        elif p.distro_like == "fedora":
+            unpkg(manager = "dnf", name = "google-chrome-stable")
+        elif p.distro_like == "arch":
+            unpkg(manager = "pacman", name = "chromium")
+        else:
+            unpkg(manager = "flatpak", name = "com.google.Chrome")

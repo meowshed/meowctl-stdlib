@@ -14,3 +14,9 @@ def install(ctx):
 
 def verify(ctx):
     ctx.run("open", ["-a", "Hidden Bar"])
+
+def upgrade(ctx):
+    uppkg(manager = "brew", name = "hiddenbar", cask = True)
+
+def uninstall(ctx):
+    unpkg(manager = "brew", name = "hiddenbar", cask = True)

@@ -14,3 +14,9 @@ def install(ctx):
 
 def verify(ctx):
     ctx.run("yabai", ["--version"])
+
+def upgrade(ctx):
+    uppkg(manager = "brew", name = "yabai")
+
+def uninstall(ctx):
+    unpkg(manager = "brew", name = "yabai")

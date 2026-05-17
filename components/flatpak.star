@@ -39,6 +39,25 @@ def install(ctx):
         return
     _ensure_flathub(ctx, False)
 
+def upgrade(ctx):
+    p = platform()
+    if p.os != "linux":
+        return
+    ctx.run("flatpak", ["--user", "update", "-y"])
+
+def uninstall(ctx):
+    p = platform()
+    if p.os != "linux":
+        return
+    if p.distro == "ubuntu" or p.distro == "debian" or p.distro_like == "debian":
+        unpkg(manager = "apt", name = "flatpak")
+    elif p.distro == "fedora" or p.distro == "rhel" or p.distro_like == "fedora" or p.distro_like == "rhel":
+        unpkg(manager = "dnf", name = "flatpak")
+    elif p.distro == "arch" or p.distro_like == "arch":
+        unpkg(manager = "pacman", name = "flatpak")
+    else:
+        ctx.log("flatpak: cannot uninstall on distro %r — remove manually" % p.distro)
+
 def verify(ctx):
     p = platform()
     if p.os != "linux":

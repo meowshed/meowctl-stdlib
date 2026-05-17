@@ -14,3 +14,9 @@ def install(ctx):
 
 def verify(ctx):
     ctx.run("open", ["-a", "1Password 7"])
+
+def upgrade(ctx):
+    uppkg(manager = "brew", name = "1password", cask = True)
+
+def uninstall(ctx):
+    unpkg(manager = "brew", name = "1password", cask = True)

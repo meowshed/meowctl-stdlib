@@ -20,6 +20,12 @@ pm_name = "mas"
 def install(ctx):
     pkg(manager = "brew", name = "mas")
 
+def upgrade(ctx):
+    ctx.run("mas", ["upgrade"])
+
+def uninstall(ctx):
+    unpkg(manager = "brew", name = "mas")
+
 def verify(ctx):
     ctx.run("mas", ["version"])
 

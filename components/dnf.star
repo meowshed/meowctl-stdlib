@@ -45,6 +45,15 @@ def install_pkg(ctx, name, version, **kwargs):
     else:
         ctx.run("sudo", ["dnf", "install", "-y", name])
 
+def update(ctx):
+    ctx.run("sudo", ["dnf", "makecache", "--refresh"])
+
+def upgrade(ctx):
+    ctx.run("sudo", ["dnf", "upgrade", "-y", "dnf"])
+
+def uninstall(ctx):
+    ctx.log("warning: dnf is a system package manager and cannot be uninstalled")
+
 def uninstall_pkg(ctx, name, version, **kwargs):
     ctx.run("sudo", ["dnf", "remove", "-y", name])
 

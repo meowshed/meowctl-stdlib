@@ -14,3 +14,9 @@ def install(ctx):
 
 def verify(ctx):
     ctx.run("open", ["-a", "Docker"])
+
+def upgrade(ctx):
+    uppkg(manager = "brew", name = "docker", cask = True)
+
+def uninstall(ctx):
+    unpkg(manager = "brew", name = "docker", cask = True)

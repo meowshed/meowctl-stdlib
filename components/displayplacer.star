@@ -14,3 +14,9 @@ def install(ctx):
 
 def verify(ctx):
     ctx.run("displayplacer", ["--version"])
+
+def upgrade(ctx):
+    uppkg(manager = "brew", name = "displayplacer")
+
+def uninstall(ctx):
+    unpkg(manager = "brew", name = "displayplacer")

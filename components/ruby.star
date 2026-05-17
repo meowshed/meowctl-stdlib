@@ -31,6 +31,22 @@ def install(ctx):
         ctx.run("mise", ["settings", "ruby.compile", "false"])
         pkg(manager = "mise", name = "ruby", version = "latest")
 
+def upgrade(ctx):
+    p = platform()
+    if p.os == "linux" and (p.distro == "alpine" or p.distro_like == "alpine"):
+        uppkg(manager = "apk", name = "ruby")
+        uppkg(manager = "apk", name = "ruby-dev")
+    else:
+        uppkg(manager = "mise", name = "ruby")
+
+def uninstall(ctx):
+    p = platform()
+    if p.os == "linux" and (p.distro == "alpine" or p.distro_like == "alpine"):
+        unpkg(manager = "apk", name = "ruby")
+        unpkg(manager = "apk", name = "ruby-dev")
+    else:
+        unpkg(manager = "mise", name = "ruby")
+
 def _activate_shims(ctx):
     home = ctx.env("HOME")
     if home:

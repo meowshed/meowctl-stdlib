@@ -53,6 +53,42 @@ def install(ctx):
     else:
         ctx.log("vscode: unsupported OS %r" % p.os)
 
+def upgrade(ctx):
+    p = platform()
+    if p.os == "macos":
+        uppkg(manager = "brew", name = "visual-studio-code", cask = True)
+    elif p.os == "linux":
+        if p.distro == "ubuntu" or p.distro == "debian" or p.distro_like == "debian":
+            uppkg(manager = "apt", name = "code")
+        elif p.distro == "fedora" or p.distro == "rhel" or p.distro_like == "fedora" or p.distro_like == "rhel":
+            uppkg(manager = "dnf", name = "code")
+        elif p.distro == "arch" or p.distro_like == "arch":
+            uppkg(manager = "pacman", name = "code")
+        elif p.distro == "alpine" or p.distro_like == "alpine":
+            ctx.log("vscode: VS Code is not supported on Alpine (glibc dependency)")
+        else:
+            ctx.log("vscode: unsupported distro %r — upgrade VS Code manually" % p.distro)
+    else:
+        ctx.log("vscode: unsupported OS %r" % p.os)
+
+def uninstall(ctx):
+    p = platform()
+    if p.os == "macos":
+        unpkg(manager = "brew", name = "visual-studio-code", cask = True)
+    elif p.os == "linux":
+        if p.distro == "ubuntu" or p.distro == "debian" or p.distro_like == "debian":
+            unpkg(manager = "apt", name = "code")
+        elif p.distro == "fedora" or p.distro == "rhel" or p.distro_like == "fedora" or p.distro_like == "rhel":
+            unpkg(manager = "dnf", name = "code")
+        elif p.distro == "arch" or p.distro_like == "arch":
+            unpkg(manager = "pacman", name = "code")
+        elif p.distro == "alpine" or p.distro_like == "alpine":
+            ctx.log("vscode: VS Code is not supported on Alpine (glibc dependency)")
+        else:
+            ctx.log("vscode: unsupported distro %r — uninstall VS Code manually" % p.distro)
+    else:
+        ctx.log("vscode: unsupported OS %r" % p.os)
+
 def verify(ctx):
     p = platform()
 

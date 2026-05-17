@@ -27,3 +27,35 @@ def install(ctx):
 
 def verify(ctx):
     ctx.run("ssh", ["-V"])
+
+def upgrade(ctx):
+    p = platform()
+    if p.os == "macos":
+        uppkg(manager = "brew", name = "openssh")
+    elif p.os == "linux":
+        if p.distro_like == "debian":
+            uppkg(manager = "apt", name = "openssh-client")
+        elif p.distro_like == "fedora":
+            uppkg(manager = "dnf", name = "openssh-clients")
+        elif p.distro_like == "arch":
+            uppkg(manager = "pacman", name = "openssh")
+        elif p.distro_like == "alpine":
+            uppkg(manager = "apk", name = "openssh-client")
+        else:
+            ctx.log("ssh: unsupported distro %r — install openssh manually" % p.distro)
+
+def uninstall(ctx):
+    p = platform()
+    if p.os == "macos":
+        unpkg(manager = "brew", name = "openssh")
+    elif p.os == "linux":
+        if p.distro_like == "debian":
+            unpkg(manager = "apt", name = "openssh-client")
+        elif p.distro_like == "fedora":
+            unpkg(manager = "dnf", name = "openssh-clients")
+        elif p.distro_like == "arch":
+            unpkg(manager = "pacman", name = "openssh")
+        elif p.distro_like == "alpine":
+            unpkg(manager = "apk", name = "openssh-client")
+        else:
+            ctx.log("ssh: unsupported distro %r — install openssh manually" % p.distro)

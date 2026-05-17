@@ -78,6 +78,15 @@ def install_pkg(ctx, name, version, **kwargs):
     else:
         ctx.run("sudo", ["apt-get", "install", "-y", name])
 
+def update(ctx):
+    ctx.run("sudo", ["apt-get", "update", "-y"])
+
+def upgrade(ctx):
+    ctx.run("sudo", ["apt-get", "install", "-y", "--only-upgrade", "apt"])
+
+def uninstall(ctx):
+    ctx.log("warning: apt is a system package manager and cannot be uninstalled")
+
 def uninstall_pkg(ctx, name, version, **kwargs):
     ctx.run("sudo", ["apt-get", "remove", "-y", name])
 

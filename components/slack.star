@@ -28,3 +28,31 @@ def verify(ctx):
         ctx.run("open", ["-a", "Slack"])
     else:
         ctx.run("slack", ["--version"])
+
+def upgrade(ctx):
+    p = platform()
+    if p.os == "macos":
+        uppkg(manager = "brew", name = "slack", cask = True)
+    elif p.os == "linux":
+        if p.distro_like == "debian":
+            ctx.run("bash", ["-c", "wget -qO /tmp/slack.deb 'https://downloads.slack-edge.com/releases/linux/4.36.140/prod/x64/slack-desktop-4.36.140-amd64.deb' && apt-get install -y /tmp/slack.deb"])
+        elif p.distro_like == "fedora":
+            ctx.run("bash", ["-c", "wget -qO /tmp/slack.rpm 'https://downloads.slack-edge.com/releases/linux/4.36.140/prod/x64/slack-4.36.140-0.1.el8.x86_64.rpm' && dnf install -y /tmp/slack.rpm"])
+        elif p.distro_like == "arch":
+            uppkg(manager = "pacman", name = "slack-desktop")
+        else:
+            uppkg(manager = "flatpak", name = "com.slack.Slack")
+
+def uninstall(ctx):
+    p = platform()
+    if p.os == "macos":
+        unpkg(manager = "brew", name = "slack", cask = True)
+    elif p.os == "linux":
+        if p.distro_like == "debian":
+            unpkg(manager = "apt", name = "slack-desktop")
+        elif p.distro_like == "fedora":
+            unpkg(manager = "dnf", name = "slack")
+        elif p.distro_like == "arch":
+            unpkg(manager = "pacman", name = "slack-desktop")
+        else:
+            unpkg(manager = "flatpak", name = "com.slack.Slack")

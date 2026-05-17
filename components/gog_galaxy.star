@@ -14,3 +14,9 @@ def install(ctx):
 
 def verify(ctx):
     ctx.run("open", ["-a", "GOG Galaxy"])
+
+def upgrade(ctx):
+    uppkg(manager = "brew", name = "gog-galaxy", cask = True)
+
+def uninstall(ctx):
+    unpkg(manager = "brew", name = "gog-galaxy", cask = True)
