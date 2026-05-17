@@ -72,7 +72,7 @@ cp "$REPO_ROOT/tests/fixtures/init.star" "$CONFIG_DIR/init.star"
 cat > "$CONFIG_DIR/deps.mod" <<EOF
 module(name = "test-fixtures", version = "0.0.0")
 
-replace(module = "stdlib", path = "$STDLIB_PATH")
+replace(name = "stdlib", path = "$STDLIB_PATH")
 EOF
 
 # --- phase 1: apply all components together so after= ordering is respected ---
