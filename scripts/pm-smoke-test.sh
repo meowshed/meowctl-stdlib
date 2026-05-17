@@ -9,12 +9,13 @@
 # Each <component> must match a test-<pm> fixture component name (e.g. test-apt).
 # The script:
 #   1. Creates a temp config dir, copies fixture test-pkg components and
-#      meowctl.star into it, and writes a meowctl.mod with a replace() directive
-#      pointing @stdlib// to the local STDLIB_PATH checkout.
-#   2. Runs meowctl install for all requested components in one call so that
-#      dependency ordering (after=) is respected — PM components are installed
+#      init.star into it, writes a local.star declaring all test-* components,
+#      and writes a meowctl.mod with a replace() directive pointing @stdlib//
+#      to the local STDLIB_PATH checkout.
+#   2. Runs meowctl apply for all requested components in one call so that
+#      dependency ordering (after=) is respected — PM components are applied
 #      before the test-pkg components that depend on them.
-#   3. Then for each test component individually: verify → update → uninstall.
+#   3. Then for each test component individually: verify → upgrade → remove.
 #   4. Exits non-zero on first failure, printing which component and phase failed.
 #
 # Environment:
@@ -52,9 +53,19 @@ mkdir -p "$CONFIG_DIR/components"
 # Copy fixture test-pkg components (user test components only).
 cp "$REPO_ROOT"/tests/fixtures/components/*.star "$CONFIG_DIR/components/"
 
-# Copy fixture meowctl.star (declares test-* components; stdlib PM deps are
-# auto-discovered at runtime via each test component's after= globals).
-cp "$REPO_ROOT/tests/fixtures/meowctl.star" "$CONFIG_DIR/meowctl.star"
+# Copy fixture init.star (stdlib PM deps are auto-discovered at runtime via
+# each test component's after= globals).
+cp "$REPO_ROOT/tests/fixtures/init.star" "$CONFIG_DIR/init.star"
+
+# Write local.star declaring all test-* components. meowctl remove requires
+# components to be declared in local.star (init.star is read-only).
+{
+  echo "# local.star — test-* component declarations for smoke test"
+  for component in "${COMPONENTS[@]}"; do
+    [[ "$component" != test-* ]] && continue
+    echo "component(name = \"$component\")"
+  done
+} > "$CONFIG_DIR/local.star"
 
 # Write meowctl.mod with a replace() directive so @stdlib// resolves to the
 # local STDLIB_PATH checkout instead of the registry.
@@ -64,15 +75,15 @@ module(name = "test-fixtures", version = "0.0.0")
 replace(module = "stdlib", path = "$STDLIB_PATH")
 EOF
 
-# --- phase 1: install all components together so after= ordering is respected ---
-echo "==> install: ${COMPONENTS[*]}"
-"$MEOWCTL_BIN" --config "$CONFIG_DIR" install --verbose "${COMPONENTS[@]}"
+# --- phase 1: apply all components together so after= ordering is respected ---
+echo "==> apply: ${COMPONENTS[*]}"
+"$MEOWCTL_BIN" --config "$CONFIG_DIR" apply --verbose "${COMPONENTS[@]}"
 
-# --- phase 2: update all components together (tests update path for all PMs) ---
-echo "==> update: ${COMPONENTS[*]}"
-"$MEOWCTL_BIN" --config "$CONFIG_DIR" update --verbose "${COMPONENTS[@]}"
+# --- phase 2: upgrade all components together (tests upgrade path for all PMs) ---
+echo "==> upgrade: ${COMPONENTS[*]}"
+"$MEOWCTL_BIN" --config "$CONFIG_DIR" upgrade --verbose "${COMPONENTS[@]}"
 
-# --- phase 3: verify + uninstall each test-pkg component individually ---
+# --- phase 3: verify + remove each test-pkg component individually ---
 FAILED=()
 
 run_phase() {
@@ -86,12 +97,12 @@ run_phase() {
 }
 
 for component in "${COMPONENTS[@]}"; do
-  # Only verify/uninstall test-pkg components; PM bootstrap components are
+  # Only verify/remove test-pkg components; PM bootstrap components are
   # intentionally left installed (other components depend on them).
   [[ "$component" != test-* ]] && continue
   echo "==> smoke: ${component}"
-  if run_phase verify    "$component" \
-  && run_phase uninstall "$component"; then
+  if run_phase verify  "$component" \
+  && run_phase remove  "$component"; then
     echo "  OK"
   else
     FAILED+=("$component")

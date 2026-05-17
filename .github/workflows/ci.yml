@@ -45,8 +45,8 @@ jobs:
 
       - name: Check all components
         run: |
-          meowctl/meowctl component check stdlib/components
-          meowctl/meowctl component check stdlib/bundles
+          meowctl/meowctl check stdlib/components
+          meowctl/meowctl check stdlib/bundles
 
   pm-contract:
     name: Check / PM contracts
