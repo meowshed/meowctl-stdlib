@@ -28,3 +28,9 @@ def upgrade(ctx):
 def uninstall(ctx):
     _activate_shims(ctx)
     unpkg(manager = "mise", name = "starship")
+
+def shell(ctx):
+    if ctx.shell == "fish":
+        ctx.emit("starship init fish | source")
+    elif ctx.shell in ("bash", "zsh"):
+        ctx.emit("eval \"$(starship init %s)\"" % ctx.shell)

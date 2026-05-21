@@ -28,3 +28,9 @@ def upgrade(ctx):
 def uninstall(ctx):
     _activate_shims(ctx)
     unpkg(manager = "mise", name = "direnv")
+
+def shell(ctx):
+    if ctx.shell == "fish":
+        ctx.emit("direnv hook fish | source")
+    elif ctx.shell in ("bash", "zsh"):
+        ctx.emit("eval \"$(direnv hook %s)\"" % ctx.shell)

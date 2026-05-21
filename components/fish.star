@@ -34,12 +34,12 @@ after = ["@stdlib//components/brew", "@stdlib//components/apt", "@stdlib//compon
 
 def _fish_bin(ctx):
     # ctx.which returns bool, not a path — use platform-based conventional paths.
-    # Note: on Apple Silicon macs, brew installs fish to /opt/homebrew/bin/fish,
-    # not /usr/local/bin/fish. If fish lands outside the conventional path, chsh
-    # and the /etc/shells append may use the wrong binary; users should ensure
-    # /opt/homebrew/bin is in their PATH before running meowctl.
+    # On Apple Silicon macs, brew installs fish to /opt/homebrew/bin/fish,
+    # not /usr/local/bin/fish.
     p = platform()
     if p.os == "macos":
+        if ctx.file_exists("/opt/homebrew/bin/fish"):
+            return "/opt/homebrew/bin/fish"
         return "/usr/local/bin/fish"
     return "/usr/bin/fish"
 
@@ -70,9 +70,11 @@ def install(ctx):
     fish = _fish_bin(ctx)
 
     # Add fish to /etc/shells if not already listed (required for chsh).
-    shells = ctx.read_file("/etc/shells")
-    if fish not in shells:
-        ctx.append_file("/etc/shells", fish + "\n")
+    # Uses grep to check — avoids read_file permission errors on /etc/shells.
+    # Uses sudo to append — /etc/shells is root-owned on macOS and Linux.
+    result = ctx.run("grep", ["-qxF", fish, "/etc/shells"])
+    if result.exit_code != 0:
+        ctx.run("sudo", ["sh", "-c", "echo '%s' >> /etc/shells" % fish])
 
     # Set fish as the default shell for the current user.
     ctx.run("chsh", ["-s", fish])

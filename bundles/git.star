@@ -8,7 +8,6 @@
 
 after = [
     "@stdlib//components/lazygit",
-    "@stdlib//components/tig",
     "@stdlib//components/delta",
     "@stdlib//components/forgit",
 ]
