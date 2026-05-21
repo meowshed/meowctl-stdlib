@@ -28,3 +28,9 @@ def upgrade(ctx):
 def uninstall(ctx):
     _activate_shims(ctx)
     unpkg(manager = "mise", name = "atuin")
+
+def shell(ctx):
+    if ctx.shell == "fish":
+        ctx.emit("atuin init fish | source")
+    elif ctx.shell in ("bash", "zsh"):
+        ctx.emit("eval \"$(atuin init %s)\"" % ctx.shell)
