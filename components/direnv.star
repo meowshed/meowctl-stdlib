@@ -30,5 +30,7 @@ def uninstall(ctx):
     unpkg(manager = "mise", name = "direnv")
 
 def shell(ctx):
-    if ctx.shell in ("fish", "bash", "zsh"):
+    if ctx.shell == "fish":
+        ctx.emit("direnv hook fish | source")
+    elif ctx.shell in ("bash", "zsh"):
         ctx.emit("eval \"$(direnv hook %s)\"" % ctx.shell)
