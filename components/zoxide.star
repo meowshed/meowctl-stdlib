@@ -31,6 +31,7 @@ def uninstall(ctx):
 
 def shell(ctx):
     if ctx.shell == "fish":
-        ctx.emit("zoxide init fish | source")
+        # --cmd cd replaces the builtin cd with zoxide-aware cd.
+        ctx.emit("zoxide init --cmd cd fish | source")
     elif ctx.shell in ("bash", "zsh"):
-        ctx.emit("eval \"$(zoxide init %s)\"" % ctx.shell)
+        ctx.emit("eval \"$(zoxide init --cmd cd %s)\"" % ctx.shell)
