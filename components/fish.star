@@ -48,7 +48,7 @@ def _install_fisher(ctx):
     # Fisher is not packaged anywhere; this is the only supported path.
     # Use --no-config to avoid loading config.fish during bootstrap, which
     # would try to activate mise/starship/atuin/direnv before they are on PATH.
-    ctx.run("fish", ["--no-config", "-c", "curl -sL https://raw.githubusercontent.com/jorgebucaran/fisher/main/functions/fisher.fish | source && fisher install jorgebucaran/fisher"])
+    ctx.run("fish", ["--no-config", "-c", "curl -sL https://raw.githubusercontent.com/jorgebucaran/fisher/main/functions/fisher.fish | source && fisher install --force jorgebucaran/fisher"])
 
 def install(ctx):
     p = platform()
