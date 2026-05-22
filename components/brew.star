@@ -90,6 +90,18 @@ def uninstall_pkg(ctx, name, version, **kwargs):
     else:
         ctx.run("brew", ["uninstall", name])
 
+def shell(ctx):
+    p = platform()
+    if p.os != "macos":
+        return
+    # Prepend /opt/homebrew/bin so that brew-installed tools (e.g. bash 5,
+    # gnu coreutils) shadow the macOS BSD versions picked up from /usr/bin.
+    # fish_add_path -m prepends and deduplicates.
+    if ctx.shell == "fish":
+        ctx.emit("fish_add_path -m /opt/homebrew/bin /opt/homebrew/sbin")
+    elif ctx.shell in ("bash", "zsh"):
+        ctx.emit('export PATH="/opt/homebrew/bin:/opt/homebrew/sbin:$PATH"')
+
 def interrogate(ctx):
     formula_result = ctx.run("brew", ["list", "--formula", "--full-name"])
     cask_result = ctx.run("brew", ["list", "--cask"])
