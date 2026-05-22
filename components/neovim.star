@@ -4,7 +4,8 @@
 # after:     ["@stdlib//components/mise"]
 #
 # Neovim text editor.
-# Installed via mise (aqua backend, prebuilt binary).
+# Installed via mise (aqua backend explicitly to avoid vfox being picked
+# as the default backend from the mise registry).
 
 after = ["@stdlib//components/mise"]
 
@@ -15,7 +16,7 @@ def _activate_shims(ctx):
 
 def install(ctx):
     _activate_shims(ctx)
-    pkg(manager = "mise", name = "neovim", version = "latest")
+    pkg(manager = "mise", name = "aqua:neovim/neovim", version = "latest")
 
 def verify(ctx):
     _activate_shims(ctx)
@@ -23,8 +24,8 @@ def verify(ctx):
 
 def upgrade(ctx):
     _activate_shims(ctx)
-    uppkg(manager = "mise", name = "neovim")
+    uppkg(manager = "mise", name = "aqua:neovim/neovim")
 
 def uninstall(ctx):
     _activate_shims(ctx)
-    unpkg(manager = "mise", name = "neovim")
+    unpkg(manager = "mise", name = "aqua:neovim/neovim")
