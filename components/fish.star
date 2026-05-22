@@ -134,9 +134,14 @@ def uninstall_pkg(ctx, name, version, **kwargs):
     ctx.run("fish", ["--no-config", "-c", "source ~/.config/fish/functions/fisher.fish; fisher remove %s" % name])
 
 def interrogate(ctx):
-    result = ctx.run("fish", ["--no-config", "-c", "source ~/.config/fish/functions/fisher.fish; fisher list"])
+    # fisher list relies on $_fisher_plugins (a universal variable) which is not
+    # available with --no-config. Read fish_plugins directly instead.
+    fish_plugins = ctx.home + "/.config/fish/fish_plugins"
+    if not ctx.file_exists(fish_plugins):
+        return []
+    content = ctx.read_file(fish_plugins)
     names = []
-    for line in result.stdout.splitlines():
+    for line in content.splitlines():
         line = line.strip()
         if line:
             names.append(line)
