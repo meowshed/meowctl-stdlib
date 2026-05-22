@@ -12,7 +12,7 @@ def install(ctx):
     pkg(manager = "fisher", name = "meaningful-ooo/sponge")
 
 def verify(ctx):
-    ctx.run("fish", ["-c", "fisher list | grep sponge"])
+    ctx.run("fish", ["--no-config", "-c", "source ~/.config/fish/functions/fisher.fish; fisher list | grep sponge"])
 
 def upgrade(ctx):
     uppkg(manager = "fisher", name = "meaningful-ooo/sponge")

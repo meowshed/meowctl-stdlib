@@ -12,7 +12,7 @@ def install(ctx):
     pkg(manager = "fisher", name = "jorgebucaran/autopair.fish")
 
 def verify(ctx):
-    ctx.run("fish", ["-c", "fisher list | grep autopair.fish"])
+    ctx.run("fish", ["--no-config", "-c", "source ~/.config/fish/functions/fisher.fish; fisher list | grep autopair.fish"])
 
 def upgrade(ctx):
     uppkg(manager = "fisher", name = "jorgebucaran/autopair.fish")

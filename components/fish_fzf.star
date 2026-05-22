@@ -12,7 +12,7 @@ def install(ctx):
     pkg(manager = "fisher", name = "patrickf1/fzf.fish")
 
 def verify(ctx):
-    ctx.run("fish", ["-c", "fisher list | grep -F fzf.fish"])
+    ctx.run("fish", ["--no-config", "-c", "source ~/.config/fish/functions/fisher.fish; fisher list | grep -F fzf.fish"])
 
 def upgrade(ctx):
     uppkg(manager = "fisher", name = "patrickf1/fzf.fish")
