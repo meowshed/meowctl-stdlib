@@ -81,7 +81,8 @@ def install(ctx):
     # Set fish as the default shell for the current user.
     ctx.run("chsh", ["-s", fish])
 
-    _install_fisher(ctx)
+    if not ctx.file_exists(ctx.home + "/.config/fish/functions/fisher.fish"):
+        _install_fisher(ctx)
 
 def upgrade(ctx):
     p = platform()
