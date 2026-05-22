@@ -15,7 +15,7 @@ def _activate_shims(ctx):
 
 def install(ctx):
     _activate_shims(ctx)
-    pkg(manager = "mise", name = "tealdeer", version = "latest")
+    pkg(manager = "mise", name = "aqua:tealdeer-rs/tealdeer", version = "latest")
 
 def verify(ctx):
     _activate_shims(ctx)
@@ -23,8 +23,8 @@ def verify(ctx):
 
 def upgrade(ctx):
     _activate_shims(ctx)
-    uppkg(manager = "mise", name = "tealdeer")
+    uppkg(manager = "mise", name = "aqua:tealdeer-rs/tealdeer")
 
 def uninstall(ctx):
     _activate_shims(ctx)
-    unpkg(manager = "mise", name = "tealdeer")
+    unpkg(manager = "mise", name = "aqua:tealdeer-rs/tealdeer")

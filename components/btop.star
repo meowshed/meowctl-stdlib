@@ -1,12 +1,13 @@
 # components/btop.star
 #
 # platform: all
-# after:     ["@stdlib//components/mise"]
+# after:     ["@stdlib//components/brew", "@stdlib//components/mise"]
 #
 # btop — top/htop replacement.
-# Installed via mise (aqua backend, prebuilt binary).
+# macOS: installed via Homebrew (aqua backend is linux-only).
+# Linux: installed via mise (aqua backend).
 
-after = ["@stdlib//components/mise"]
+after = ["@stdlib//components/brew", "@stdlib//components/mise"]
 
 def _activate_shims(ctx):
     home = ctx.env("HOME")
@@ -14,17 +15,25 @@ def _activate_shims(ctx):
         ctx.add_path(home + "/.local/share/mise/shims")
 
 def install(ctx):
-    _activate_shims(ctx)
-    pkg(manager = "mise", name = "btop", version = "latest")
+    if ctx.os == "macos":
+        pkg(manager = "brew", name = "btop")
+    else:
+        _activate_shims(ctx)
+        pkg(manager = "mise", name = "btop", version = "latest")
 
 def verify(ctx):
-    _activate_shims(ctx)
     ctx.run("btop", ["--version"])
 
 def upgrade(ctx):
-    _activate_shims(ctx)
-    uppkg(manager = "mise", name = "btop")
+    if ctx.os == "macos":
+        uppkg(manager = "brew", name = "btop")
+    else:
+        _activate_shims(ctx)
+        uppkg(manager = "mise", name = "btop")
 
 def uninstall(ctx):
-    _activate_shims(ctx)
-    unpkg(manager = "mise", name = "btop")
+    if ctx.os == "macos":
+        unpkg(manager = "brew", name = "btop")
+    else:
+        _activate_shims(ctx)
+        unpkg(manager = "mise", name = "btop")
