@@ -125,7 +125,9 @@ def shell(ctx):
 
 def install_pkg(ctx, name, version, **kwargs):
     # version is ignored — fisher manages versions via its lock file.
-    ctx.run("fish", ["--no-config", "-c", "source ~/.config/fish/functions/fisher.fish; fisher install %s" % name])
+    # --force is required when plugin files already exist on disk from a
+    # previous partial or interrupted install that did not update fish_plugins.
+    ctx.run("fish", ["--no-config", "-c", "source ~/.config/fish/functions/fisher.fish; fisher install --force %s" % name])
 
 def uninstall_pkg(ctx, name, version, **kwargs):
     ctx.run("fish", ["--no-config", "-c", "source ~/.config/fish/functions/fisher.fish; fisher remove %s" % name])
