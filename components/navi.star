@@ -15,7 +15,8 @@ def _activate_shims(ctx):
         ctx.add_path(home + "/.local/share/mise/shims")
 
 def install(ctx):
-    if ctx.os == "macos":
+    p = platform()
+    if p.os == "macos":
         pkg(manager = "brew", name = "navi")
     else:
         _activate_shims(ctx)
@@ -25,14 +26,16 @@ def verify(ctx):
     ctx.run("navi", ["--version"])
 
 def upgrade(ctx):
-    if ctx.os == "macos":
+    p = platform()
+    if p.os == "macos":
         uppkg(manager = "brew", name = "navi")
     else:
         _activate_shims(ctx)
         uppkg(manager = "mise", name = "navi")
 
 def uninstall(ctx):
-    if ctx.os == "macos":
+    p = platform()
+    if p.os == "macos":
         unpkg(manager = "brew", name = "navi")
     else:
         _activate_shims(ctx)
