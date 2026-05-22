@@ -1,12 +1,13 @@
 # components/navi.star
 #
 # platform: all
-# after:     ["@stdlib//components/mise"]
+# after:     ["@stdlib//components/brew", "@stdlib//components/mise"]
 #
 # navi — interactive cheatsheet tool for the command-line.
-# Installed via mise (aqua backend, prebuilt binary).
+# macOS: installed via Homebrew (aqua backend is linux/windows-only).
+# Linux: installed via mise (aqua backend).
 
-after = ["@stdlib//components/mise"]
+after = ["@stdlib//components/brew", "@stdlib//components/mise"]
 
 def _activate_shims(ctx):
     home = ctx.env("HOME")
@@ -14,17 +15,25 @@ def _activate_shims(ctx):
         ctx.add_path(home + "/.local/share/mise/shims")
 
 def install(ctx):
-    _activate_shims(ctx)
-    pkg(manager = "mise", name = "navi", version = "latest")
+    if ctx.os == "macos":
+        pkg(manager = "brew", name = "navi")
+    else:
+        _activate_shims(ctx)
+        pkg(manager = "mise", name = "navi", version = "latest")
 
 def verify(ctx):
-    _activate_shims(ctx)
     ctx.run("navi", ["--version"])
 
 def upgrade(ctx):
-    _activate_shims(ctx)
-    uppkg(manager = "mise", name = "navi")
+    if ctx.os == "macos":
+        uppkg(manager = "brew", name = "navi")
+    else:
+        _activate_shims(ctx)
+        uppkg(manager = "mise", name = "navi")
 
 def uninstall(ctx):
-    _activate_shims(ctx)
-    unpkg(manager = "mise", name = "navi")
+    if ctx.os == "macos":
+        unpkg(manager = "brew", name = "navi")
+    else:
+        _activate_shims(ctx)
+        unpkg(manager = "mise", name = "navi")

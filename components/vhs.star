@@ -10,13 +10,13 @@ platforms = ["macos"]
 after = ["@stdlib//components/brew"]
 
 def install(ctx):
-    pkg(manager = "brew", name = "vhs", cask = True)
+    pkg(manager = "brew", name = "vhs")
 
 def verify(ctx):
     ctx.run("vhs", ["--version"])
 
 def upgrade(ctx):
-    uppkg(manager = "brew", name = "vhs", cask = True)
+    uppkg(manager = "brew", name = "vhs")
 
 def uninstall(ctx):
-    unpkg(manager = "brew", name = "vhs", cask = True)
+    unpkg(manager = "brew", name = "vhs")

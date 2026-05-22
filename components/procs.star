@@ -15,7 +15,7 @@ def _activate_shims(ctx):
 
 def install(ctx):
     _activate_shims(ctx)
-    pkg(manager = "mise", name = "procs", version = "latest")
+    pkg(manager = "mise", name = "aqua:dalance/procs", version = "latest")
 
 def verify(ctx):
     _activate_shims(ctx)
@@ -23,8 +23,8 @@ def verify(ctx):
 
 def upgrade(ctx):
     _activate_shims(ctx)
-    uppkg(manager = "mise", name = "procs")
+    uppkg(manager = "mise", name = "aqua:dalance/procs")
 
 def uninstall(ctx):
     _activate_shims(ctx)
-    unpkg(manager = "mise", name = "procs")
+    unpkg(manager = "mise", name = "aqua:dalance/procs")
