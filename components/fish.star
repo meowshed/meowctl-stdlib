@@ -46,9 +46,7 @@ def _fish_bin(ctx):
 def _install_fisher(ctx):
     # Bootstrap fisher using the official curl installer, run inside fish.
     # Fisher is not packaged anywhere; this is the only supported path.
-    # Use --no-config to avoid loading config.fish during bootstrap, which
-    # would try to activate mise/starship/atuin/direnv before they are on PATH.
-    ctx.run("fish", ["--no-config", "-c", "curl -sL https://raw.githubusercontent.com/jorgebucaran/fisher/main/functions/fisher.fish | source && fisher install --force jorgebucaran/fisher"])
+    ctx.run("fish", ["-c", "curl -sL https://raw.githubusercontent.com/jorgebucaran/fisher/main/functions/fisher.fish | source && fisher install jorgebucaran/fisher"])
 
 def install(ctx):
     p = platform()
@@ -81,8 +79,7 @@ def install(ctx):
     # Set fish as the default shell for the current user.
     ctx.run("chsh", ["-s", fish])
 
-    if not ctx.file_exists(ctx.home + "/.config/fish/functions/fisher.fish"):
-        _install_fisher(ctx)
+    _install_fisher(ctx)
 
 def upgrade(ctx):
     p = platform()
@@ -117,7 +114,7 @@ def uninstall(ctx):
             ctx.log("fish: unsupported distro %r — uninstall fish manually" % p.distro)
 
 def verify(ctx):
-    ctx.run("fish", ["--no-config", "--version"])
+    ctx.run("fish", ["--version"])
 
 def shell(ctx):
     # fish does not require eval-based activation; the hook is intentionally
@@ -126,22 +123,15 @@ def shell(ctx):
 
 def install_pkg(ctx, name, version, **kwargs):
     # version is ignored — fisher manages versions via its lock file.
-    # --force is required when plugin files already exist on disk from a
-    # previous partial or interrupted install that did not update fish_plugins.
-    ctx.run("fish", ["--no-config", "-c", "source ~/.config/fish/functions/fisher.fish; fisher install --force %s" % name])
+    ctx.run("fish", ["-c", "fisher install %s" % name])
 
 def uninstall_pkg(ctx, name, version, **kwargs):
-    ctx.run("fish", ["--no-config", "-c", "source ~/.config/fish/functions/fisher.fish; fisher remove %s" % name])
+    ctx.run("fish", ["-c", "fisher remove %s" % name])
 
 def interrogate(ctx):
-    # fisher list relies on $_fisher_plugins (a universal variable) which is not
-    # available with --no-config. Read fish_plugins directly instead.
-    fish_plugins = ctx.home + "/.config/fish/fish_plugins"
-    if not ctx.file_exists(fish_plugins):
-        return []
-    content = ctx.read_file(fish_plugins)
+    result = ctx.run("fish", ["-c", "fisher list"])
     names = []
-    for line in content.splitlines():
+    for line in result.stdout.splitlines():
         line = line.strip()
         if line:
             names.append(line)
