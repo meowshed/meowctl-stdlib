@@ -46,7 +46,9 @@ def _fish_bin(ctx):
 def _install_fisher(ctx):
     # Bootstrap fisher using the official curl installer, run inside fish.
     # Fisher is not packaged anywhere; this is the only supported path.
-    ctx.run("fish", ["-c", "curl -sL https://raw.githubusercontent.com/jorgebucaran/fisher/main/functions/fisher.fish | source && fisher install jorgebucaran/fisher"])
+    # Use --no-config to avoid loading config.fish during bootstrap, which
+    # would try to activate mise/starship/atuin/direnv before they are on PATH.
+    ctx.run("fish", ["--no-config", "-c", "curl -sL https://raw.githubusercontent.com/jorgebucaran/fisher/main/functions/fisher.fish | source && fisher install jorgebucaran/fisher"])
 
 def install(ctx):
     p = platform()
@@ -114,7 +116,7 @@ def uninstall(ctx):
             ctx.log("fish: unsupported distro %r — uninstall fish manually" % p.distro)
 
 def verify(ctx):
-    ctx.run("fish", ["--version"])
+    ctx.run("fish", ["--no-config", "--version"])
 
 def shell(ctx):
     # fish does not require eval-based activation; the hook is intentionally
@@ -123,13 +125,13 @@ def shell(ctx):
 
 def install_pkg(ctx, name, version, **kwargs):
     # version is ignored — fisher manages versions via its lock file.
-    ctx.run("fish", ["-c", "fisher install %s" % name])
+    ctx.run("fish", ["--no-config", "-c", "source ~/.config/fish/functions/fisher.fish; fisher install %s" % name])
 
 def uninstall_pkg(ctx, name, version, **kwargs):
-    ctx.run("fish", ["-c", "fisher remove %s" % name])
+    ctx.run("fish", ["--no-config", "-c", "source ~/.config/fish/functions/fisher.fish; fisher remove %s" % name])
 
 def interrogate(ctx):
-    result = ctx.run("fish", ["-c", "fisher list"])
+    result = ctx.run("fish", ["--no-config", "-c", "source ~/.config/fish/functions/fisher.fish; fisher list"])
     names = []
     for line in result.stdout.splitlines():
         line = line.strip()

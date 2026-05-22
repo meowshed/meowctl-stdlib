@@ -12,7 +12,7 @@ def install(ctx):
     pkg(manager = "fisher", name = "edc/bass")
 
 def verify(ctx):
-    ctx.run("fish", ["-c", "fisher list | grep bass"])
+    ctx.run("fish", ["--no-config", "-c", "source ~/.config/fish/functions/fisher.fish; fisher list | grep bass"])
 
 def upgrade(ctx):
     uppkg(manager = "fisher", name = "edc/bass")
