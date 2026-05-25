@@ -94,6 +94,7 @@ def shell(ctx):
     p = platform()
     if p.os != "macos":
         return
+
     # Prepend /opt/homebrew/bin so that brew-installed tools (e.g. bash 5,
     # gnu coreutils) shadow the macOS BSD versions picked up from /usr/bin.
     # fish_add_path -m prepends and deduplicates.
