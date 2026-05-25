@@ -14,7 +14,7 @@ jobs:
     name: Check / Formatting
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
       - uses: jdx/mise-action@c37c93293d6b742fc901e1406b8f764f6fb19dac # v2
       - name: Check formatting
         run: mise run lint
@@ -24,12 +24,12 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout meowctl-stdlib
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         with:
           path: stdlib
 
       - name: Checkout meowctl
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         with:
           repository: meowshed/meowctl
           path: meowctl
@@ -53,12 +53,12 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout meowctl-stdlib
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         with:
           path: stdlib
 
       - name: Checkout meowctl
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         with:
           repository: meowshed/meowctl
           path: meowctl
@@ -79,12 +79,12 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout meowctl-stdlib
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         with:
           path: stdlib
 
       - name: Checkout meowctl
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         with:
           repository: meowshed/meowctl
           path: meowctl
@@ -121,12 +121,12 @@ jobs:
         run: dnf install -y git golang sudo
 
       - name: Checkout meowctl-stdlib
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         with:
           path: stdlib
 
       - name: Checkout meowctl
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         with:
           repository: meowshed/meowctl
           path: meowctl
@@ -158,12 +158,12 @@ jobs:
         run: pacman -Syu --noconfirm git go sudo
 
       - name: Checkout meowctl-stdlib
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         with:
           path: stdlib
 
       - name: Checkout meowctl
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         with:
           repository: meowshed/meowctl
           path: meowctl
@@ -195,12 +195,12 @@ jobs:
         run: apk add --no-cache git go bash sudo
 
       - name: Checkout meowctl-stdlib
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         with:
           path: stdlib
 
       - name: Checkout meowctl
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         with:
           repository: meowshed/meowctl
           path: meowctl
@@ -226,12 +226,12 @@ jobs:
     runs-on: macos-latest
     steps:
       - name: Checkout meowctl-stdlib
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         with:
           path: stdlib
 
       - name: Checkout meowctl
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         with:
           repository: meowshed/meowctl
           path: meowctl
@@ -261,7 +261,7 @@ jobs:
     name: Secrets (trufflehog)
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
         with:
           fetch-depth: 0
       - name: Scan for secrets
