@@ -3,11 +3,11 @@ buildifier = "latest"
 
 [tasks.fmt]
 description = "Format all .star files with buildifier"
-run = "buildifier --type=bzl components/*.star bundles/*.star tests/fixtures/components/*.star"
+run = "buildifier --type=bzl $(find components bundles tests/fixtures/components -name '*.star')"
 
 [tasks.lint]
 description = "Check .star file formatting with buildifier (no writes)"
-run = "buildifier --mode=check --type=bzl components/*.star bundles/*.star tests/fixtures/components/*.star"
+run = "buildifier --mode=check --type=bzl $(find components bundles tests/fixtures/components -name '*.star')"
 
 [tasks.check]
 description = "Validate all component and bundle .star files with meowctl"
