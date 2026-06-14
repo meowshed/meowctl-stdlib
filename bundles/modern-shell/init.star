@@ -17,7 +17,6 @@ after = [
     "@stdlib//components/fish_sponge",
     "@stdlib//components/starship",
     "@stdlib//components/zoxide",
-    "@stdlib//components/atuin",
     # network / connectivity
     "@stdlib//components/openssh",
     "@stdlib//components/curl",
