@@ -3,20 +3,35 @@
 # platforms: ["macos"]
 # after:     ["@stdlib//components/brew"]
 #
-# Nerd Fonts (Hack Nerd Font).
-# Installed via Homebrew formula.
+# Nerd Fonts and additional programming/UI fonts.
+# Installed via Homebrew cask (font casks).
 
 platforms = ["macos"]
 after = ["@stdlib//components/brew"]
 
+_FONTS = [
+    "font-hack-nerd-font",
+    "font-caskaydia-cove-nerd-font",
+    "font-caskaydia-mono-nerd-font",
+    "font-fira-code-nerd-font",
+    "font-fira-sans",
+    "font-inconsolata-nerd-font",
+    "font-jetbrains-mono",
+    "font-jetbrains-mono-nerd-font",
+]
+
 def install(ctx):
-    pkg(manager = "brew", name = "font-hack-nerd-font")
+    for font in _FONTS:
+        pkg(manager = "brew", name = font, cask = True)
 
 def verify(ctx):
-    ctx.run("brew", ["list", "font-hack-nerd-font"])
+    for font in _FONTS:
+        ctx.run("brew", ["list", "--cask", font])
 
 def upgrade(ctx):
-    uppkg(manager = "brew", name = "font-hack-nerd-font")
+    for font in _FONTS:
+        uppkg(manager = "brew", name = font, cask = True)
 
 def uninstall(ctx):
-    unpkg(manager = "brew", name = "font-hack-nerd-font")
+    for font in _FONTS:
+        unpkg(manager = "brew", name = font, cask = True)
