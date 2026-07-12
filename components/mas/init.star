@@ -7,8 +7,8 @@
 # PM kwargs: none
 #
 # Package names are numeric App Store IDs (e.g. "1333542190").
-# Guard: MEOW_ENABLE_MAS=true environment variable must be set; mas requires
-#        the user to be signed in to the App Store.
+# Requires the user to be signed in to the App Store (mas surfaces its own
+# error if not).
 # uninstall: mas cannot auto-uninstall by ID; logs a warning and returns.
 # interrogate: `mas list` → space-padded `<id>  <name> (<version>)` per line;
 #              returns the numeric ID strings (first space-delimited field).
@@ -31,9 +31,6 @@ def verify(ctx):
 
 def install_pkg(ctx, name, version, **kwargs):
     # name: numeric App Store ID string, e.g. "1333542190"
-    if ctx.env("MEOW_ENABLE_MAS") != "true":
-        ctx.log("mas: skipping install of %s — set MEOW_ENABLE_MAS=true to enable" % name)
-        return
     ctx.run("mas", ["install", name])
 
 def uninstall_pkg(ctx, name, version, **kwargs):
