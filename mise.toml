@@ -12,6 +12,6 @@ run = "buildifier --mode=check --type=bzl $(find components bundles tests/fixtur
 [tasks.check]
 description = "Validate all component and bundle .star files with meowctl"
 run = """
-meowctl component check components
-meowctl component check bundles
+meowctl check components
+meowctl check bundles
 """
