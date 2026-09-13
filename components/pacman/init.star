@@ -33,19 +33,19 @@ def add_repo(ctx, **kwargs):
 def install_pkg(ctx, name, version, **kwargs):
     if version:
         ctx.log("warning: pacman does not support version pinning; installing latest %s" % name)
-    ctx.run("sudo", ["pacman", "-S", "--noconfirm", name])
+    ctx.run("sudo", ["pacman", "-S", "--noconfirm", name], interactive = True)
 
 def update(ctx):
-    ctx.run("sudo", ["pacman", "-Sy", "--noconfirm"])
+    ctx.run("sudo", ["pacman", "-Sy", "--noconfirm"], interactive = True)
 
 def upgrade(ctx):
-    ctx.run("sudo", ["pacman", "-S", "--noconfirm", "pacman"])
+    ctx.run("sudo", ["pacman", "-S", "--noconfirm", "pacman"], interactive = True)
 
 def uninstall(ctx):
     ctx.log("warning: pacman is a system package manager and cannot be uninstalled")
 
 def uninstall_pkg(ctx, name, version, **kwargs):
-    ctx.run("sudo", ["pacman", "-R", "--noconfirm", name])
+    ctx.run("sudo", ["pacman", "-R", "--noconfirm", name], interactive = True)
 
 def interrogate(ctx):
     result = ctx.run("pacman", ["-Qq"])

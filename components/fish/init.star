@@ -74,10 +74,11 @@ def install(ctx):
     # Uses sudo to append — /etc/shells is root-owned on macOS and Linux.
     result = ctx.run("grep", ["-qxF", fish, "/etc/shells"])
     if result.exit_code != 0:
-        ctx.run("sudo", ["sh", "-c", "echo '%s' >> /etc/shells" % fish])
+        ctx.run("sudo", ["sh", "-c", "echo '%s' >> /etc/shells" % fish], interactive = True)
 
-    # Set fish as the default shell for the current user.
-    ctx.run("chsh", ["-s", fish])
+    # Set fish as the default shell for the current user. chsh authenticates
+    # the user, so it needs the real terminal.
+    ctx.run("chsh", ["-s", fish], interactive = True)
 
     _install_fisher(ctx)
 

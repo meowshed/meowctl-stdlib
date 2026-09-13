@@ -36,26 +36,26 @@ def verify(ctx):
 def add_repo(ctx, **kwargs):
     copr = kwargs.get("copr", "")
     if copr:
-        ctx.run("sudo", ["dnf", "install", "-y", "dnf-plugins-core"])
-        ctx.run("sudo", ["dnf", "copr", "enable", "-y", copr])
+        ctx.run("sudo", ["dnf", "install", "-y", "dnf-plugins-core"], interactive = True)
+        ctx.run("sudo", ["dnf", "copr", "enable", "-y", copr], interactive = True)
 
 def install_pkg(ctx, name, version, **kwargs):
     if version:
-        ctx.run("sudo", ["dnf", "install", "-y", "%s-%s" % (name, version)])
+        ctx.run("sudo", ["dnf", "install", "-y", "%s-%s" % (name, version)], interactive = True)
     else:
-        ctx.run("sudo", ["dnf", "install", "-y", name])
+        ctx.run("sudo", ["dnf", "install", "-y", name], interactive = True)
 
 def update(ctx):
-    ctx.run("sudo", ["dnf", "makecache", "--refresh"])
+    ctx.run("sudo", ["dnf", "makecache", "--refresh"], interactive = True)
 
 def upgrade(ctx):
-    ctx.run("sudo", ["dnf", "upgrade", "-y", "dnf"])
+    ctx.run("sudo", ["dnf", "upgrade", "-y", "dnf"], interactive = True)
 
 def uninstall(ctx):
     ctx.log("warning: dnf is a system package manager and cannot be uninstalled")
 
 def uninstall_pkg(ctx, name, version, **kwargs):
-    ctx.run("sudo", ["dnf", "remove", "-y", name])
+    ctx.run("sudo", ["dnf", "remove", "-y", name], interactive = True)
 
 def interrogate(ctx):
     result = ctx.run("dnf", ["--quiet", "repoquery", "--installed", "--qf", "%{name}\n"])

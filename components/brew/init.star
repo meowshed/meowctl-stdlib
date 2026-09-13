@@ -74,7 +74,10 @@ def install_pkg(ctx, name, version, **kwargs):
             # Homebrew casks do not support pinned versions via `brew install`.
             # Install the current cask and log the version expectation.
             ctx.log("brew cask: version pinning not supported; installing latest %s" % name)
-        ctx.run("brew", ["install", "--cask", name])
+
+        # A cask may hand off to the macOS installer, which prompts for admin
+        # credentials; without the real terminal that prompt is invisible.
+        ctx.run("brew", ["install", "--cask", name], interactive = True)
     elif version and version != "latest":
         ctx.run("brew", ["install", "%s@%s" % (name, version)])
     else:
@@ -86,7 +89,7 @@ def uninstall_pkg(ctx, name, version, **kwargs):
     # here would be a side-effect the caller didn't request.
     cask = kwargs.get("cask", False)
     if cask:
-        ctx.run("brew", ["uninstall", "--cask", name])
+        ctx.run("brew", ["uninstall", "--cask", name], interactive = True)
     else:
         ctx.run("brew", ["uninstall", name])
 

@@ -51,8 +51,8 @@ def add_repo(ctx, **kwargs):
         key_file = key_file + ".asc"
         keyring_path = "/etc/apt/keyrings/" + key_file
 
-        ctx.run("sudo", ["apt-get", "install", "-y", "curl", "ca-certificates"])
-        ctx.run("sudo", ["install", "-dm", "755", "/etc/apt/keyrings"])
+        ctx.run("sudo", ["apt-get", "install", "-y", "curl", "ca-certificates"], interactive = True)
+        ctx.run("sudo", ["install", "-dm", "755", "/etc/apt/keyrings"], interactive = True)
         ctx.run("sh", ["-c", "curl -fsSL %s | sudo tee %s > /dev/null" % (key_url, keyring_path)])
 
     if repo_line:
@@ -70,25 +70,25 @@ def add_repo(ctx, **kwargs):
                 break
         list_path = "/etc/apt/sources.list.d/" + list_name + ".list"
         ctx.run("sh", ["-c", "echo '%s' | sudo tee %s" % (repo_line, list_path)])
-        ctx.run("sudo", ["apt-get", "update", "-y"])
+        ctx.run("sudo", ["apt-get", "update", "-y"], interactive = True)
 
 def install_pkg(ctx, name, version, **kwargs):
     if version:
-        ctx.run("sudo", ["apt-get", "install", "-y", "%s=%s" % (name, version)])
+        ctx.run("sudo", ["apt-get", "install", "-y", "%s=%s" % (name, version)], interactive = True)
     else:
-        ctx.run("sudo", ["apt-get", "install", "-y", name])
+        ctx.run("sudo", ["apt-get", "install", "-y", name], interactive = True)
 
 def update(ctx):
-    ctx.run("sudo", ["apt-get", "update", "-y"])
+    ctx.run("sudo", ["apt-get", "update", "-y"], interactive = True)
 
 def upgrade(ctx):
-    ctx.run("sudo", ["apt-get", "install", "-y", "--only-upgrade", "apt"])
+    ctx.run("sudo", ["apt-get", "install", "-y", "--only-upgrade", "apt"], interactive = True)
 
 def uninstall(ctx):
     ctx.log("warning: apt is a system package manager and cannot be uninstalled")
 
 def uninstall_pkg(ctx, name, version, **kwargs):
-    ctx.run("sudo", ["apt-get", "remove", "-y", name])
+    ctx.run("sudo", ["apt-get", "remove", "-y", name], interactive = True)
 
 def interrogate(ctx):
     result = ctx.run("dpkg-query", ["-f", "${Package}\n", "-W"])
