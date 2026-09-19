@@ -10,7 +10,7 @@ platforms = ["macos"]
 after = ["@stdlib//components/mas"]
 
 def install(ctx):
-    pkg(manager = "mas", name = "24 Hour Wallpaper", version = "1226087575")
+    pkg(manager = "mas", name = "1226087575")  # 24 Hour Wallpaper
 
 def verify(ctx):
     ctx.run("mas", ["list"])

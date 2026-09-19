@@ -10,7 +10,7 @@ platforms = ["macos"]
 after = ["@stdlib//components/mas"]
 
 def install(ctx):
-    pkg(manager = "mas", name = "Numbers", version = "361304891")
+    pkg(manager = "mas", name = "361304891")  # Numbers
 
 def verify(ctx):
     ctx.run("mas", ["list"])
