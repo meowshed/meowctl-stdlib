@@ -5,18 +5,29 @@
 #
 # Mini Motorways — Mac App Store.
 # Installed via mas (Mac App Store CLI).
+#
+# Apple Arcade title: mas cannot install or even look it up — the App Store CLI
+# only handles purchasable apps, and `mas info <id>` answers "No apps found in
+# the App Store for ADAM ID". Installing it means opening the App Store by hand
+# with an active Arcade subscription; this component is declarative only.
 
 platforms = ["macos"]
 after = ["@stdlib//components/mas"]
 
 def install(ctx):
-    pkg(manager = "mas", name = "1456188526")  # Mini Motorways
+    # No pkg() call: mas cannot install this, so asking it to would fail on
+    # every apply. Report whether it is there and leave it at that.
+    r = ctx.run("sh", ["-c", "mas list | grep -q '^ *1456188526 ' && echo yes || echo no"])
+    if r.stdout.strip() == "yes":
+        ctx.log("Mini Motorways: installed")
+    else:
+        ctx.log("Mini Motorways: NOT installed — open the App Store and get it through Arcade")
 
 def verify(ctx):
-    ctx.run("mas", ["list"])
+    ctx.run("sh", ["-c", "mas list | grep -q '^ *1456188526 ' || echo 'Mini Motorways: not installed'"])
 
 def upgrade(ctx):
-    uppkg(manager = "mas", name = "1456188526")
+    install(ctx)
 
 def uninstall(ctx):
-    unpkg(manager = "mas", name = "1456188526")
+    ctx.log("Mini Motorways: remove it from Applications by hand; mas cannot uninstall")
