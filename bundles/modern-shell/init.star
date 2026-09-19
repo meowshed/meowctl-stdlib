@@ -50,7 +50,6 @@ after = [
     "@stdlib//components/gum",
     "@stdlib//components/direnv",
     "@stdlib//components/tealdeer",
-    "@stdlib//components/navi",
     "@stdlib//components/watchexec",
     # multiplexer
     "@stdlib//components/zellij",
