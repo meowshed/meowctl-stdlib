@@ -7,9 +7,14 @@
 # PM kwargs: none
 #
 # Installs Python via mise and manages Python CLI tools via the mise pipx
-# backend (`mise use --global pipx:<name>`). mise auto-selects uv when
-# available for faster installs; no need to expose uv or pipx as separate
-# components.
+# backend (`mise use --global pipx:<name>`). That backend shells out to uv, and
+# it does so through the mise shim — which refuses to run unless uv has a
+# declared global version ("No version is set for shim: uv"), so uv is declared
+# here rather than left to be auto-selected.
+#
+# The backend installs applications, not libraries: a package with no entry
+# points fails with "Failed to install entrypoints". Libraries belong in a
+# specific interpreter, installed with pip.
 #
 # On Alpine, mise compiles python from source (slow, complex deps). Use the
 # Alpine system packages instead. pipx is then installed via pip3 directly
@@ -52,8 +57,10 @@ def install(ctx):
     else:
         pkg(manager = "mise", name = "python", version = "latest")
 
-        # mise's pipx backend requires pipx to be installed first.
+        # mise's pipx backend requires pipx to be installed first, and calls uv
+        # through its shim, which needs a declared version of its own.
         _activate_shims(ctx)
+        ctx.run("mise", ["use", "--global", "uv@latest"])
         ctx.run("mise", ["use", "--global", "pipx@latest"])
 
 def upgrade(ctx):
