@@ -23,7 +23,7 @@ def install(ctx):
             ctx.log("ffmpeg: unsupported distro %r — install manually then re-run" % p.distro)
 
 def verify(ctx):
-    ctx.run("ffmpeg", ["--version"])
+    ctx.run("ffmpeg", ["-version"])
 
 def upgrade(ctx):
     p = platform()
