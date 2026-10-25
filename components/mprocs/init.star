@@ -4,8 +4,10 @@
 # after:     ["@stdlib//components/mise"]
 #
 # mprocs — run multiple long-running commands in a split TUI.
-# https://github.com/pvolok/mprocs
-# Installed via mise (aqua backend, prebuilt binary).
+# https://github.com/pvolok/dekit
+# Installed via mise (aqua backend, prebuilt binary). Upstream renamed the
+# project to dekit: mise's `mprocs` entry now installs `aqua:pvolok/dekit`,
+# whose binary is `dekit`.
 
 after = ["@stdlib//components/mise"]
 
@@ -20,7 +22,7 @@ def install(ctx):
 
 def verify(ctx):
     _activate_shims(ctx)
-    ctx.run("mprocs", ["--version"])
+    ctx.run("dekit", ["--version"])
 
 def upgrade(ctx):
     _activate_shims(ctx)
