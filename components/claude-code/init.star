@@ -19,7 +19,8 @@ def _finish_install(ctx):
     # launcher whose postinstall fetches the platform-native binary — without it
     # `claude` starts and reports "native binary not installed". Running the
     # script by hand is what the error message itself suggests.
-    r = ctx.run("sh", ["-c",
+    r = ctx.run("sh", [
+        "-c",
         "f=$(find " + ctx.home + "/.local/share/mise/installs/npm-anthropic-ai-claude-code " +
         "-name install.cjs -path '*@anthropic-ai/claude-code/*' 2>/dev/null | head -1); " +
         "[ -n \"$f\" ] && cd \"$(dirname \"$f\")\" && node install.cjs >/dev/null 2>&1; :",
