@@ -70,12 +70,16 @@ echo "# init.star — managed by meowctl init" > "$CONFIG_DIR/init.star"
 } > "$CONFIG_DIR/local.star"
 
 # Write deps.mod with a replace() directive so @stdlib// resolves to the
-# local STDLIB_PATH checkout instead of the registry.
+# local STDLIB_PATH checkout instead of the registry. A replace() applies only
+# to a declared dep(), and meowctl reads the replacement from deps.lock, so the
+# dependency is declared and synced before anything is applied.
 cat > "$CONFIG_DIR/deps.mod" <<EOF
 module(name = "test-fixtures", version = "0.0.0")
 
+dep(name = "stdlib", version = "latest")
 replace(name = "stdlib", path = "$STDLIB_PATH")
 EOF
+"$MEOWCTL_BIN" --config "$CONFIG_DIR" dep sync
 
 # --- phase 1: apply all components together so after= ordering is respected ---
 echo "==> apply: ${COMPONENTS[*]}"
