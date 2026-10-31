@@ -19,7 +19,9 @@ def install(ctx):
 
 def verify(ctx):
     _activate_shims(ctx)
-    ctx.run("dasel", ["--version"])
+
+    # dasel 3 dropped the --version flag; the version subcommand prints it.
+    ctx.run("dasel", ["version"])
 
 def upgrade(ctx):
     _activate_shims(ctx)
