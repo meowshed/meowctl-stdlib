@@ -19,43 +19,71 @@ jobs:
       - name: Check formatting
         run: mise run lint
 
-  component-check:
-    name: Check / Components
+  # meowctl is a Rust workspace with no Linux release to download, so one job
+  # builds a static musl binary that every Linux job, container or not, runs.
+  build-linux:
+    name: Build meowctl (Linux)
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout meowctl-stdlib
-        uses: actions/checkout@v6
-        with:
-          path: stdlib
-
       - name: Checkout meowctl
         uses: actions/checkout@v6
         with:
           repository: meowshed/meowctl
           path: meowctl
 
-      - uses: actions/setup-go@v6
+      - name: Install musl tools
+        run: sudo apt-get update && sudo apt-get install -y musl-tools
+
+      - uses: dtolnay/rust-toolchain@stable
         with:
-          go-version-file: meowctl/go.mod
-          cache-dependency-path: meowctl/go.sum
+          targets: x86_64-unknown-linux-musl
+
+      - uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: meowctl
 
       - name: Build meowctl
         working-directory: meowctl
-        run: CGO_ENABLED=0 go build -o meowctl ./cmd/meowctl
+        run: cargo build --release --locked --target x86_64-unknown-linux-musl
 
-      - name: Check all components
-        run: |
-          meowctl/meowctl check stdlib/components
-          meowctl/meowctl check stdlib/bundles
+      - uses: actions/upload-artifact@v7
+        with:
+          name: meowctl-linux
+          path: meowctl/target/x86_64-unknown-linux-musl/release/meowctl
+          if-no-files-found: error
 
-  pm-contract:
-    name: Check / Package Managers
+  component-check:
+    name: Check / Components
     runs-on: ubuntu-latest
+    needs: build-linux
     steps:
       - name: Checkout meowctl-stdlib
         uses: actions/checkout@v6
         with:
           path: stdlib
+
+      - uses: actions/download-artifact@v8
+        with:
+          name: meowctl-linux
+          path: bin
+
+      - name: Check all components
+        run: |
+          chmod +x bin/meowctl
+          bin/meowctl check stdlib/components
+          bin/meowctl check stdlib/bundles
+
+  # meowctl's own corpus test evaluates every component in a meowctl-stdlib
+  # checked out beside it, and skips when there is none, so the directory
+  # names matter.
+  corpus:
+    name: Check / Corpus
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout meowctl-stdlib
+        uses: actions/checkout@v6
+        with:
+          path: meowctl-stdlib
 
       - name: Checkout meowctl
         uses: actions/checkout@v6
@@ -63,43 +91,35 @@ jobs:
           repository: meowshed/meowctl
           path: meowctl
 
-      - uses: actions/setup-go@v6
-        with:
-          go-version-file: meowctl/go.mod
-          cache-dependency-path: meowctl/go.sum
+      - uses: dtolnay/rust-toolchain@stable
 
-      - name: Run PM contract tests
+      - uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: meowctl
+
+      - name: Evaluate the corpus
         working-directory: meowctl
-        env:
-          STDLIB_PATH: ${{ github.workspace }}/stdlib
-        run: CGO_ENABLED=0 go test -tags integration -count=1 -v ./internal/lifecycle/...
+        run: cargo test --locked -p meowctl-starlark --test stdlib -- --nocapture
 
   integration-ubuntu:
     name: Integration / Ubuntu
     runs-on: ubuntu-latest
+    needs: build-linux
     steps:
       - name: Checkout meowctl-stdlib
         uses: actions/checkout@v6
         with:
           path: stdlib
 
-      - name: Checkout meowctl
-        uses: actions/checkout@v6
+      - uses: actions/download-artifact@v8
         with:
-          repository: meowshed/meowctl
-          path: meowctl
+          name: meowctl-linux
+          path: bin
 
-      - uses: actions/setup-go@v6
-        with:
-          go-version-file: meowctl/go.mod
-          cache-dependency-path: meowctl/go.sum
-
-      - name: Build and install meowctl
-        working-directory: meowctl
+      - name: Install meowctl
         run: |
-          CGO_ENABLED=0 go build -o meowctl ./cmd/meowctl
           mkdir -p "$HOME/.local/bin"
-          install -m755 meowctl "$HOME/.local/bin/meowctl"
+          install -m755 bin/meowctl "$HOME/.local/bin/meowctl"
           echo "MEOWCTL_BIN=$HOME/.local/bin/meowctl" >> "$GITHUB_ENV"
 
       - name: Smoke test (apt)
@@ -113,30 +133,28 @@ jobs:
   integration-fedora:
     name: Integration / Fedora
     runs-on: ubuntu-latest
+    needs: build-linux
     container: fedora:latest
     env:
       HOME: /root
     steps:
-      - name: Install git and Go toolchain deps
-        run: dnf install -y git golang sudo
+      - name: Install git
+        run: dnf install -y git sudo
 
       - name: Checkout meowctl-stdlib
         uses: actions/checkout@v6
         with:
           path: stdlib
 
-      - name: Checkout meowctl
-        uses: actions/checkout@v6
+      - uses: actions/download-artifact@v8
         with:
-          repository: meowshed/meowctl
-          path: meowctl
+          name: meowctl-linux
+          path: bin
 
-      - name: Build and install meowctl
-        working-directory: meowctl
+      - name: Install meowctl
         run: |
-          CGO_ENABLED=0 go build -o meowctl ./cmd/meowctl
           mkdir -p "$HOME/.local/bin"
-          install -m755 meowctl "$HOME/.local/bin/meowctl"
+          install -m755 bin/meowctl "$HOME/.local/bin/meowctl"
           echo "MEOWCTL_BIN=$HOME/.local/bin/meowctl" >> "$GITHUB_ENV"
 
       - name: Smoke test (dnf)
@@ -150,30 +168,28 @@ jobs:
   integration-arch:
     name: Integration / Arch
     runs-on: ubuntu-latest
+    needs: build-linux
     container: archlinux:latest
     env:
       HOME: /root
     steps:
-      - name: Install git and Go toolchain deps
-        run: pacman -Syu --noconfirm git go sudo
+      - name: Install git
+        run: pacman -Syu --noconfirm git sudo
 
       - name: Checkout meowctl-stdlib
         uses: actions/checkout@v6
         with:
           path: stdlib
 
-      - name: Checkout meowctl
-        uses: actions/checkout@v6
+      - uses: actions/download-artifact@v8
         with:
-          repository: meowshed/meowctl
-          path: meowctl
+          name: meowctl-linux
+          path: bin
 
-      - name: Build and install meowctl
-        working-directory: meowctl
+      - name: Install meowctl
         run: |
-          CGO_ENABLED=0 go build -o meowctl ./cmd/meowctl
           mkdir -p "$HOME/.local/bin"
-          install -m755 meowctl "$HOME/.local/bin/meowctl"
+          install -m755 bin/meowctl "$HOME/.local/bin/meowctl"
           echo "MEOWCTL_BIN=$HOME/.local/bin/meowctl" >> "$GITHUB_ENV"
 
       - name: Smoke test (pacman)
@@ -187,30 +203,28 @@ jobs:
   integration-alpine:
     name: Integration / Alpine (apk)
     runs-on: ubuntu-latest
+    needs: build-linux
     container: alpine:latest
     env:
       HOME: /root
     steps:
-      - name: Install git and Go toolchain deps
-        run: apk add --no-cache git go bash sudo
+      - name: Install git
+        run: apk add --no-cache git bash sudo
 
       - name: Checkout meowctl-stdlib
         uses: actions/checkout@v6
         with:
           path: stdlib
 
-      - name: Checkout meowctl
-        uses: actions/checkout@v6
+      - uses: actions/download-artifact@v8
         with:
-          repository: meowshed/meowctl
-          path: meowctl
+          name: meowctl-linux
+          path: bin
 
-      - name: Build and install meowctl
-        working-directory: meowctl
+      - name: Install meowctl
         run: |
-          CGO_ENABLED=0 go build -o meowctl ./cmd/meowctl
           mkdir -p "$HOME/.local/bin"
-          install -m755 meowctl "$HOME/.local/bin/meowctl"
+          install -m755 bin/meowctl "$HOME/.local/bin/meowctl"
           echo "MEOWCTL_BIN=$HOME/.local/bin/meowctl" >> "$GITHUB_ENV"
 
       - name: Smoke test (apk)
@@ -236,17 +250,18 @@ jobs:
           repository: meowshed/meowctl
           path: meowctl
 
-      - uses: actions/setup-go@v6
+      - uses: dtolnay/rust-toolchain@stable
+
+      - uses: Swatinem/rust-cache@v2
         with:
-          go-version-file: meowctl/go.mod
-          cache-dependency-path: meowctl/go.sum
+          workspaces: meowctl
 
       - name: Build and install meowctl
         working-directory: meowctl
         run: |
-          CGO_ENABLED=0 go build -o meowctl ./cmd/meowctl
+          cargo build --release --locked
           mkdir -p "$HOME/.local/bin"
-          install -m755 meowctl "$HOME/.local/bin/meowctl"
+          install -m755 target/release/meowctl "$HOME/.local/bin/meowctl"
           echo "MEOWCTL_BIN=$HOME/.local/bin/meowctl" >> "$GITHUB_ENV"
 
       - name: Smoke test (brew)
