@@ -6,7 +6,7 @@
 #
 # PM kwargs:
 #   cask=True        — install as a Homebrew cask (GUI app)
-#   tap="owner/repo" — tap to add before installing the formula/cask
+#   tap="owner/repo" — tap to add and trust before installing the formula/cask
 #
 # Homebrew has no upstream package manager to install it from on a fresh macOS
 # system; the official curl installer is the only supported bootstrap path.
@@ -68,6 +68,10 @@ def install_pkg(ctx, name, version, **kwargs):
 
     if tap:
         ctx.run("brew", ["tap", tap])
+        # Homebrew 7 refuses to load a formula or cask from a third-party tap
+        # until the tap is trusted, so `brew install` below would fail.
+        # Declaring tap= is the caller's decision to trust it.
+        ctx.run("brew", ["trust", "--tap", tap])
 
     if cask:
         if version:
